@@ -334,84 +334,147 @@
       box-shadow: 0 6px 25px rgba(0,0,0,0.3);
     }
 
-    /* Language Selector - Compact Dropdown */
-    .lang-selector-wrap {
+    /* Language Selection Screen */
+    .lang-screen {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 48px 24px 32px;
+    }
+    .lang-screen-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .lang-screen-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+    .lang-screen-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+    }
+    .lang-screen-subtitle {
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+    .lang-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 4px;
+      margin: 0 -4px;
+    }
+    .lang-list::-webkit-scrollbar { width: 0; }
+    .lang-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      text-align: left;
+      width: 100%;
+    }
+    .lang-card:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+    .lang-card.selected {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.5);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .lang-card-flag {
+      font-size: 36px;
+      line-height: 1;
+    }
+    .lang-card-info {
+      flex: 1;
+    }
+    .lang-card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 2px;
+    }
+    .lang-card-currency {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-card-currency-badge {
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+    }
+    .lang-card-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: transparent;
+      transition: all 0.2s;
+    }
+    .lang-card.selected .lang-card-check {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: white;
+    }
+    .lang-screen-footer {
+      padding-top: 24px;
+    }
+    .lang-screen-footer .btn {
+      background: white;
+      color: #1a1a1a;
+    }
+    .lang-screen-footer .btn:disabled {
+      background: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Small language button on splash */
+    .splash-lang-btn {
       position: absolute;
       top: 20px;
       right: 20px;
-      z-index: 100;
-    }
-    .lang-current {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.25);
-      border-radius: 12px;
-      color: white;
-      font-size: 14px;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       font-family: inherit;
     }
-    .lang-current:hover {
-      background: rgba(255,255,255,0.2);
-      border-color: rgba(255,255,255,0.4);
-    }
-    .lang-current .flag { font-size: 18px; }
-    .lang-current .arrow { font-size: 10px; opacity: 0.7; transition: transform 0.2s; }
-    .lang-selector-wrap.open .lang-current .arrow { transform: rotate(180deg); }
-
-    .lang-dropdown {
-      position: absolute;
-      top: calc(100% + 8px);
-      right: 0;
-      min-width: 160px;
-      background: #2d2d2d;
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 14px;
-      padding: 8px;
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.2s ease;
-      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
-    }
-    .lang-selector-wrap.open .lang-dropdown {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-    .lang-option {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      width: 100%;
-      padding: 10px 12px;
-      background: transparent;
-      border: none;
-      border-radius: 10px;
-      color: rgba(255,255,255,0.7);
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      transition: all 0.15s;
-      font-family: inherit;
-      text-align: left;
-    }
-    .lang-option:hover {
-      background: rgba(255,255,255,0.1);
-      color: white;
-    }
-    .lang-option.active {
+    .splash-lang-btn:hover {
       background: rgba(255,255,255,0.15);
-      color: white;
+      border-color: rgba(255,255,255,0.3);
     }
-    .lang-option .flag { font-size: 18px; }
-    .lang-option .check { margin-left: auto; opacity: 0; }
-    .lang-option.active .check { opacity: 1; }
+    .splash-lang-btn .flag { font-size: 16px; }
 
     /* Chat loading */
     .typing {
@@ -1425,21 +1488,14 @@
     };
 
     // Toggle language dropdown
-    let langDropdownOpen = false;
-    const toggleLangDropdown = () => {
-      langDropdownOpen = !langDropdownOpen;
-      const wrap = document.querySelector('.lang-selector-wrap');
-      if (wrap) wrap.classList.toggle('open', langDropdownOpen);
-    };
-    const closeLangDropdown = () => {
-      langDropdownOpen = false;
-      const wrap = document.querySelector('.lang-selector-wrap');
-      if (wrap) wrap.classList.remove('open');
-    };
+
+    // Check if first time user (no language saved)
+    const savedLang = localStorage.getItem('moni_language');
+    const isFirstTime = !savedLang;
 
     let state = {
-      screen: 'splash',
-      language: localStorage.getItem('moni_language') || 'vi',
+      screen: isFirstTime ? 'language' : 'splash',
+      language: savedLang || 'vi',
       step: 0,
       quizStep: -1,
       quizAnswers: [],
@@ -1557,34 +1613,78 @@
 
     const render = () => {
       const app = $('app');
-      if (state.screen === 'splash') renderSplash(app);
+      if (state.screen === 'language') renderLanguageSelection(app);
+      else if (state.screen === 'splash') renderSplash(app);
       else if (state.screen === 'onboarding') renderOnboarding(app);
       else if (state.screen === 'main') renderMain(app);
+    };
+
+    // ============= LANGUAGE SELECTION SCREEN =============
+    const renderLanguageSelection = (app) => {
+      app.className = 'phone splash-bg';
+      const langCards = Object.entries(LANGUAGES).map(([code, lang]) => `
+        <button class="lang-card ${state.language === code ? 'selected' : ''}" onclick="selectLanguage('${code}')">
+          <span class="lang-card-flag">${lang.flag}</span>
+          <div class="lang-card-info">
+            <div class="lang-card-name">${lang.label}</div>
+            <div class="lang-card-currency">
+              <span class="lang-card-currency-badge">${lang.currency}</span>
+              <span>${lang.symbol}</span>
+            </div>
+          </div>
+          <div class="lang-card-check">✓</div>
+        </button>
+      `).join('');
+
+      app.innerHTML = `
+        <div class="lang-screen">
+          <div class="lang-screen-header">
+            <div class="lang-screen-icon">🌍</div>
+            <div class="lang-screen-title">Choose Language</div>
+            <div class="lang-screen-subtitle">Select your preferred language and currency</div>
+          </div>
+          <div class="lang-list">
+            ${langCards}
+          </div>
+          <div class="lang-screen-footer">
+            <button class="btn" onclick="confirmLanguage()">Continue →</button>
+          </div>
+        </div>
+      `;
+    };
+
+    window.selectLanguage = (code) => {
+      state.language = code;
+      render();
+    };
+
+    window.confirmLanguage = () => {
+      localStorage.setItem('moni_language', state.language);
+      document.documentElement.lang = state.language;
+      state.screen = 'splash';
+      // Reset financial data for new currency
+      state.income = '';
+      state.fixedExpenses = getDefaultFixed();
+      state.goals = [];
+      state.allocations = {};
+      render();
+    };
+
+    window.goToLanguageScreen = () => {
+      state.screen = 'language';
+      render();
     };
 
     const renderSplash = (app) => {
       app.className = 'phone splash-bg';
       const currentLang = getLang();
-      const langOptions = Object.entries(LANGUAGES).map(([code, {label, flag}]) =>
-        `<button class="lang-option ${state.language === code ? 'active' : ''}" onclick="event.stopPropagation();setLanguage('${code}');closeLangDropdown()">
-          <span class="flag">${flag}</span>
-          <span>${label}</span>
-          <span class="check">✓</span>
-        </button>`
-      ).join('');
 
       app.innerHTML = `
         <div class="splash">
-          <div class="lang-selector-wrap ${langDropdownOpen ? 'open' : ''}" onclick="toggleLangDropdown()">
-            <div class="lang-current">
-              <span class="flag">${currentLang.flag}</span>
-              <span>${currentLang.currency}</span>
-              <span class="arrow">▼</span>
-            </div>
-            <div class="lang-dropdown" onclick="event.stopPropagation()">
-              ${langOptions}
-            </div>
-          </div>
+          <button class="splash-lang-btn" onclick="goToLanguageScreen()">
+            <span class="flag">${currentLang.flag}</span>
+            <span>${currentLang.label}</span>
+          </button>
           <div>
             <div class="splash-logo">🌿</div>
             <div class="splash-title">Moni</div>
