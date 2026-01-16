@@ -3455,7 +3455,7 @@
             const daysLeft = getDaysRemainingInMonth();
             const dailyBudget = daysLeft > 0 ? remaining / daysLeft : 0;
             const totalDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-            const idealDaily = calculateRemaining() / totalDays; // Original monthly budget / total days
+            const idealDaily = spendable() / totalDays; // Original monthly budget / total days
             const paceRatio = idealDaily > 0 ? dailyBudget / idealDaily : 1;
 
             let peaceStatus, peaceEmoji, peaceColor;
