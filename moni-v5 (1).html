@@ -617,6 +617,9 @@
         namePlaceholderExpense: 'VD: Cafe, Grab, Ăn trưa...',
         amount: 'Số tiền',
         addExpense: 'Thêm chi tiêu',
+        viewAll: 'Xem danh mục',
+        hideCategories: 'Ẩn danh mục',
+        noExpensesYet: 'Chưa có chi tiêu nào hôm nay',
         afterPurchase: 'Sau khi mua:',
         leftRemaining: 'còn lại',
         bought: 'Mua rồi ✓',
@@ -744,6 +747,9 @@
         namePlaceholderExpense: 'E.g.: Coffee, Uber, Lunch...',
         amount: 'Amount',
         addExpense: 'Add expense',
+        viewAll: 'View categories',
+        hideCategories: 'Hide categories',
+        noExpensesYet: 'No expenses yet today',
         afterPurchase: 'After purchase:',
         leftRemaining: 'remaining',
         bought: 'Bought ✓',
@@ -868,6 +874,9 @@
         namePlaceholderExpense: '例如：咖啡、打车、午餐...',
         amount: '金额',
         addExpense: '添加支出',
+        viewAll: '查看分类',
+        hideCategories: '隐藏分类',
+        noExpensesYet: '今天还没有支出',
         afterPurchase: '购买后：',
         leftRemaining: '剩余',
         bought: '已购买 ✓',
@@ -992,6 +1001,9 @@
         namePlaceholderExpense: '例：コーヒー、タクシー、ランチ...',
         amount: '金額',
         addExpense: '支出を追加',
+        viewAll: 'カテゴリを見る',
+        hideCategories: 'カテゴリを隠す',
+        noExpensesYet: '今日はまだ支出がありません',
         afterPurchase: '購入後：',
         leftRemaining: '残り',
         bought: '購入済み ✓',
@@ -1116,6 +1128,9 @@
         namePlaceholderExpense: '예: 커피, 택시, 점심...',
         amount: '금액',
         addExpense: '지출 추가',
+        viewAll: '카테고리 보기',
+        hideCategories: '카테고리 숨기기',
+        noExpensesYet: '오늘 아직 지출이 없습니다',
         afterPurchase: '구매 후:',
         leftRemaining: '남음',
         bought: '구매함 ✓',
@@ -1240,6 +1255,9 @@
         namePlaceholderExpense: 'Ex: Café, Uber, Déjeuner...',
         amount: 'Montant',
         addExpense: 'Ajouter dépense',
+        viewAll: 'Voir catégories',
+        hideCategories: 'Masquer catégories',
+        noExpensesYet: 'Pas encore de dépenses aujourd\'hui',
         afterPurchase: 'Après achat:',
         leftRemaining: 'restant',
         bought: 'Acheté ✓',
@@ -1364,6 +1382,9 @@
         namePlaceholderExpense: 'Ej: Café, Uber, Almuerzo...',
         amount: 'Monto',
         addExpense: 'Agregar gasto',
+        viewAll: 'Ver categorías',
+        hideCategories: 'Ocultar categorías',
+        noExpensesYet: 'Aún no hay gastos hoy',
         afterPurchase: 'Después de comprar:',
         leftRemaining: 'restante',
         bought: 'Comprado ✓',
@@ -1404,7 +1425,19 @@
         incomePresets: [8, 10, 15, 20, 25, 30], // millions
         multiplier: 1000000, // 1 unit = 1 million VND
         formatUnit: 'tr',
-        goalAmounts: { laptop: 25000000, phone: 15000000, trip: 10000000, bike: 50000000, emergency: 20000000, wedding: 100000000 }
+        goalAmounts: { laptop: 25000000, phone: 15000000, trip: 10000000, bike: 50000000, emergency: 20000000, wedding: 100000000 },
+        sampleExpenses: [
+          { emoji: '☕', name: 'Cafe', amount: 50000 },
+          { emoji: '🍜', name: 'Cơm trưa', amount: 45000 },
+          { emoji: '🚗', name: 'Grab', amount: 85000 },
+          { emoji: '🛒', name: 'Siêu thị', amount: 150000 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: 'Cafe', amount: 50000, label: 'Cafe 50k' },
+          { emoji: '🍜', name: 'Cơm', amount: 45000, label: 'Cơm 45k' },
+          { emoji: '🚗', name: 'Grab', amount: 85000, label: 'Grab 85k' },
+          { emoji: '🛒', name: 'Chợ', amount: 150000, label: 'Chợ 150k' }
+        ]
       },
       en: {
         label: 'English', flag: '🇬🇧',
@@ -1412,7 +1445,19 @@
         incomePresets: [3, 4, 5, 6, 8, 10], // thousands
         multiplier: 1000, // 1 unit = 1 thousand USD
         formatUnit: 'k',
-        goalAmounts: { laptop: 1500, phone: 1000, trip: 2000, bike: 5000, emergency: 5000, wedding: 20000 }
+        goalAmounts: { laptop: 1500, phone: 1000, trip: 2000, bike: 5000, emergency: 5000, wedding: 20000 },
+        sampleExpenses: [
+          { emoji: '☕', name: 'Coffee', amount: 5 },
+          { emoji: '🍜', name: 'Lunch', amount: 15 },
+          { emoji: '🚗', name: 'Uber', amount: 25 },
+          { emoji: '🛒', name: 'Groceries', amount: 80 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: 'Coffee', amount: 5, label: 'Coffee $5' },
+          { emoji: '🍜', name: 'Lunch', amount: 15, label: 'Lunch $15' },
+          { emoji: '🚗', name: 'Uber', amount: 25, label: 'Uber $25' },
+          { emoji: '🛒', name: 'Grocery', amount: 50, label: 'Grocery $50' }
+        ]
       },
       zh: {
         label: '中文', flag: '🇨🇳',
@@ -1420,23 +1465,59 @@
         incomePresets: [8, 10, 15, 20, 30, 50], // thousands
         multiplier: 1000,
         formatUnit: 'k',
-        goalAmounts: { laptop: 8000, phone: 6000, trip: 10000, bike: 15000, emergency: 20000, wedding: 100000 }
+        goalAmounts: { laptop: 8000, phone: 6000, trip: 10000, bike: 15000, emergency: 20000, wedding: 100000 },
+        sampleExpenses: [
+          { emoji: '☕', name: '咖啡', amount: 30 },
+          { emoji: '🍜', name: '午餐', amount: 40 },
+          { emoji: '🚗', name: '打车', amount: 50 },
+          { emoji: '🛒', name: '超市', amount: 200 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: '咖啡', amount: 30, label: '咖啡 ¥30' },
+          { emoji: '🍜', name: '午餐', amount: 40, label: '午餐 ¥40' },
+          { emoji: '🚗', name: '打车', amount: 50, label: '打车 ¥50' },
+          { emoji: '🛒', name: '超市', amount: 150, label: '超市 ¥150' }
+        ]
       },
       ja: {
         label: '日本語', flag: '🇯🇵',
         currency: 'JPY', symbol: '¥', symbolPosition: 'before',
         incomePresets: [200, 250, 300, 400, 500, 600], // thousands
-        multiplier: 1000, // 1 unit = 1 thousand Yen (万 = 10k)
+        multiplier: 10000, // 万 = 10k
         formatUnit: '万',
-        goalAmounts: { laptop: 150000, phone: 100000, trip: 200000, bike: 300000, emergency: 500000, wedding: 3000000 }
+        goalAmounts: { laptop: 150000, phone: 100000, trip: 200000, bike: 300000, emergency: 500000, wedding: 3000000 },
+        sampleExpenses: [
+          { emoji: '☕', name: 'コーヒー', amount: 500 },
+          { emoji: '🍜', name: 'ランチ', amount: 1000 },
+          { emoji: '🚗', name: 'タクシー', amount: 2000 },
+          { emoji: '🛒', name: 'スーパー', amount: 5000 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: 'コーヒー', amount: 500, label: 'コーヒー ¥500' },
+          { emoji: '🍜', name: 'ランチ', amount: 1000, label: 'ランチ ¥1000' },
+          { emoji: '🚗', name: 'タクシー', amount: 2000, label: 'タクシー ¥2000' },
+          { emoji: '🛒', name: 'スーパー', amount: 3000, label: 'スーパー ¥3000' }
+        ]
       },
       ko: {
         label: '한국어', flag: '🇰🇷',
         currency: 'KRW', symbol: '₩', symbolPosition: 'before',
-        incomePresets: [2000, 3000, 4000, 5000, 6000, 8000], // thousands
-        multiplier: 1000,
+        incomePresets: [200, 300, 400, 500, 600, 800], // 만원 units (200만 = 2M KRW)
+        multiplier: 10000, // 만 = 10k
         formatUnit: '만',
-        goalAmounts: { laptop: 1500000, phone: 1000000, trip: 2000000, bike: 5000000, emergency: 5000000, wedding: 30000000 }
+        goalAmounts: { laptop: 1500000, phone: 1000000, trip: 2000000, bike: 5000000, emergency: 5000000, wedding: 30000000 },
+        sampleExpenses: [
+          { emoji: '☕', name: '커피', amount: 5000 },
+          { emoji: '🍜', name: '점심', amount: 10000 },
+          { emoji: '🚗', name: '택시', amount: 15000 },
+          { emoji: '🛒', name: '마트', amount: 50000 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: '커피', amount: 5000, label: '커피 ₩5000' },
+          { emoji: '🍜', name: '점심', amount: 10000, label: '점심 ₩10000' },
+          { emoji: '🚗', name: '택시', amount: 15000, label: '택시 ₩15000' },
+          { emoji: '🛒', name: '마트', amount: 30000, label: '마트 ₩30000' }
+        ]
       },
       fr: {
         label: 'Français', flag: '🇫🇷',
@@ -1444,7 +1525,19 @@
         incomePresets: [2, 2.5, 3, 4, 5, 6], // thousands
         multiplier: 1000,
         formatUnit: 'k',
-        goalAmounts: { laptop: 1200, phone: 800, trip: 1500, bike: 4000, emergency: 5000, wedding: 15000 }
+        goalAmounts: { laptop: 1200, phone: 800, trip: 1500, bike: 4000, emergency: 5000, wedding: 15000 },
+        sampleExpenses: [
+          { emoji: '☕', name: 'Café', amount: 4 },
+          { emoji: '🍜', name: 'Déjeuner', amount: 15 },
+          { emoji: '🚗', name: 'Uber', amount: 20 },
+          { emoji: '🛒', name: 'Courses', amount: 60 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: 'Café', amount: 4, label: 'Café 4€' },
+          { emoji: '🍜', name: 'Déjeuner', amount: 15, label: 'Déjeuner 15€' },
+          { emoji: '🚗', name: 'Uber', amount: 20, label: 'Uber 20€' },
+          { emoji: '🛒', name: 'Courses', amount: 50, label: 'Courses 50€' }
+        ]
       },
       es: {
         label: 'Español', flag: '🇪🇸',
@@ -1452,7 +1545,19 @@
         incomePresets: [1.5, 2, 2.5, 3, 4, 5], // thousands
         multiplier: 1000,
         formatUnit: 'k',
-        goalAmounts: { laptop: 1000, phone: 700, trip: 1200, bike: 3500, emergency: 4000, wedding: 12000 }
+        goalAmounts: { laptop: 1000, phone: 700, trip: 1200, bike: 3500, emergency: 4000, wedding: 12000 },
+        sampleExpenses: [
+          { emoji: '☕', name: 'Café', amount: 3 },
+          { emoji: '🍜', name: 'Almuerzo', amount: 12 },
+          { emoji: '🚗', name: 'Uber', amount: 15 },
+          { emoji: '🛒', name: 'Compras', amount: 50 }
+        ],
+        quickExpenses: [
+          { emoji: '☕', name: 'Café', amount: 3, label: 'Café 3€' },
+          { emoji: '🍜', name: 'Almuerzo', amount: 12, label: 'Almuerzo 12€' },
+          { emoji: '🚗', name: 'Uber', amount: 15, label: 'Uber 15€' },
+          { emoji: '🛒', name: 'Compras', amount: 40, label: 'Compras 40€' }
+        ]
       }
     };
 
@@ -1492,15 +1597,16 @@
     };
 
     // Set language function
-    const setLanguage = (lang) => {
-      state.language = lang;
-      localStorage.setItem('moni_language', lang);
-      document.documentElement.lang = lang;
+    const setLanguage = (langCode) => {
+      state.language = langCode;
+      localStorage.setItem('moni_language', langCode);
+      document.documentElement.lang = langCode;
       // Reset financial data when changing language/currency
       state.income = '';
       state.fixedExpenses = getDefaultFixed();
       state.goals = [];
       state.allocations = {};
+      state.transactions = []; // Start empty, user adds expenses
       render();
     };
 
@@ -1519,13 +1625,9 @@
       fixedExpenses: [],  // [{ id, e, name, amount }]
       goals: [],
       allocations: {},
-      transactions: [
-        { emoji: '☕', name: 'Cafe', amount: 50000 },
-        { emoji: '🍜', name: 'Cơm trưa', amount: 45000 },
-        { emoji: '🚗', name: 'Grab về nhà', amount: 85000 },
-        { emoji: '🛒', name: 'Siêu thị', amount: 140000 },
-      ],
+      transactions: [], // Will be initialized from language-specific sample expenses
       showAddExpense: false,
+      showCategories: false, // Toggle for quick categories in add expense modal
       showAddFixed: false,
       showAddGoal: false,
       newExpense: { name: '', amount: '' },
@@ -1546,8 +1648,19 @@
     ];
     const getFixedName = (item) => item.customName || t(item.nameKey) || item.nameKey;
 
-    // Initialize fixed expenses from defaults
+    // Get sample transactions for current language/currency
+    const getSampleTransactions = () => {
+      const lang = getLang();
+      return (lang.sampleExpenses || []).map(exp => ({
+        emoji: exp.emoji,
+        name: exp.name,
+        amount: exp.amount
+      }));
+    };
+
+    // Initialize fixed expenses and transactions from defaults
     state.fixedExpenses = getDefaultFixed();
+    state.transactions = []; // Start empty, user adds expenses
 
     const getArchetypes = () => ({
       dreamer: { emoji: '✨', name: t('theDreamer'), tag: t('dreamerTag'), color: '#8b5cf6', descKey: 'dreamerDesc' },
@@ -1759,6 +1872,7 @@
       state.fixedExpenses = getDefaultFixed();
       state.goals = [];
       state.allocations = {};
+      state.transactions = []; // Start empty, user adds expenses
       render();
     };
 
@@ -2155,16 +2269,22 @@
               <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('name')}</label>
               <input id="expenseName" class="input" placeholder="${t('namePlaceholderExpense')}">
             </div>
-            <div style="margin-bottom:24px">
+            <div style="margin-bottom:16px">
               <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amount')}</label>
               <input id="expenseAmount" class="input" placeholder="50,000" style="font-size:24px;font-weight:700;text-align:center">
             </div>
-            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
-              <button onclick="quickAddExpense('☕','Cafe',50000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">☕ Cafe 50k</button>
-              <button onclick="quickAddExpense('🍜','Lunch',45000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🍜 Lunch 45k</button>
-              <button onclick="quickAddExpense('🚗','Grab',85000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🚗 Grab 85k</button>
-              <button onclick="quickAddExpense('🛒','Market',150000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🛒 Market 150k</button>
+            <div style="margin-bottom:16px;text-align:center">
+              <button onclick="toggleCategories()" style="background:none;border:none;color:var(--primary);font-size:14px;cursor:pointer;font-family:inherit;padding:8px 16px">
+                ${state.showCategories ? '▲ ' + t('hideCategories') : '▼ ' + t('viewAll')}
+              </button>
             </div>
+            ${state.showCategories ? `
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
+                ${(getLang().quickExpenses || []).map(qe => `
+                  <button onclick="quickAddExpense('${qe.emoji}','${qe.name}',${qe.amount})" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">${qe.emoji} ${qe.label}</button>
+                `).join('')}
+              </div>
+            ` : ''}
             <button class="btn" onclick="confirmAddExpenseFromModal()">${t('addExpense')}</button>
           </div>
         </div>
@@ -2218,7 +2338,8 @@
           <div class="goals-status">
             ${state.goals.slice(0, 2).map((g, i) => {
               const isOnTrack = i === 0;
-              const months = Math.ceil(g.amount / (state.allocations[g.id] || 1000000));
+              const alloc = state.allocations[g.id] || getLang().multiplier || 1000;
+              const months = Math.ceil(g.amount / alloc);
               return `
                 <div class="goal-pill ${isOnTrack ? 'on-track' : 'behind'}">
                   <span class="goal-emoji">${g.e}</span>
@@ -2237,16 +2358,21 @@
           <div class="recent-section">
             <div class="recent-header">
               <span class="recent-title">${t('today')}</span>
-              <span class="recent-total">-${fmt(todaySpent())}</span>
+              <span class="recent-total">${state.transactions.length > 0 ? '-' + fmt(todaySpent()) : ''}</span>
             </div>
             <div class="recent-list">
-              ${state.transactions.slice(0, 4).map(tx => `
+              ${state.transactions.length > 0 ? state.transactions.slice(0, 4).map(tx => `
                 <div class="recent-item">
                   <span class="recent-emoji">${tx.emoji}</span>
                   <span class="recent-name">${tx.name}</span>
                   <span class="recent-amount">-${fmt(tx.amount)}</span>
                 </div>
-              `).join('')}
+              `).join('') : `
+                <div style="text-align:center;padding:24px;color:var(--text-muted)">
+                  <div style="font-size:32px;margin-bottom:8px">✨</div>
+                  <div style="font-size:14px">${t('noExpensesYet')}</div>
+                </div>
+              `}
             </div>
           </div>
           <div class="spacer"></div>
@@ -2259,9 +2385,9 @@
               </div>
             </div>
             <div class="chips">
-              <button class="chip" onclick="askWithText('Cafe 50k')">☕ Cafe 50k</button>
-              <button class="chip" onclick="askWithText('Grab 85k')">🚗 Grab 85k</button>
-              <button class="chip" onclick="askWithText('Dinner 150k')">🍜 Dinner 150k</button>
+              ${(getLang().quickExpenses || []).slice(0, 3).map(qe => `
+                <button class="chip" onclick="askWithText('${qe.label}')">${qe.emoji} ${qe.label}</button>
+              `).join('')}
             </div>
             ${chatSection}
             <div class="ask-hint">${t('askHint')}</div>
@@ -2556,8 +2682,9 @@ Ví dụ response:
       clearChat();
     };
     
-    window.openAddExpense = () => { state.showAddExpense = true; render(); };
-    window.closeAddExpense = () => { state.showAddExpense = false; render(); };
+    window.openAddExpense = () => { state.showAddExpense = true; state.showCategories = false; render(); };
+    window.closeAddExpense = () => { state.showAddExpense = false; state.showCategories = false; render(); };
+    window.toggleCategories = () => { state.showCategories = !state.showCategories; render(); };
     window.confirmAddExpenseFromModal = () => {
       const name = $('expenseName')?.value;
       const rawAmount = $('expenseAmount')?.value;
