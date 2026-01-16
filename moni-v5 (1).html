@@ -560,6 +560,7 @@
         incomeTitle: 'Thu nhập hàng tháng',
         incomeDesc: 'Để Moni tính được bạn có thể tiêu thoải mái bao nhiêu mỗi tháng.',
         privacyNote: 'Thông tin được bảo mật và chỉ lưu trên thiết bị',
+        smartInputHint: '💡 Nhập tự nhiên: 15tr, 15 triệu, 500k, 500 nghìn...',
         // Fixed Expenses Step
         fixedTitle: 'Chi phí cố định hàng tháng',
         fixedDesc: 'Những khoản phải trả đều đặn. Nhập số tiền hoặc xóa nếu không có.',
@@ -690,6 +691,7 @@
         incomeTitle: 'Monthly Income',
         incomeDesc: 'So Moni can calculate how much you can comfortably spend each month.',
         privacyNote: 'Information is secure and stored only on your device',
+        smartInputHint: '💡 Type naturally: 15k, 1.5m, 1.5 million...',
         fixedTitle: 'Monthly Fixed Expenses',
         fixedDesc: 'Regular payments you make. Enter amounts or remove if not applicable.',
         addOther: 'Add another',
@@ -813,6 +815,7 @@
         incomeTitle: '月收入',
         incomeDesc: '这样Moni可以计算您每月可以舒适地花多少钱。',
         privacyNote: '信息安全，仅存储在您的设备上',
+        smartInputHint: '💡 自然输入: 15k, 1.5万, 100万...',
         fixedTitle: '每月固定支出',
         fixedDesc: '您定期支付的费用。输入金额或删除不适用的项目。',
         addOther: '添加其他',
@@ -936,6 +939,7 @@
         incomeTitle: '月収',
         incomeDesc: 'Moniが毎月快適に使える金額を計算できるようにします。',
         privacyNote: '情報は安全で、デバイスにのみ保存されます',
+        smartInputHint: '💡 自然に入力: 15k, 1.5万, 100万...',
         fixedTitle: '毎月の固定費',
         fixedDesc: '定期的な支払い。金額を入力するか、該当しない場合は削除してください。',
         addOther: '他を追加',
@@ -1059,6 +1063,7 @@
         incomeTitle: '월 수입',
         incomeDesc: 'Moni가 매월 편안하게 쓸 수 있는 금액을 계산할 수 있게 해줍니다.',
         privacyNote: '정보는 안전하며 기기에만 저장됩니다',
+        smartInputHint: '💡 자연스럽게 입력: 15k, 1.5만, 100만...',
         fixedTitle: '월 고정 지출',
         fixedDesc: '정기적인 지출입니다. 금액을 입력하거나 해당되지 않으면 삭제하세요.',
         addOther: '다른 항목 추가',
@@ -1182,6 +1187,7 @@
         incomeTitle: 'Revenu Mensuel',
         incomeDesc: 'Pour que Moni calcule combien vous pouvez dépenser confortablement chaque mois.',
         privacyNote: 'Les informations sont sécurisées et stockées uniquement sur votre appareil',
+        smartInputHint: '💡 Tapez naturellement: 15k, 1.5m, 1.5 million...',
         fixedTitle: 'Dépenses Fixes Mensuelles',
         fixedDesc: 'Paiements réguliers. Entrez les montants ou supprimez si non applicable.',
         addOther: 'Ajouter autre',
@@ -1305,6 +1311,7 @@
         incomeTitle: 'Ingreso Mensual',
         incomeDesc: 'Para que Moni calcule cuánto puedes gastar cómodamente cada mes.',
         privacyNote: 'La información es segura y se almacena solo en tu dispositivo',
+        smartInputHint: '💡 Escribe naturalmente: 15k, 1.5m, 1.5 million...',
         fixedTitle: 'Gastos Fijos Mensuales',
         fixedDesc: 'Pagos regulares. Ingresa montos o elimina si no aplica.',
         addOther: 'Agregar otro',
@@ -1487,14 +1494,11 @@
       render();
     };
 
-    // Toggle language dropdown
-
-    // Check if first time user (no language saved)
+    // Get saved language preference
     const savedLang = localStorage.getItem('moni_language');
-    const isFirstTime = !savedLang;
 
     let state = {
-      screen: isFirstTime ? 'language' : 'splash',
+      screen: 'language', // Always start with language selection screen
       language: savedLang || 'vi',
       step: 0,
       quizStep: -1,
@@ -1606,6 +1610,61 @@
       }
     };
 
+    // Format large spendable amount for homepage display
+    const formatSpendable = (n) => {
+      const lang = getLang();
+      const multiplier = lang.multiplier || 1000000;
+      const unit = lang.formatUnit || 'tr';
+      const symbol = lang.symbol;
+      const pos = lang.symbolPosition;
+
+      const value = (n / multiplier).toFixed(1).replace('.0', '');
+
+      if (pos === 'before') {
+        return `${symbol}${value}<span class="unit">${unit}</span>`;
+      } else {
+        return `${value}<span class="unit">${unit}</span>`;
+      }
+    };
+
+    // AI-powered amount parser - understands various formats
+    const parseAmount = (input) => {
+      if (!input) return 0;
+      const text = input.toString().toLowerCase().trim();
+      const lang = getLang();
+
+      // Remove currency symbols and spaces
+      let clean = text.replace(/[$€¥₫₩,\s]/g, '');
+
+      // Parse different formats
+      // Vietnamese: 50k, 1.5tr, 2 triệu, 500 nghìn
+      // English: 50k, 1.5m, 1.5 million, 500 thousand
+      // Chinese: 50k, 1.5万, 100万
+      // Japanese: 50k, 1.5万, 100万
+      // Korean: 50k, 1.5만, 100만
+
+      let multiplier = 1;
+
+      // Check for multiplier keywords
+      if (/tr(iệu)?|million|m(?!\w)/i.test(clean)) {
+        multiplier = 1000000;
+        clean = clean.replace(/tr(iệu)?|million|m(?!\w)/gi, '');
+      } else if (/nghìn|ngàn|thousand|k(?!\w)/i.test(clean)) {
+        multiplier = 1000;
+        clean = clean.replace(/nghìn|ngàn|thousand|k(?!\w)/gi, '');
+      } else if (/万|만/i.test(clean)) {
+        multiplier = 10000;
+        clean = clean.replace(/万|만/gi, '');
+      } else if (/億|억/i.test(clean)) {
+        multiplier = 100000000;
+        clean = clean.replace(/億|억/gi, '');
+      }
+
+      // Parse the number
+      const num = parseFloat(clean.replace(/[^\d.]/g, '')) || 0;
+      return Math.round(num * multiplier);
+    };
+
     const totalFixed = () => state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0);
     const totalAllocation = () => Object.values(state.allocations).reduce((a, b) => a + (parseInt(b) || 0), 0);
     const spendable = () => (parseInt(state.income) || 0) - totalFixed() - totalAllocation();
@@ -1677,14 +1736,10 @@
 
     const renderSplash = (app) => {
       app.className = 'phone splash-bg';
-      const currentLang = getLang();
 
       app.innerHTML = `
         <div class="splash">
-          <button class="splash-lang-btn" onclick="goToLanguageScreen()">
-            <span class="flag">${currentLang.flag}</span>
-            <span>${currentLang.label}</span>
-          </button>
+          <div></div>
           <div>
             <div class="splash-logo">🌿</div>
             <div class="splash-title">Moni</div>
@@ -1841,6 +1896,7 @@
               <input id="incomeInput" class="income-input" placeholder="${formatCurrency(presets[2])}" value="${state.income ? parseInt(state.income).toLocaleString() : ''}" onkeyup="handleIncome(this)">
               <span class="income-unit">${lang.currency}</span>
             </div>
+            <div style="text-align:center;font-size:13px;color:var(--text-muted);margin:-8px 0 16px">${t('smartInputHint')}</div>
             <div class="presets">
               ${presets.map((val, i) => `<button class="preset ${parseInt(state.income) === val ? 'active' : ''}" onclick="setIncome(${val})">${lang.symbolPosition === 'before' ? lang.symbol : ''}${presetLabels[i]}${lang.formatUnit}${lang.symbolPosition === 'after' ? lang.symbol : ''}</button>`).join('')}
             </div>
@@ -2124,7 +2180,7 @@
           </div>
           <div class="spendable">
             <div class="spendable-label">${t('spendableLabel')}</div>
-            <div class="spendable-amount">${(remaining / 1000000).toFixed(1).replace('.0', '')}<span class="unit">tr</span></div>
+            <div class="spendable-amount">${formatSpendable(remaining)}</div>
             <div class="spendable-sub">${t('remaining')} <span>18 ${t('daysLeft')}</span></div>
           </div>
           <div class="goals-status">
@@ -2211,12 +2267,20 @@
         render();
       }
     };
-    window.handleIncome = (el) => { state.income = el.value.replace(/\D/g, ''); const btn = $('nextBtn'); if (btn) btn.disabled = !state.income; };
+    window.handleIncome = (el) => {
+      // AI parse: supports "15tr", "15 triệu", "15m", "15 million", "15000000", etc.
+      const parsed = parseAmount(el.value);
+      state.income = parsed > 0 ? parsed.toString() : el.value.replace(/\D/g, '');
+      const btn = $('nextBtn');
+      if (btn) btn.disabled = !state.income;
+    };
     window.setIncome = (val) => { state.income = val.toString(); render(); };
-    
+
     // Fixed expenses
-    window.updateFixedAmount = (idx, val) => { 
-      state.fixedExpenses[idx].amount = val.replace(/\D/g, '');
+    window.updateFixedAmount = (idx, val) => {
+      // AI parse for fixed expenses
+      const parsed = parseAmount(val);
+      state.fixedExpenses[idx].amount = parsed > 0 ? parsed.toString() : val.replace(/\D/g, '');
       // Update the total display without full re-render
       const totalEl = document.querySelector('[data-fixed-total]');
       if (totalEl) totalEl.textContent = fmt(totalFixed()) + '/' + t('months').charAt(0);
@@ -2227,14 +2291,17 @@
     };
     window.addCustomFixed = () => {
       const name = $('newFixedName')?.value;
-      const amount = $('newFixedAmount')?.value.replace(/\D/g, '');
-      if (name && amount) {
+      const rawAmount = $('newFixedAmount')?.value;
+      // AI parse: "500k", "1tr", "1.5 million", etc.
+      const amount = parseAmount(rawAmount);
+      if (name && amount > 0) {
         const emojis = ['📦', '🎬', '🏋️', '📚', '🎵', '🚌', '💳', '🔧'];
         state.fixedExpenses.push({
           id: 'custom_' + Date.now(),
           e: emojis[Math.floor(Math.random() * emojis.length)],
-          name: name,
-          amount: amount
+          customName: name,
+          nameKey: '',
+          amount: amount.toString()
         });
         state.showAddFixed = false;
         render();
@@ -2260,14 +2327,17 @@
     };
     window.addCustomGoal = () => {
       const name = $('newGoalName')?.value;
-      const amount = $('newGoalAmount')?.value.replace(/\D/g, '');
-      if (name && amount && state.goals.length < 3) {
+      const rawAmount = $('newGoalAmount')?.value;
+      // AI parse: "25tr", "25 million", "$1500", etc.
+      const amount = parseAmount(rawAmount);
+      if (name && amount > 0 && state.goals.length < 3) {
         const emojis = ['🎯', '⭐', '🌟', '💫', '🎁', '🏆', '💎', '🚀'];
         state.goals.push({
           id: 'custom_' + Date.now(),
           e: emojis[Math.floor(Math.random() * emojis.length)],
-          name: name,
-          amount: parseInt(amount)
+          customName: name,
+          nameKey: '',
+          amount: amount
         });
         state.showAddGoal = false;
         render();
@@ -2275,8 +2345,10 @@
     };
     
     // Allocation  
-    window.updateAllocation = (id, val) => { 
-      state.allocations[id] = val.replace(/\D/g, ''); 
+    window.updateAllocation = (id, val) => {
+      // AI parse for allocation: "500k", "1tr", "1 million", etc.
+      const parsed = parseAmount(val);
+      state.allocations[id] = parsed > 0 ? parsed.toString() : val.replace(/\D/g, '');
       // Update summary without full re-render
       updateAllocationSummary();
     };
@@ -2456,13 +2528,15 @@ Ví dụ response:
     window.closeAddExpense = () => { state.showAddExpense = false; render(); };
     window.confirmAddExpenseFromModal = () => {
       const name = $('expenseName')?.value;
-      const amount = $('expenseAmount')?.value?.replace(/\D/g, '');
-      if (name && amount) {
+      const rawAmount = $('expenseAmount')?.value;
+      // AI parse: "50k", "85k", "150 nghìn", etc.
+      const amount = parseAmount(rawAmount);
+      if (name && amount > 0) {
         const emojis = ['🛍️', '🍽️', '🎬', '🎁', '💊', '📦', '🎮', '✨'];
         state.transactions.unshift({
           emoji: emojis[Math.floor(Math.random() * emojis.length)],
           name,
-          amount: parseInt(amount)
+          amount: amount
         });
         state.showAddExpense = false;
         render();
