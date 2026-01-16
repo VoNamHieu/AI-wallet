@@ -334,6 +334,39 @@
       box-shadow: 0 6px 25px rgba(0,0,0,0.3);
     }
 
+    /* Language Selector */
+    .lang-selector {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .lang-btn {
+      padding: 10px 16px;
+      background: rgba(255,255,255,0.1);
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 12px;
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .lang-btn:hover {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.3);
+    }
+    .lang-btn.active {
+      background: rgba(255,255,255,0.2);
+      border-color: white;
+      color: white;
+    }
+    .lang-btn .flag {
+      margin-right: 6px;
+    }
+
     /* Chat loading */
     .typing {
       display: flex;
@@ -360,8 +393,908 @@
   <div id="app" class="phone"></div>
 
   <script>
+    // ============= TRANSLATIONS =============
+    const TRANSLATIONS = {
+      vi: {
+        // Splash
+        welcome: 'Chào mừng đến Moni!',
+        tagline: 'Quản lý tiền theo cách của bạn.<br>Không phán xét. Chỉ đồng hành.',
+        start: 'Bắt đầu →',
+        // Onboarding Step 0
+        welcomeTitle: 'Chào mừng đến Moni!',
+        welcomeDesc: 'Moni sẽ giúp bạn tiêu tiền có chủ đích — không phải theo dõi từng đồng, mà là biết mình đang ở đâu trên đường đến mục tiêu.',
+        nameLabel: 'Mình gọi bạn là gì nhỉ?',
+        namePlaceholder: 'Nhập tên của bạn...',
+        continue: 'Tiếp tục →',
+        // Onboarding Step 1 - Quiz Intro
+        quizTitle: '4 Money Personalities',
+        quizDesc: 'Bạn thuộc nhóm nào? Làm quiz để khám phá!',
+        theDreamer: 'The Dreamer',
+        dreamerTag: 'Người mơ mộng',
+        theExperiencer: 'The Experiencer',
+        experiencerTag: 'Người trải nghiệm',
+        theGiver: 'The Giver',
+        giverTag: 'Người cho đi',
+        thePlanner: 'The Planner',
+        plannerTag: 'Người kế hoạch',
+        quizAccompany: '🎯 Moni sẽ đồng hành theo phong cách của bạn',
+        startQuiz: 'Làm Quiz · 4 câu hỏi →',
+        skip: 'Bỏ qua',
+        // Quiz Questions
+        quiz1: 'Khi nhận được tiền thưởng bất ngờ, bạn thường...',
+        quiz1opt1: 'Lên kế hoạch cụ thể cho nó',
+        quiz1opt2: 'Tự thưởng cho mình ngay',
+        quiz1opt3: 'Nghĩ đến quà cho người thân',
+        quiz1opt4: 'Mơ về những possibilities',
+        quiz2: 'Bạn hay vượt chi tiêu nhất khi nào?',
+        quiz2opt1: 'Đi chơi với bạn bè',
+        quiz2opt2: 'Có ai đó cần giúp đỡ',
+        quiz2opt3: 'Bị thu hút bởi cái mới',
+        quiz2opt4: 'Hiếm khi vượt chi',
+        quiz3: 'Cảm xúc của bạn khi nghĩ về tiền...',
+        quiz3opt1: 'Excited về tương lai',
+        quiz3opt2: 'Thoải mái, sống hiện tại',
+        quiz3opt3: 'Lo lắng cho người thân',
+        quiz3opt4: 'Cảm giác kiểm soát',
+        quiz4: 'Điều nào mô tả bạn nhất?',
+        quiz4opt1: 'Nhiều ước mơ, khó focus',
+        quiz4opt2: 'Kỷ niệm quan trọng hơn tiết kiệm',
+        quiz4opt3: 'Vui khi được giúp người khác',
+        quiz4opt4: 'Thích kế hoạch rõ ràng',
+        // Quiz Result
+        thisIsYou: '✨ Đây là bạn!',
+        dreamerDesc: 'Bạn có nhiều ước mơ đẹp và trí tưởng tượng phong phú. Moni sẽ giúp bạn focus vào điều quan trọng nhất.',
+        experiencerDesc: 'Bạn tin cuộc sống là để trải nghiệm. Moni sẽ giúp bạn balance giữa tận hưởng và đảm bảo tương lai.',
+        giverDesc: 'Niềm vui của bạn là mang lại niềm vui cho người khác. Moni sẽ nhắc bạn cũng cần invest vào bản thân.',
+        plannerDesc: 'Bạn có kỷ luật tài chính tốt. Moni sẽ giúp bạn optimize hơn nữa và celebrate những progress nhỏ.',
+        // Income Step
+        incomeTitle: 'Thu nhập hàng tháng',
+        incomeDesc: 'Để Moni tính được bạn có thể tiêu thoải mái bao nhiêu mỗi tháng.',
+        privacyNote: 'Thông tin được bảo mật và chỉ lưu trên thiết bị',
+        // Fixed Expenses Step
+        fixedTitle: 'Chi phí cố định hàng tháng',
+        fixedDesc: 'Những khoản phải trả đều đặn. Nhập số tiền hoặc xóa nếu không có.',
+        addOther: 'Thêm khoản khác',
+        totalFixed: 'Tổng chi phí cố định',
+        addFixedTitle: '➕ Thêm chi phí cố định',
+        expenseName: 'Tên khoản chi',
+        expenseNamePlaceholder: 'VD: Gym, Netflix, Học phí...',
+        amountPerMonth: 'Số tiền / tháng',
+        add: 'Thêm',
+        // Goals Step
+        goalsTitle: 'Bạn đang hướng tới điều gì?',
+        goalsDesc: 'Chọn 1-3 mục tiêu. Moni sẽ giúp bạn theo dõi tiến độ.',
+        createOwn: 'Tự tạo',
+        createGoalTitle: '✨ Tạo mục tiêu mới',
+        goalName: 'Tên mục tiêu',
+        goalNamePlaceholder: 'VD: iPhone mới, Khóa học, Xe đạp...',
+        amountNeeded: 'Số tiền cần',
+        addGoal: 'Thêm mục tiêu',
+        // Allocation Step
+        allocationTitle: 'Mỗi tháng dành bao nhiêu?',
+        allocationDesc: 'Chọn số tiền bạn muốn để dành cho mỗi mục tiêu hàng tháng.',
+        target: 'Mục tiêu',
+        perMonth: 'VND / tháng',
+        reachGoalIn: 'Đạt mục tiêu trong',
+        months: 'tháng',
+        income: 'Thu nhập',
+        fixedExpenses: 'Chi phí cố định',
+        savingForGoals: 'Để dành cho goals',
+        spendComfortably: 'Tiêu thoải mái',
+        finish: 'Hoàn tất →',
+        // Main App
+        hey: 'Hey,',
+        spendableLabel: 'Tiêu thoải mái',
+        daysLeft: 'ngày nữa',
+        remaining: 'còn',
+        goalTarget: 'Mục tiêu',
+        actual: 'Thực tế',
+        today: 'Hôm nay',
+        askPlaceholder: 'Muốn mua gì?',
+        askHint: 'Hỏi Moni trước khi tiêu',
+        addExpenseTitle: '✏️ Thêm chi tiêu',
+        name: 'Tên',
+        namePlaceholderExpense: 'VD: Cafe, Grab, Ăn trưa...',
+        amount: 'Số tiền',
+        addExpense: 'Thêm chi tiêu',
+        afterPurchase: 'Sau khi mua:',
+        leftRemaining: 'còn lại',
+        bought: 'Mua rồi ✓',
+        cancel: 'Thôi',
+        close: 'Đóng',
+        home: 'Home',
+        goals: 'Goals',
+        history: 'History',
+        // Fixed expenses names
+        rent: 'Tiền nhà',
+        electric: 'Điện',
+        water: 'Nước',
+        internet: 'Internet',
+        phone: 'Điện thoại',
+        insurance: 'Bảo hiểm',
+        // Goals names
+        laptop: 'Laptop',
+        phoneGoal: 'Điện thoại',
+        trip: 'Du lịch',
+        bike: 'Xe máy',
+        emergency: 'Quỹ khẩn cấp',
+        wedding: 'Đám cưới',
+        // Chat
+        notUnderstand: 'Moni chưa hiểu lắm. Bạn thử nhập kiểu "Cafe 50k" hoặc "Grab 85k" nhé! 😊',
+        buyIt: 'mua đi!',
+        okToBuy: 'được thôi!',
+        tooMuch: 'hơi nhiều đó!',
+        onlyPercent: 'Chỉ',
+        budget: 'ngân sách',
+        comfortable: 'thoải mái!',
+        considerIt: 'Cân nhắc chút nhé.',
+        areYouSure: 'Bạn chắc chứ?',
+        percentOfBudget: 'ngân sách còn lại.',
+      },
+      en: {
+        welcome: 'Welcome to Moni!',
+        tagline: 'Manage money your way.<br>No judgment. Just support.',
+        start: 'Get Started →',
+        welcomeTitle: 'Welcome to Moni!',
+        welcomeDesc: 'Moni helps you spend with intention — not tracking every penny, but knowing where you are on the path to your goals.',
+        nameLabel: 'What should we call you?',
+        namePlaceholder: 'Enter your name...',
+        continue: 'Continue →',
+        quizTitle: '4 Money Personalities',
+        quizDesc: 'Which type are you? Take the quiz to find out!',
+        theDreamer: 'The Dreamer',
+        dreamerTag: 'Visionary',
+        theExperiencer: 'The Experiencer',
+        experiencerTag: 'Adventure Seeker',
+        theGiver: 'The Giver',
+        giverTag: 'Generous Soul',
+        thePlanner: 'The Planner',
+        plannerTag: 'Strategic Mind',
+        quizAccompany: '🎯 Moni will support your unique style',
+        startQuiz: 'Take Quiz · 4 questions →',
+        skip: 'Skip',
+        quiz1: 'When you receive unexpected bonus money, you usually...',
+        quiz1opt1: 'Make a specific plan for it',
+        quiz1opt2: 'Treat yourself right away',
+        quiz1opt3: 'Think about gifts for loved ones',
+        quiz1opt4: 'Dream about possibilities',
+        quiz2: 'When do you overspend the most?',
+        quiz2opt1: 'Going out with friends',
+        quiz2opt2: 'When someone needs help',
+        quiz2opt3: 'Attracted by new things',
+        quiz2opt4: 'Rarely overspend',
+        quiz3: 'How do you feel when thinking about money...',
+        quiz3opt1: 'Excited about the future',
+        quiz3opt2: 'Relaxed, living in the moment',
+        quiz3opt3: 'Worried about loved ones',
+        quiz3opt4: 'Feeling in control',
+        quiz4: 'What describes you best?',
+        quiz4opt1: 'Many dreams, hard to focus',
+        quiz4opt2: 'Memories matter more than saving',
+        quiz4opt3: 'Happy when helping others',
+        quiz4opt4: 'Love clear plans',
+        thisIsYou: '✨ This is you!',
+        dreamerDesc: 'You have beautiful dreams and rich imagination. Moni will help you focus on what matters most.',
+        experiencerDesc: 'You believe life is for experiencing. Moni will help you balance enjoying now and securing your future.',
+        giverDesc: 'Your joy is bringing joy to others. Moni will remind you to invest in yourself too.',
+        plannerDesc: 'You have great financial discipline. Moni will help you optimize further and celebrate small wins.',
+        incomeTitle: 'Monthly Income',
+        incomeDesc: 'So Moni can calculate how much you can comfortably spend each month.',
+        privacyNote: 'Information is secure and stored only on your device',
+        fixedTitle: 'Monthly Fixed Expenses',
+        fixedDesc: 'Regular payments you make. Enter amounts or remove if not applicable.',
+        addOther: 'Add another',
+        totalFixed: 'Total fixed expenses',
+        addFixedTitle: '➕ Add fixed expense',
+        expenseName: 'Expense name',
+        expenseNamePlaceholder: 'E.g.: Gym, Netflix, Tuition...',
+        amountPerMonth: 'Amount / month',
+        add: 'Add',
+        goalsTitle: 'What are you working towards?',
+        goalsDesc: 'Choose 1-3 goals. Moni will help you track progress.',
+        createOwn: 'Create own',
+        createGoalTitle: '✨ Create new goal',
+        goalName: 'Goal name',
+        goalNamePlaceholder: 'E.g.: New iPhone, Course, Bicycle...',
+        amountNeeded: 'Amount needed',
+        addGoal: 'Add goal',
+        allocationTitle: 'How much to save monthly?',
+        allocationDesc: 'Choose how much you want to save for each goal monthly.',
+        target: 'Target',
+        perMonth: 'VND / month',
+        reachGoalIn: 'Reach goal in',
+        months: 'months',
+        income: 'Income',
+        fixedExpenses: 'Fixed expenses',
+        savingForGoals: 'Saving for goals',
+        spendComfortably: 'Spend comfortably',
+        finish: 'Finish →',
+        hey: 'Hey,',
+        spendableLabel: 'Spendable',
+        daysLeft: 'days left',
+        remaining: 'remaining',
+        goalTarget: 'Target',
+        actual: 'Actual',
+        today: 'Today',
+        askPlaceholder: 'Want to buy something?',
+        askHint: 'Ask Moni before spending',
+        addExpenseTitle: '✏️ Add expense',
+        name: 'Name',
+        namePlaceholderExpense: 'E.g.: Coffee, Uber, Lunch...',
+        amount: 'Amount',
+        addExpense: 'Add expense',
+        afterPurchase: 'After purchase:',
+        leftRemaining: 'remaining',
+        bought: 'Bought ✓',
+        cancel: 'Cancel',
+        close: 'Close',
+        home: 'Home',
+        goals: 'Goals',
+        history: 'History',
+        rent: 'Rent',
+        electric: 'Electric',
+        water: 'Water',
+        internet: 'Internet',
+        phone: 'Phone',
+        insurance: 'Insurance',
+        laptop: 'Laptop',
+        phoneGoal: 'Phone',
+        trip: 'Trip',
+        bike: 'Motorbike',
+        emergency: 'Emergency Fund',
+        wedding: 'Wedding',
+        notUnderstand: 'Moni doesn\'t understand. Try typing "Coffee 50k" or "Uber 85k"! 😊',
+        buyIt: 'go for it!',
+        okToBuy: 'looks good!',
+        tooMuch: 'that\'s a bit much!',
+        onlyPercent: 'Only',
+        budget: 'budget',
+        comfortable: 'comfortable!',
+        considerIt: 'Consider it.',
+        areYouSure: 'Are you sure?',
+        percentOfBudget: 'of remaining budget.',
+      },
+      zh: {
+        welcome: '欢迎来到Moni!',
+        tagline: '按照您的方式管理金钱。<br>不评判，只陪伴。',
+        start: '开始 →',
+        welcomeTitle: '欢迎来到Moni!',
+        welcomeDesc: 'Moni帮助您有目的地消费——不是追踪每一分钱，而是知道您在实现目标的路上走到哪里了。',
+        nameLabel: '我们怎么称呼您？',
+        namePlaceholder: '输入您的名字...',
+        continue: '继续 →',
+        quizTitle: '4种金钱性格',
+        quizDesc: '您属于哪一种？做测试来发现！',
+        theDreamer: '梦想家',
+        dreamerTag: '充满想象',
+        theExperiencer: '体验者',
+        experiencerTag: '追求体验',
+        theGiver: '给予者',
+        giverTag: '慷慨大方',
+        thePlanner: '规划者',
+        plannerTag: '深思熟虑',
+        quizAccompany: '🎯 Moni将以您的风格陪伴您',
+        startQuiz: '开始测试 · 4个问题 →',
+        skip: '跳过',
+        quiz1: '当您收到意外奖金时，您通常...',
+        quiz1opt1: '为它制定具体计划',
+        quiz1opt2: '立即犒劳自己',
+        quiz1opt3: '想着给亲人买礼物',
+        quiz1opt4: '梦想各种可能性',
+        quiz2: '您什么时候最容易超支？',
+        quiz2opt1: '和朋友出去玩',
+        quiz2opt2: '有人需要帮助时',
+        quiz2opt3: '被新事物吸引',
+        quiz2opt4: '很少超支',
+        quiz3: '当您想到钱时的感受...',
+        quiz3opt1: '对未来感到兴奋',
+        quiz3opt2: '放松，活在当下',
+        quiz3opt3: '担心亲人',
+        quiz3opt4: '感觉在掌控中',
+        quiz4: '哪个最能描述您？',
+        quiz4opt1: '梦想很多，难以专注',
+        quiz4opt2: '回忆比存钱更重要',
+        quiz4opt3: '帮助他人时感到快乐',
+        quiz4opt4: '喜欢清晰的计划',
+        thisIsYou: '✨ 这就是您！',
+        dreamerDesc: '您有美丽的梦想和丰富的想象力。Moni将帮助您专注于最重要的事情。',
+        experiencerDesc: '您相信生活就是要体验。Moni将帮助您在享受当下和确保未来之间取得平衡。',
+        giverDesc: '您的快乐是给他人带来快乐。Moni会提醒您也要投资自己。',
+        plannerDesc: '您有很好的财务纪律。Moni将帮助您进一步优化并庆祝小胜利。',
+        incomeTitle: '月收入',
+        incomeDesc: '这样Moni可以计算您每月可以舒适地花多少钱。',
+        privacyNote: '信息安全，仅存储在您的设备上',
+        fixedTitle: '每月固定支出',
+        fixedDesc: '您定期支付的费用。输入金额或删除不适用的项目。',
+        addOther: '添加其他',
+        totalFixed: '固定支出总计',
+        addFixedTitle: '➕ 添加固定支出',
+        expenseName: '支出名称',
+        expenseNamePlaceholder: '例如：健身房、Netflix、学费...',
+        amountPerMonth: '每月金额',
+        add: '添加',
+        goalsTitle: '您在追求什么？',
+        goalsDesc: '选择1-3个目标。Moni将帮助您跟踪进度。',
+        createOwn: '自定义',
+        createGoalTitle: '✨ 创建新目标',
+        goalName: '目标名称',
+        goalNamePlaceholder: '例如：新iPhone、课程、自行车...',
+        amountNeeded: '需要金额',
+        addGoal: '添加目标',
+        allocationTitle: '每月存多少？',
+        allocationDesc: '选择您每月想为每个目标存多少钱。',
+        target: '目标',
+        perMonth: '越南盾 / 月',
+        reachGoalIn: '达成目标需要',
+        months: '个月',
+        income: '收入',
+        fixedExpenses: '固定支出',
+        savingForGoals: '目标储蓄',
+        spendComfortably: '可自由支配',
+        finish: '完成 →',
+        hey: '嗨，',
+        spendableLabel: '可支配',
+        daysLeft: '天剩余',
+        remaining: '还有',
+        goalTarget: '目标',
+        actual: '实际',
+        today: '今天',
+        askPlaceholder: '想买什么？',
+        askHint: '消费前问问Moni',
+        addExpenseTitle: '✏️ 添加支出',
+        name: '名称',
+        namePlaceholderExpense: '例如：咖啡、打车、午餐...',
+        amount: '金额',
+        addExpense: '添加支出',
+        afterPurchase: '购买后：',
+        leftRemaining: '剩余',
+        bought: '已购买 ✓',
+        cancel: '取消',
+        close: '关闭',
+        home: '首页',
+        goals: '目标',
+        history: '历史',
+        rent: '房租',
+        electric: '电费',
+        water: '水费',
+        internet: '网费',
+        phone: '话费',
+        insurance: '保险',
+        laptop: '笔记本',
+        phoneGoal: '手机',
+        trip: '旅行',
+        bike: '摩托车',
+        emergency: '应急基金',
+        wedding: '婚礼',
+        notUnderstand: 'Moni不太明白。试试输入"咖啡 50k"或"打车 85k"！😊',
+        buyIt: '买吧！',
+        okToBuy: '可以买！',
+        tooMuch: '有点多！',
+        onlyPercent: '只有',
+        budget: '预算',
+        comfortable: '没问题！',
+        considerIt: '考虑一下。',
+        areYouSure: '确定吗？',
+        percentOfBudget: '剩余预算。',
+      },
+      ja: {
+        welcome: 'Moniへようこそ！',
+        tagline: 'あなたらしいお金の管理。<br>批判なし。サポートのみ。',
+        start: '始める →',
+        welcomeTitle: 'Moniへようこそ！',
+        welcomeDesc: 'Moniは目的を持った支出をお手伝いします — 一円一円を追跡するのではなく、目標への道のりでどこにいるかを把握します。',
+        nameLabel: 'お名前は何ですか？',
+        namePlaceholder: 'お名前を入力...',
+        continue: '続ける →',
+        quizTitle: '4つのマネー性格',
+        quizDesc: 'あなたはどのタイプ？クイズで発見！',
+        theDreamer: 'ドリーマー',
+        dreamerTag: '夢見る人',
+        theExperiencer: 'エクスペリエンサー',
+        experiencerTag: '体験者',
+        theGiver: 'ギバー',
+        giverTag: '与える人',
+        thePlanner: 'プランナー',
+        plannerTag: '計画者',
+        quizAccompany: '🎯 Moniはあなたのスタイルでサポートします',
+        startQuiz: 'クイズを始める · 4問 →',
+        skip: 'スキップ',
+        quiz1: '予期せぬボーナスをもらったとき、あなたは...',
+        quiz1opt1: '具体的な計画を立てる',
+        quiz1opt2: 'すぐに自分にご褒美',
+        quiz1opt3: '大切な人へのプレゼントを考える',
+        quiz1opt4: '可能性を夢見る',
+        quiz2: 'いつ一番使いすぎますか？',
+        quiz2opt1: '友達と遊ぶとき',
+        quiz2opt2: '誰かが助けを必要としているとき',
+        quiz2opt3: '新しいものに惹かれたとき',
+        quiz2opt4: 'めったに使いすぎない',
+        quiz3: 'お金のことを考えるとき...',
+        quiz3opt1: '未来にワクワク',
+        quiz3opt2: 'リラックス、今を生きる',
+        quiz3opt3: '大切な人が心配',
+        quiz3opt4: 'コントロールしている感覚',
+        quiz4: 'あなたを最もよく表すのは？',
+        quiz4opt1: '夢がたくさん、集中しにくい',
+        quiz4opt2: '思い出は貯金より大切',
+        quiz4opt3: '人を助けると嬉しい',
+        quiz4opt4: '明確な計画が好き',
+        thisIsYou: '✨ これがあなたです！',
+        dreamerDesc: '美しい夢と豊かな想像力を持っています。Moniは最も大切なことに集中するお手伝いをします。',
+        experiencerDesc: '人生は体験するためにあると信じています。Moniは今を楽しみながら将来も確保するバランスをお手伝いします。',
+        giverDesc: 'あなたの喜びは他の人に喜びをもたらすこと。Moniは自分自身への投資も忘れないようリマインドします。',
+        plannerDesc: '素晴らしい金融規律を持っています。Moniはさらに最適化し、小さな勝利を祝うお手伝いをします。',
+        incomeTitle: '月収',
+        incomeDesc: 'Moniが毎月快適に使える金額を計算できるようにします。',
+        privacyNote: '情報は安全で、デバイスにのみ保存されます',
+        fixedTitle: '毎月の固定費',
+        fixedDesc: '定期的な支払い。金額を入力するか、該当しない場合は削除してください。',
+        addOther: '他を追加',
+        totalFixed: '固定費合計',
+        addFixedTitle: '➕ 固定費を追加',
+        expenseName: '費用名',
+        expenseNamePlaceholder: '例：ジム、Netflix、学費...',
+        amountPerMonth: '月額',
+        add: '追加',
+        goalsTitle: '何を目指していますか？',
+        goalsDesc: '1-3個の目標を選択。Moniが進捗を追跡します。',
+        createOwn: '自分で作成',
+        createGoalTitle: '✨ 新しい目標を作成',
+        goalName: '目標名',
+        goalNamePlaceholder: '例：新しいiPhone、講座、自転車...',
+        amountNeeded: '必要金額',
+        addGoal: '目標を追加',
+        allocationTitle: '毎月いくら貯める？',
+        allocationDesc: '各目標に毎月いくら貯めるか選択してください。',
+        target: '目標',
+        perMonth: 'VND / 月',
+        reachGoalIn: '目標達成まで',
+        months: 'ヶ月',
+        income: '収入',
+        fixedExpenses: '固定費',
+        savingForGoals: '目標貯金',
+        spendComfortably: '自由に使える',
+        finish: '完了 →',
+        hey: 'やあ、',
+        spendableLabel: '使える金額',
+        daysLeft: '日残り',
+        remaining: '残り',
+        goalTarget: '目標',
+        actual: '実際',
+        today: '今日',
+        askPlaceholder: '何を買いたい？',
+        askHint: '使う前にMoniに聞いて',
+        addExpenseTitle: '✏️ 支出を追加',
+        name: '名前',
+        namePlaceholderExpense: '例：コーヒー、タクシー、ランチ...',
+        amount: '金額',
+        addExpense: '支出を追加',
+        afterPurchase: '購入後：',
+        leftRemaining: '残り',
+        bought: '購入済み ✓',
+        cancel: 'キャンセル',
+        close: '閉じる',
+        home: 'ホーム',
+        goals: '目標',
+        history: '履歴',
+        rent: '家賃',
+        electric: '電気',
+        water: '水道',
+        internet: 'インターネット',
+        phone: '電話',
+        insurance: '保険',
+        laptop: 'ノートPC',
+        phoneGoal: 'スマホ',
+        trip: '旅行',
+        bike: 'バイク',
+        emergency: '緊急資金',
+        wedding: '結婚式',
+        notUnderstand: 'Moniはよく分かりません。「コーヒー 50k」や「タクシー 85k」と入力してみてください！😊',
+        buyIt: '買っちゃおう！',
+        okToBuy: '大丈夫！',
+        tooMuch: 'ちょっと多いかも！',
+        onlyPercent: 'たった',
+        budget: '予算',
+        comfortable: '問題なし！',
+        considerIt: '考えてみて。',
+        areYouSure: '本当に？',
+        percentOfBudget: '残り予算の。',
+      },
+      ko: {
+        welcome: 'Moni에 오신 것을 환영합니다!',
+        tagline: '당신만의 방식으로 돈을 관리하세요.<br>판단 없이. 오직 지원만.',
+        start: '시작하기 →',
+        welcomeTitle: 'Moni에 오신 것을 환영합니다!',
+        welcomeDesc: 'Moni는 의도적인 소비를 도와드립니다 — 모든 돈을 추적하는 것이 아니라, 목표를 향한 여정에서 어디에 있는지 알려드립니다.',
+        nameLabel: '이름이 뭐예요?',
+        namePlaceholder: '이름을 입력하세요...',
+        continue: '계속 →',
+        quizTitle: '4가지 돈 성격',
+        quizDesc: '당신은 어떤 유형인가요? 퀴즈로 알아보세요!',
+        theDreamer: '드리머',
+        dreamerTag: '꿈꾸는 사람',
+        theExperiencer: '익스피리언서',
+        experiencerTag: '경험을 추구하는 사람',
+        theGiver: '기버',
+        giverTag: '베푸는 사람',
+        thePlanner: '플래너',
+        plannerTag: '계획하는 사람',
+        quizAccompany: '🎯 Moni가 당신의 스타일에 맞춰 도와드립니다',
+        startQuiz: '퀴즈 시작 · 4문항 →',
+        skip: '건너뛰기',
+        quiz1: '예상치 못한 보너스를 받으면, 보통...',
+        quiz1opt1: '구체적인 계획을 세운다',
+        quiz1opt2: '바로 자신에게 보상한다',
+        quiz1opt3: '사랑하는 사람 선물을 생각한다',
+        quiz1opt4: '가능성을 꿈꾼다',
+        quiz2: '언제 가장 과소비하나요?',
+        quiz2opt1: '친구들과 놀 때',
+        quiz2opt2: '누군가 도움이 필요할 때',
+        quiz2opt3: '새로운 것에 끌릴 때',
+        quiz2opt4: '거의 과소비 안 함',
+        quiz3: '돈에 대해 생각할 때...',
+        quiz3opt1: '미래에 설렌다',
+        quiz3opt2: '편안하게, 현재를 산다',
+        quiz3opt3: '사랑하는 사람이 걱정된다',
+        quiz3opt4: '통제하는 느낌',
+        quiz4: '당신을 가장 잘 설명하는 것은?',
+        quiz4opt1: '꿈이 많고, 집중이 어렵다',
+        quiz4opt2: '추억이 저축보다 중요하다',
+        quiz4opt3: '다른 사람을 도우면 행복하다',
+        quiz4opt4: '명확한 계획을 좋아한다',
+        thisIsYou: '✨ 이것이 당신입니다!',
+        dreamerDesc: '아름다운 꿈과 풍부한 상상력을 가지고 있습니다. Moni가 가장 중요한 것에 집중하도록 도와드립니다.',
+        experiencerDesc: '인생은 경험하기 위한 것이라고 믿습니다. Moni가 현재를 즐기면서 미래도 확보하는 균형을 도와드립니다.',
+        giverDesc: '당신의 기쁨은 다른 사람에게 기쁨을 주는 것입니다. Moni가 자신에게도 투자하라고 알려드립니다.',
+        plannerDesc: '훌륭한 재정 규율을 가지고 있습니다. Moni가 더 최적화하고 작은 승리를 축하하도록 도와드립니다.',
+        incomeTitle: '월 수입',
+        incomeDesc: 'Moni가 매월 편안하게 쓸 수 있는 금액을 계산할 수 있게 해줍니다.',
+        privacyNote: '정보는 안전하며 기기에만 저장됩니다',
+        fixedTitle: '월 고정 지출',
+        fixedDesc: '정기적인 지출입니다. 금액을 입력하거나 해당되지 않으면 삭제하세요.',
+        addOther: '다른 항목 추가',
+        totalFixed: '고정 지출 합계',
+        addFixedTitle: '➕ 고정 지출 추가',
+        expenseName: '지출 이름',
+        expenseNamePlaceholder: '예: 헬스장, 넷플릭스, 학비...',
+        amountPerMonth: '월 금액',
+        add: '추가',
+        goalsTitle: '무엇을 향해 나아가고 있나요?',
+        goalsDesc: '1-3개 목표를 선택하세요. Moni가 진행 상황을 추적합니다.',
+        createOwn: '직접 만들기',
+        createGoalTitle: '✨ 새 목표 만들기',
+        goalName: '목표 이름',
+        goalNamePlaceholder: '예: 새 아이폰, 강좌, 자전거...',
+        amountNeeded: '필요 금액',
+        addGoal: '목표 추가',
+        allocationTitle: '매월 얼마나 저축할까요?',
+        allocationDesc: '각 목표에 매월 얼마를 저축할지 선택하세요.',
+        target: '목표',
+        perMonth: 'VND / 월',
+        reachGoalIn: '목표 달성까지',
+        months: '개월',
+        income: '수입',
+        fixedExpenses: '고정 지출',
+        savingForGoals: '목표 저축',
+        spendComfortably: '자유롭게 쓸 수 있는',
+        finish: '완료 →',
+        hey: '안녕,',
+        spendableLabel: '쓸 수 있는 돈',
+        daysLeft: '일 남음',
+        remaining: '남은',
+        goalTarget: '목표',
+        actual: '실제',
+        today: '오늘',
+        askPlaceholder: '뭘 사고 싶어요?',
+        askHint: '쓰기 전에 Moni에게 물어보세요',
+        addExpenseTitle: '✏️ 지출 추가',
+        name: '이름',
+        namePlaceholderExpense: '예: 커피, 택시, 점심...',
+        amount: '금액',
+        addExpense: '지출 추가',
+        afterPurchase: '구매 후:',
+        leftRemaining: '남음',
+        bought: '구매함 ✓',
+        cancel: '취소',
+        close: '닫기',
+        home: '홈',
+        goals: '목표',
+        history: '기록',
+        rent: '월세',
+        electric: '전기',
+        water: '수도',
+        internet: '인터넷',
+        phone: '전화',
+        insurance: '보험',
+        laptop: '노트북',
+        phoneGoal: '휴대폰',
+        trip: '여행',
+        bike: '오토바이',
+        emergency: '비상금',
+        wedding: '결혼식',
+        notUnderstand: 'Moni가 이해하지 못했어요. "커피 50k" 또는 "택시 85k"처럼 입력해보세요! 😊',
+        buyIt: '사세요!',
+        okToBuy: '괜찮아요!',
+        tooMuch: '좀 많아요!',
+        onlyPercent: '단',
+        budget: '예산',
+        comfortable: '편해요!',
+        considerIt: '고려해보세요.',
+        areYouSure: '확실해요?',
+        percentOfBudget: '남은 예산의.',
+      },
+      fr: {
+        welcome: 'Bienvenue sur Moni!',
+        tagline: 'Gérez votre argent à votre façon.<br>Sans jugement. Juste du soutien.',
+        start: 'Commencer →',
+        welcomeTitle: 'Bienvenue sur Moni!',
+        welcomeDesc: 'Moni vous aide à dépenser avec intention — pas en suivant chaque centime, mais en sachant où vous en êtes sur le chemin de vos objectifs.',
+        nameLabel: 'Comment vous appeler?',
+        namePlaceholder: 'Entrez votre nom...',
+        continue: 'Continuer →',
+        quizTitle: '4 Personnalités Financières',
+        quizDesc: 'Quel type êtes-vous? Faites le quiz pour découvrir!',
+        theDreamer: 'Le Rêveur',
+        dreamerTag: 'Visionnaire',
+        theExperiencer: 'L\'Expérimentateur',
+        experiencerTag: 'Aventurier',
+        theGiver: 'Le Donneur',
+        giverTag: 'Âme généreuse',
+        thePlanner: 'Le Planificateur',
+        plannerTag: 'Esprit stratégique',
+        quizAccompany: '🎯 Moni vous accompagnera selon votre style',
+        startQuiz: 'Faire le Quiz · 4 questions →',
+        skip: 'Passer',
+        quiz1: 'Quand vous recevez un bonus inattendu, vous...',
+        quiz1opt1: 'Faites un plan précis',
+        quiz1opt2: 'Vous faites plaisir tout de suite',
+        quiz1opt3: 'Pensez à des cadeaux pour vos proches',
+        quiz1opt4: 'Rêvez aux possibilités',
+        quiz2: 'Quand dépensez-vous trop?',
+        quiz2opt1: 'En sortant avec des amis',
+        quiz2opt2: 'Quand quelqu\'un a besoin d\'aide',
+        quiz2opt3: 'Attiré par les nouveautés',
+        quiz2opt4: 'Rarement trop dépenser',
+        quiz3: 'Ce que vous ressentez en pensant à l\'argent...',
+        quiz3opt1: 'Excité par l\'avenir',
+        quiz3opt2: 'Détendu, vivre le moment',
+        quiz3opt3: 'Inquiet pour les proches',
+        quiz3opt4: 'Sentiment de contrôle',
+        quiz4: 'Qu\'est-ce qui vous décrit le mieux?',
+        quiz4opt1: 'Beaucoup de rêves, difficile de se concentrer',
+        quiz4opt2: 'Les souvenirs comptent plus que l\'épargne',
+        quiz4opt3: 'Heureux d\'aider les autres',
+        quiz4opt4: 'J\'aime les plans clairs',
+        thisIsYou: '✨ C\'est vous!',
+        dreamerDesc: 'Vous avez de beaux rêves et une imagination riche. Moni vous aidera à vous concentrer sur l\'essentiel.',
+        experiencerDesc: 'Vous croyez que la vie est faite pour être vécue. Moni vous aidera à équilibrer plaisir et avenir.',
+        giverDesc: 'Votre joie est d\'apporter de la joie aux autres. Moni vous rappellera d\'investir en vous aussi.',
+        plannerDesc: 'Vous avez une excellente discipline financière. Moni vous aidera à optimiser et célébrer les petites victoires.',
+        incomeTitle: 'Revenu Mensuel',
+        incomeDesc: 'Pour que Moni calcule combien vous pouvez dépenser confortablement chaque mois.',
+        privacyNote: 'Les informations sont sécurisées et stockées uniquement sur votre appareil',
+        fixedTitle: 'Dépenses Fixes Mensuelles',
+        fixedDesc: 'Paiements réguliers. Entrez les montants ou supprimez si non applicable.',
+        addOther: 'Ajouter autre',
+        totalFixed: 'Total dépenses fixes',
+        addFixedTitle: '➕ Ajouter dépense fixe',
+        expenseName: 'Nom de la dépense',
+        expenseNamePlaceholder: 'Ex: Gym, Netflix, Frais de scolarité...',
+        amountPerMonth: 'Montant / mois',
+        add: 'Ajouter',
+        goalsTitle: 'Vers quoi travaillez-vous?',
+        goalsDesc: 'Choisissez 1-3 objectifs. Moni suivra votre progression.',
+        createOwn: 'Créer le vôtre',
+        createGoalTitle: '✨ Créer nouvel objectif',
+        goalName: 'Nom de l\'objectif',
+        goalNamePlaceholder: 'Ex: Nouvel iPhone, Cours, Vélo...',
+        amountNeeded: 'Montant nécessaire',
+        addGoal: 'Ajouter objectif',
+        allocationTitle: 'Combien épargner par mois?',
+        allocationDesc: 'Choisissez combien épargner pour chaque objectif mensuellement.',
+        target: 'Objectif',
+        perMonth: 'VND / mois',
+        reachGoalIn: 'Atteindre l\'objectif en',
+        months: 'mois',
+        income: 'Revenu',
+        fixedExpenses: 'Dépenses fixes',
+        savingForGoals: 'Épargne objectifs',
+        spendComfortably: 'Dépenser librement',
+        finish: 'Terminer →',
+        hey: 'Salut,',
+        spendableLabel: 'Dépensable',
+        daysLeft: 'jours restants',
+        remaining: 'restant',
+        goalTarget: 'Objectif',
+        actual: 'Réel',
+        today: 'Aujourd\'hui',
+        askPlaceholder: 'Envie d\'acheter?',
+        askHint: 'Demandez à Moni avant de dépenser',
+        addExpenseTitle: '✏️ Ajouter dépense',
+        name: 'Nom',
+        namePlaceholderExpense: 'Ex: Café, Uber, Déjeuner...',
+        amount: 'Montant',
+        addExpense: 'Ajouter dépense',
+        afterPurchase: 'Après achat:',
+        leftRemaining: 'restant',
+        bought: 'Acheté ✓',
+        cancel: 'Annuler',
+        close: 'Fermer',
+        home: 'Accueil',
+        goals: 'Objectifs',
+        history: 'Historique',
+        rent: 'Loyer',
+        electric: 'Électricité',
+        water: 'Eau',
+        internet: 'Internet',
+        phone: 'Téléphone',
+        insurance: 'Assurance',
+        laptop: 'Ordinateur',
+        phoneGoal: 'Téléphone',
+        trip: 'Voyage',
+        bike: 'Moto',
+        emergency: 'Fonds d\'urgence',
+        wedding: 'Mariage',
+        notUnderstand: 'Moni ne comprend pas. Essayez "Café 50k" ou "Uber 85k"! 😊',
+        buyIt: 'achetez!',
+        okToBuy: 'ça va!',
+        tooMuch: 'c\'est beaucoup!',
+        onlyPercent: 'Seulement',
+        budget: 'budget',
+        comfortable: 'confortable!',
+        considerIt: 'Réfléchissez.',
+        areYouSure: 'Vous êtes sûr?',
+        percentOfBudget: 'du budget restant.',
+      },
+      es: {
+        welcome: '¡Bienvenido a Moni!',
+        tagline: 'Administra tu dinero a tu manera.<br>Sin juicios. Solo apoyo.',
+        start: 'Empezar →',
+        welcomeTitle: '¡Bienvenido a Moni!',
+        welcomeDesc: 'Moni te ayuda a gastar con intención — no rastreando cada centavo, sino sabiendo dónde estás en el camino hacia tus metas.',
+        nameLabel: '¿Cómo te llamamos?',
+        namePlaceholder: 'Ingresa tu nombre...',
+        continue: 'Continuar →',
+        quizTitle: '4 Personalidades del Dinero',
+        quizDesc: '¿Qué tipo eres? ¡Haz el quiz para descubrirlo!',
+        theDreamer: 'El Soñador',
+        dreamerTag: 'Visionario',
+        theExperiencer: 'El Experimentador',
+        experiencerTag: 'Buscador de aventuras',
+        theGiver: 'El Dador',
+        giverTag: 'Alma generosa',
+        thePlanner: 'El Planificador',
+        plannerTag: 'Mente estratégica',
+        quizAccompany: '🎯 Moni te acompañará según tu estilo',
+        startQuiz: 'Hacer Quiz · 4 preguntas →',
+        skip: 'Saltar',
+        quiz1: 'Cuando recibes dinero extra inesperado, normalmente...',
+        quiz1opt1: 'Haces un plan específico',
+        quiz1opt2: 'Te das un gusto inmediatamente',
+        quiz1opt3: 'Piensas en regalos para seres queridos',
+        quiz1opt4: 'Sueñas con posibilidades',
+        quiz2: '¿Cuándo gastas de más?',
+        quiz2opt1: 'Saliendo con amigos',
+        quiz2opt2: 'Cuando alguien necesita ayuda',
+        quiz2opt3: 'Atraído por cosas nuevas',
+        quiz2opt4: 'Raramente gasto de más',
+        quiz3: 'Cómo te sientes al pensar en dinero...',
+        quiz3opt1: 'Emocionado por el futuro',
+        quiz3opt2: 'Relajado, viviendo el momento',
+        quiz3opt3: 'Preocupado por seres queridos',
+        quiz3opt4: 'Sensación de control',
+        quiz4: '¿Qué te describe mejor?',
+        quiz4opt1: 'Muchos sueños, difícil enfocarse',
+        quiz4opt2: 'Los recuerdos importan más que ahorrar',
+        quiz4opt3: 'Feliz cuando ayudo a otros',
+        quiz4opt4: 'Me gustan los planes claros',
+        thisIsYou: '✨ ¡Este eres tú!',
+        dreamerDesc: 'Tienes sueños hermosos e imaginación rica. Moni te ayudará a enfocarte en lo más importante.',
+        experiencerDesc: 'Crees que la vida es para experimentar. Moni te ayudará a equilibrar disfrutar y asegurar tu futuro.',
+        giverDesc: 'Tu alegría es dar alegría a otros. Moni te recordará invertir en ti también.',
+        plannerDesc: 'Tienes gran disciplina financiera. Moni te ayudará a optimizar más y celebrar pequeñas victorias.',
+        incomeTitle: 'Ingreso Mensual',
+        incomeDesc: 'Para que Moni calcule cuánto puedes gastar cómodamente cada mes.',
+        privacyNote: 'La información es segura y se almacena solo en tu dispositivo',
+        fixedTitle: 'Gastos Fijos Mensuales',
+        fixedDesc: 'Pagos regulares. Ingresa montos o elimina si no aplica.',
+        addOther: 'Agregar otro',
+        totalFixed: 'Total gastos fijos',
+        addFixedTitle: '➕ Agregar gasto fijo',
+        expenseName: 'Nombre del gasto',
+        expenseNamePlaceholder: 'Ej: Gimnasio, Netflix, Colegiatura...',
+        amountPerMonth: 'Monto / mes',
+        add: 'Agregar',
+        goalsTitle: '¿Hacia qué estás trabajando?',
+        goalsDesc: 'Elige 1-3 metas. Moni seguirá tu progreso.',
+        createOwn: 'Crear propio',
+        createGoalTitle: '✨ Crear nueva meta',
+        goalName: 'Nombre de la meta',
+        goalNamePlaceholder: 'Ej: iPhone nuevo, Curso, Bicicleta...',
+        amountNeeded: 'Monto necesario',
+        addGoal: 'Agregar meta',
+        allocationTitle: '¿Cuánto ahorrar al mes?',
+        allocationDesc: 'Elige cuánto quieres ahorrar para cada meta mensualmente.',
+        target: 'Meta',
+        perMonth: 'VND / mes',
+        reachGoalIn: 'Alcanzar meta en',
+        months: 'meses',
+        income: 'Ingreso',
+        fixedExpenses: 'Gastos fijos',
+        savingForGoals: 'Ahorro para metas',
+        spendComfortably: 'Gastar libremente',
+        finish: 'Finalizar →',
+        hey: 'Hola,',
+        spendableLabel: 'Disponible',
+        daysLeft: 'días restantes',
+        remaining: 'restante',
+        goalTarget: 'Meta',
+        actual: 'Real',
+        today: 'Hoy',
+        askPlaceholder: '¿Quieres comprar algo?',
+        askHint: 'Pregunta a Moni antes de gastar',
+        addExpenseTitle: '✏️ Agregar gasto',
+        name: 'Nombre',
+        namePlaceholderExpense: 'Ej: Café, Uber, Almuerzo...',
+        amount: 'Monto',
+        addExpense: 'Agregar gasto',
+        afterPurchase: 'Después de comprar:',
+        leftRemaining: 'restante',
+        bought: 'Comprado ✓',
+        cancel: 'Cancelar',
+        close: 'Cerrar',
+        home: 'Inicio',
+        goals: 'Metas',
+        history: 'Historial',
+        rent: 'Alquiler',
+        electric: 'Electricidad',
+        water: 'Agua',
+        internet: 'Internet',
+        phone: 'Teléfono',
+        insurance: 'Seguro',
+        laptop: 'Laptop',
+        phoneGoal: 'Teléfono',
+        trip: 'Viaje',
+        bike: 'Moto',
+        emergency: 'Fondo de emergencia',
+        wedding: 'Boda',
+        notUnderstand: 'Moni no entiende. Intenta escribir "Café 50k" o "Uber 85k"! 😊',
+        buyIt: '¡cómpralo!',
+        okToBuy: '¡está bien!',
+        tooMuch: '¡es mucho!',
+        onlyPercent: 'Solo',
+        budget: 'presupuesto',
+        comfortable: '¡cómodo!',
+        considerIt: 'Considéralo.',
+        areYouSure: '¿Estás seguro?',
+        percentOfBudget: 'del presupuesto restante.',
+      }
+    };
+
+    const LANGUAGES = {
+      vi: { label: 'Tiếng Việt', flag: '🇻🇳' },
+      en: { label: 'English', flag: '🇬🇧' },
+      zh: { label: '中文', flag: '🇨🇳' },
+      ja: { label: '日本語', flag: '🇯🇵' },
+      ko: { label: '한국어', flag: '🇰🇷' },
+      fr: { label: 'Français', flag: '🇫🇷' },
+      es: { label: 'Español', flag: '🇪🇸' }
+    };
+
+    // Translation function
+    const t = (key) => TRANSLATIONS[state.language]?.[key] || TRANSLATIONS.vi[key] || key;
+
+    // Set language function
+    const setLanguage = (lang) => {
+      state.language = lang;
+      localStorage.setItem('moni_language', lang);
+      document.documentElement.lang = lang;
+      render();
+    };
+
     let state = {
       screen: 'splash',
+      language: localStorage.getItem('moni_language') || 'vi',
       step: 0,
       quizStep: -1,
       quizAnswers: [],
@@ -388,60 +1321,63 @@
       chatParsed: null, // { item, amount }
     };
 
-    const DEFAULT_FIXED = [
-      { id: 'rent', e: '🏠', name: 'Tiền nhà', amount: '' },
-      { id: 'electric', e: '💡', name: 'Điện', amount: '' },
-      { id: 'water', e: '💧', name: 'Nước', amount: '' },
-      { id: 'internet', e: '📶', name: 'Internet', amount: '' },
-      { id: 'phone', e: '📱', name: 'Điện thoại', amount: '' },
-      { id: 'insurance', e: '🛡️', name: 'Bảo hiểm', amount: '' },
+    const getDefaultFixed = () => [
+      { id: 'rent', e: '🏠', nameKey: 'rent', amount: '' },
+      { id: 'electric', e: '💡', nameKey: 'electric', amount: '' },
+      { id: 'water', e: '💧', nameKey: 'water', amount: '' },
+      { id: 'internet', e: '📶', nameKey: 'internet', amount: '' },
+      { id: 'phone', e: '📱', nameKey: 'phone', amount: '' },
+      { id: 'insurance', e: '🛡️', nameKey: 'insurance', amount: '' },
     ];
+    const getFixedName = (item) => item.customName || t(item.nameKey) || item.nameKey;
 
     // Initialize fixed expenses from defaults
-    state.fixedExpenses = DEFAULT_FIXED.map(f => ({...f}));
+    state.fixedExpenses = getDefaultFixed();
 
-    const ARCHETYPES = {
-      dreamer: { emoji: '✨', name: 'The Dreamer', tag: 'Người mơ mộng', color: '#8b5cf6' },
-      experiencer: { emoji: '🎢', name: 'The Experiencer', tag: 'Người trải nghiệm', color: '#f97316' },
-      giver: { emoji: '💝', name: 'The Giver', tag: 'Người cho đi', color: '#ec4899' },
-      planner: { emoji: '🎯', name: 'The Planner', tag: 'Người kế hoạch', color: '#10b981' },
-    };
+    const getArchetypes = () => ({
+      dreamer: { emoji: '✨', name: t('theDreamer'), tag: t('dreamerTag'), color: '#8b5cf6', descKey: 'dreamerDesc' },
+      experiencer: { emoji: '🎢', name: t('theExperiencer'), tag: t('experiencerTag'), color: '#f97316', descKey: 'experiencerDesc' },
+      giver: { emoji: '💝', name: t('theGiver'), tag: t('giverTag'), color: '#ec4899', descKey: 'giverDesc' },
+      planner: { emoji: '🎯', name: t('thePlanner'), tag: t('plannerTag'), color: '#10b981', descKey: 'plannerDesc' },
+    });
 
-    const QUIZ = [
-      { q: 'Khi nhận được tiền thưởng bất ngờ, bạn thường...', opts: [
-        { e: '📋', text: 'Lên kế hoạch cụ thể cho nó', type: 'planner' },
-        { e: '🎁', text: 'Tự thưởng cho mình ngay', type: 'experiencer' },
-        { e: '💝', text: 'Nghĩ đến quà cho người thân', type: 'giver' },
-        { e: '✨', text: 'Mơ về những possibilities', type: 'dreamer' },
+    const getQuiz = () => [
+      { q: t('quiz1'), opts: [
+        { e: '📋', text: t('quiz1opt1'), type: 'planner' },
+        { e: '🎁', text: t('quiz1opt2'), type: 'experiencer' },
+        { e: '💝', text: t('quiz1opt3'), type: 'giver' },
+        { e: '✨', text: t('quiz1opt4'), type: 'dreamer' },
       ]},
-      { q: 'Bạn hay vượt chi tiêu nhất khi nào?', opts: [
-        { e: '🎉', text: 'Đi chơi với bạn bè', type: 'experiencer' },
-        { e: '🤝', text: 'Có ai đó cần giúp đỡ', type: 'giver' },
-        { e: '🆕', text: 'Bị thu hút bởi cái mới', type: 'dreamer' },
-        { e: '✅', text: 'Hiếm khi vượt chi', type: 'planner' },
+      { q: t('quiz2'), opts: [
+        { e: '🎉', text: t('quiz2opt1'), type: 'experiencer' },
+        { e: '🤝', text: t('quiz2opt2'), type: 'giver' },
+        { e: '🆕', text: t('quiz2opt3'), type: 'dreamer' },
+        { e: '✅', text: t('quiz2opt4'), type: 'planner' },
       ]},
-      { q: 'Cảm xúc của bạn khi nghĩ về tiền...', opts: [
-        { e: '🚀', text: 'Excited về tương lai', type: 'dreamer' },
-        { e: '😌', text: 'Thoải mái, sống hiện tại', type: 'experiencer' },
-        { e: '🫂', text: 'Lo lắng cho người thân', type: 'giver' },
-        { e: '💪', text: 'Cảm giác kiểm soát', type: 'planner' },
+      { q: t('quiz3'), opts: [
+        { e: '🚀', text: t('quiz3opt1'), type: 'dreamer' },
+        { e: '😌', text: t('quiz3opt2'), type: 'experiencer' },
+        { e: '🫂', text: t('quiz3opt3'), type: 'giver' },
+        { e: '💪', text: t('quiz3opt4'), type: 'planner' },
       ]},
-      { q: 'Điều nào mô tả bạn nhất?', opts: [
-        { e: '🌈', text: 'Nhiều ước mơ, khó focus', type: 'dreamer' },
-        { e: '📸', text: 'Kỷ niệm quan trọng hơn tiết kiệm', type: 'experiencer' },
-        { e: '😊', text: 'Vui khi được giúp người khác', type: 'giver' },
-        { e: '📊', text: 'Thích kế hoạch rõ ràng', type: 'planner' },
+      { q: t('quiz4'), opts: [
+        { e: '🌈', text: t('quiz4opt1'), type: 'dreamer' },
+        { e: '📸', text: t('quiz4opt2'), type: 'experiencer' },
+        { e: '😊', text: t('quiz4opt3'), type: 'giver' },
+        { e: '📊', text: t('quiz4opt4'), type: 'planner' },
       ]},
     ];
 
-    const GOALS = [
-      { id: 'laptop', e: '💻', name: 'Laptop', amount: 25000000 },
-      { id: 'phone', e: '📱', name: 'Điện thoại', amount: 15000000 },
-      { id: 'trip', e: '✈️', name: 'Du lịch', amount: 10000000 },
-      { id: 'bike', e: '🏍️', name: 'Xe máy', amount: 50000000 },
-      { id: 'emergency', e: '🛡️', name: 'Quỹ khẩn cấp', amount: 20000000 },
-      { id: 'wedding', e: '💒', name: 'Đám cưới', amount: 100000000 },
+    const GOALS_DATA = [
+      { id: 'laptop', e: '💻', nameKey: 'laptop', amount: 25000000 },
+      { id: 'phone', e: '📱', nameKey: 'phoneGoal', amount: 15000000 },
+      { id: 'trip', e: '✈️', nameKey: 'trip', amount: 10000000 },
+      { id: 'bike', e: '🏍️', nameKey: 'bike', amount: 50000000 },
+      { id: 'emergency', e: '🛡️', nameKey: 'emergency', amount: 20000000 },
+      { id: 'wedding', e: '💒', nameKey: 'wedding', amount: 100000000 },
     ];
+    const getGoals = () => GOALS_DATA.map(g => ({ ...g, name: t(g.nameKey) }));
+    const getGoalName = (goal) => goal.customName || t(goal.nameKey) || goal.name;
 
     const $ = id => document.getElementById(id);
     const fmt = n => {
@@ -464,15 +1400,19 @@
 
     const renderSplash = (app) => {
       app.className = 'phone splash-bg';
+      const langButtons = Object.entries(LANGUAGES).map(([code, {label, flag}]) =>
+        `<button class="lang-btn ${state.language === code ? 'active' : ''}" onclick="setLanguage('${code}')"><span class="flag">${flag}</span>${label}</button>`
+      ).join('');
+
       app.innerHTML = `
         <div class="splash">
-          <div></div>
+          <div class="lang-selector">${langButtons}</div>
           <div>
             <div class="splash-logo">🌿</div>
             <div class="splash-title">Moni</div>
-            <div class="splash-tagline">Quản lý tiền theo cách của bạn.<br>Không phán xét. Chỉ đồng hành.</div>
+            <div class="splash-tagline">${t('tagline')}</div>
           </div>
-          <button class="btn white" onclick="startOnboarding()">Bắt đầu →</button>
+          <button class="btn white" onclick="startOnboarding()">${t('start')}</button>
         </div>
       `;
     };
@@ -491,22 +1431,23 @@
           <div class="content">
             <div class="ob-center">
               <div class="ob-icon">👋</div>
-              <div class="ob-title">Chào mừng đến Moni!</div>
-              <div class="ob-desc">Moni sẽ giúp bạn tiêu tiền có chủ đích — không phải theo dõi từng đồng, mà là biết mình đang ở đâu trên đường đến mục tiêu.</div>
+              <div class="ob-title">${t('welcomeTitle')}</div>
+              <div class="ob-desc">${t('welcomeDesc')}</div>
             </div>
             <div style="margin-top:40px">
-              <label style="font-size:14px;font-weight:600;color:var(--text-soft);display:block;margin-bottom:12px">Mình gọi bạn là gì nhỉ?</label>
-              <input id="nameInput" class="input" style="text-align:center;font-weight:600" placeholder="Nhập tên của bạn..." value="${state.userName}" onkeyup="state.userName=this.value;updateBtn()">
+              <label style="font-size:14px;font-weight:600;color:var(--text-soft);display:block;margin-bottom:12px">${t('nameLabel')}</label>
+              <input id="nameInput" class="input" style="text-align:center;font-weight:600" placeholder="${t('namePlaceholder')}" value="${state.userName}" onkeyup="state.userName=this.value;updateBtn()">
             </div>
           </div>
           <div class="footer">
-            <button class="btn" id="nextBtn" ${state.userName.trim() ? '' : 'disabled'} onclick="nextStep()">Tiếp tục →</button>
+            <button class="btn" id="nextBtn" ${state.userName.trim() ? '' : 'disabled'} onclick="nextStep()">${t('continue')}</button>
           </div>
         `;
         return;
       }
 
       if (state.step === 1) {
+        const archetypes = getArchetypes();
         if (state.quizStep === -1) {
           app.innerHTML = `
             <div class="header">
@@ -517,42 +1458,43 @@
             <div class="content">
               <div class="ob-center" style="margin-bottom:20px">
                 <div class="ob-icon">🪞</div>
-                <div class="ob-title">4 Money Personalities</div>
-                <div class="ob-desc">Bạn thuộc nhóm nào? Làm quiz để khám phá!</div>
+                <div class="ob-title">${t('quizTitle')}</div>
+                <div class="ob-desc">${t('quizDesc')}</div>
               </div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
                 <div style="background:linear-gradient(135deg, #8b5cf6, #a78bfa);border-radius:20px;padding:20px;color:white;text-align:center">
                   <div style="font-size:36px;margin-bottom:8px">✨</div>
-                  <div style="font-size:15px;font-weight:700">The Dreamer</div>
-                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người mơ mộng</div>
+                  <div style="font-size:15px;font-weight:700">${t('theDreamer')}</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">${t('dreamerTag')}</div>
                 </div>
                 <div style="background:linear-gradient(135deg, #f97316, #fb923c);border-radius:20px;padding:20px;color:white;text-align:center">
                   <div style="font-size:36px;margin-bottom:8px">🎢</div>
-                  <div style="font-size:15px;font-weight:700">The Experiencer</div>
-                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người trải nghiệm</div>
+                  <div style="font-size:15px;font-weight:700">${t('theExperiencer')}</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">${t('experiencerTag')}</div>
                 </div>
                 <div style="background:linear-gradient(135deg, #ec4899, #f472b6);border-radius:20px;padding:20px;color:white;text-align:center">
                   <div style="font-size:36px;margin-bottom:8px">💝</div>
-                  <div style="font-size:15px;font-weight:700">The Giver</div>
-                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người cho đi</div>
+                  <div style="font-size:15px;font-weight:700">${t('theGiver')}</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">${t('giverTag')}</div>
                 </div>
                 <div style="background:linear-gradient(135deg, #10b981, #34d399);border-radius:20px;padding:20px;color:white;text-align:center">
                   <div style="font-size:36px;margin-bottom:8px">🎯</div>
-                  <div style="font-size:15px;font-weight:700">The Planner</div>
-                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người kế hoạch</div>
+                  <div style="font-size:15px;font-weight:700">${t('thePlanner')}</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">${t('plannerTag')}</div>
                 </div>
               </div>
               <div style="margin-top:20px;padding:16px;background:var(--purple-light);border-radius:16px;text-align:center">
-                <div style="font-size:14px;color:#6b21a8">🎯 Moni sẽ đồng hành theo phong cách của bạn</div>
+                <div style="font-size:14px;color:#6b21a8">${t('quizAccompany')}</div>
               </div>
             </div>
             <div class="footer">
-              <button class="btn" onclick="startQuiz()">Làm Quiz · 4 câu hỏi →</button>
-              <button class="btn secondary" onclick="skipQuiz()">Bỏ qua</button>
+              <button class="btn" onclick="startQuiz()">${t('startQuiz')}</button>
+              <button class="btn secondary" onclick="skipQuiz()">${t('skip')}</button>
             </div>
           `;
         } else {
-          const q = QUIZ[state.quizStep];
+          const quiz = getQuiz();
+          const q = quiz[state.quizStep];
           app.innerHTML = `
             <div class="header">
               <button class="btn-back" onclick="quizBack()">←</button>
@@ -578,13 +1520,8 @@
       }
 
       if (state.step === 2) {
-        const arch = ARCHETYPES[state.archetype];
-        const desc = {
-          dreamer: 'Bạn có nhiều ước mơ đẹp và trí tưởng tượng phong phú. Moni sẽ giúp bạn focus vào điều quan trọng nhất.',
-          experiencer: 'Bạn tin cuộc sống là để trải nghiệm. Moni sẽ giúp bạn balance giữa tận hưởng và đảm bảo tương lai.',
-          giver: 'Niềm vui của bạn là mang lại niềm vui cho người khác. Moni sẽ nhắc bạn cũng cần invest vào bản thân.',
-          planner: 'Bạn có kỷ luật tài chính tốt. Moni sẽ giúp bạn optimize hơn nữa và celebrate những progress nhỏ.',
-        };
+        const archetypes = getArchetypes();
+        const arch = archetypes[state.archetype];
         app.innerHTML = `
           <div class="header">
             <button class="btn-back" onclick="backToQuiz()">←</button>
@@ -592,15 +1529,15 @@
             <div style="width:44px"></div>
           </div>
           <div class="content">
-            <div style="text-align:center;margin-bottom:8px"><span class="quiz-badge">✨ Đây là bạn!</span></div>
+            <div style="text-align:center;margin-bottom:8px"><span class="quiz-badge">${t('thisIsYou')}</span></div>
             <div class="result-card" style="background:linear-gradient(135deg, ${arch.color}, ${arch.color}dd)">
               <div class="result-emoji">${arch.emoji}</div>
               <div class="result-type">${arch.name}</div>
               <div class="result-tag">${arch.tag}</div>
             </div>
-            <p class="result-desc">${desc[state.archetype]}</p>
+            <p class="result-desc">${t(arch.descKey)}</p>
           </div>
-          <div class="footer"><button class="btn" onclick="nextStep()">Tiếp tục →</button></div>
+          <div class="footer"><button class="btn" onclick="nextStep()">${t('continue')}</button></div>
         `;
         return;
       }
@@ -615,8 +1552,8 @@
           <div class="content">
             <div class="ob-center">
               <div class="ob-icon">💰</div>
-              <div class="ob-title">Thu nhập hàng tháng</div>
-              <div class="ob-desc">Để Moni tính được bạn có thể tiêu thoải mái bao nhiêu mỗi tháng.</div>
+              <div class="ob-title">${t('incomeTitle')}</div>
+              <div class="ob-desc">${t('incomeDesc')}</div>
             </div>
             <div class="income-input-wrap">
               <input id="incomeInput" class="income-input" placeholder="15,000,000" value="${state.income ? parseInt(state.income).toLocaleString('vi-VN') : ''}" onkeyup="handleIncome(this)">
@@ -625,9 +1562,9 @@
             <div class="presets">
               ${[8,10,15,20,25,30].map(n => `<button class="preset ${parseInt(state.income) === n * 1000000 ? 'active' : ''}" onclick="setIncome(${n * 1000000})">${n}tr</button>`).join('')}
             </div>
-            <div class="privacy-note"><span>🔒</span><span>Thông tin được bảo mật và chỉ lưu trên thiết bị</span></div>
+            <div class="privacy-note"><span>🔒</span><span>${t('privacyNote')}</span></div>
           </div>
-          <div class="footer"><button class="btn" id="nextBtn" ${state.income ? '' : 'disabled'} onclick="nextStep()">Tiếp tục →</button></div>
+          <div class="footer"><button class="btn" id="nextBtn" ${state.income ? '' : 'disabled'} onclick="nextStep()">${t('continue')}</button></div>
         `;
         return;
       }
@@ -639,22 +1576,22 @@
           <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
             <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-                <span style="font-size:20px;font-weight:700">➕ Thêm chi phí cố định</span>
+                <span style="font-size:20px;font-weight:700">${t('addFixedTitle')}</span>
                 <button onclick="state.showAddFixed=false;render()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
               </div>
               <div style="margin-bottom:16px">
-                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Tên khoản chi</label>
-                <input id="newFixedName" class="input" placeholder="VD: Gym, Netflix, Học phí...">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('expenseName')}</label>
+                <input id="newFixedName" class="input" placeholder="${t('expenseNamePlaceholder')}">
               </div>
               <div style="margin-bottom:24px">
-                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Số tiền / tháng</label>
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amountPerMonth')}</label>
                 <input id="newFixedAmount" class="input" placeholder="500,000" style="font-size:20px;font-weight:600;text-align:center">
               </div>
-              <button class="btn" onclick="addCustomFixed()">Thêm</button>
+              <button class="btn" onclick="addCustomFixed()">${t('add')}</button>
             </div>
           </div>
         ` : '';
-        
+
         app.innerHTML = `
           <div class="header">
             <button class="btn-back" onclick="prevStep()">←</button>
@@ -664,15 +1601,15 @@
           <div class="content">
             <div class="ob-center" style="margin-bottom:24px">
               <div class="ob-icon">🏠</div>
-              <div class="ob-title">Chi phí cố định hàng tháng</div>
-              <div class="ob-desc">Những khoản phải trả đều đặn. Nhập số tiền hoặc xóa nếu không có.</div>
+              <div class="ob-title">${t('fixedTitle')}</div>
+              <div class="ob-desc">${t('fixedDesc')}</div>
             </div>
             <div style="display:flex;flex-direction:column;gap:12px">
               ${state.fixedExpenses.map((f, idx) => `
                 <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px">
                   <span style="font-size:24px">${f.e}</span>
-                  <span style="flex:1;font-size:15px;color:var(--text)">${f.name}</span>
-                  <input 
+                  <span style="flex:1;font-size:15px;color:var(--text)">${getFixedName(f)}</span>
+                  <input
                     id="fixed_${idx}"
                     style="width:110px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:15px;text-align:right;font-family:inherit"
                     placeholder="0"
@@ -683,15 +1620,15 @@
                 </div>
               `).join('')}
               <button onclick="state.showAddFixed=true;render()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;background:var(--card);border:2px dashed var(--border);border-radius:14px;color:var(--text-muted);font-size:15px;cursor:pointer;font-family:inherit">
-                <span style="font-size:20px">+</span> Thêm khoản khác
+                <span style="font-size:20px">+</span> ${t('addOther')}
               </button>
             </div>
             <div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:14px;display:flex;justify-content:space-between;align-items:center">
-              <span style="font-size:14px;color:var(--text-soft)">Tổng chi phí cố định</span>
-              <span data-fixed-total style="font-size:18px;font-weight:700;color:var(--orange)">${fmt(fixed)}/tháng</span>
+              <span style="font-size:14px;color:var(--text-soft)">${t('totalFixed')}</span>
+              <span data-fixed-total style="font-size:18px;font-weight:700;color:var(--orange)">${fmt(fixed)}/${t('months').charAt(0)}</span>
             </div>
           </div>
-          <div class="footer"><button class="btn" onclick="nextStep()">Tiếp tục →</button></div>
+          <div class="footer"><button class="btn" onclick="nextStep()">${t('continue')}</button></div>
           ${addModal}
         `;
         return;
@@ -700,28 +1637,29 @@
       // Step 5: Goals
       if (state.step === 5) {
         const selectedIds = state.goals.map(g => g.id);
-        const available = GOALS.filter(g => !selectedIds.includes(g.id));
-        
+        const goals = getGoals();
+        const available = goals.filter(g => !selectedIds.includes(g.id));
+
         const addModal = state.showAddGoal ? `
           <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
             <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
               <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-                <span style="font-size:20px;font-weight:700">✨ Tạo mục tiêu mới</span>
+                <span style="font-size:20px;font-weight:700">${t('createGoalTitle')}</span>
                 <button onclick="state.showAddGoal=false;render()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
               </div>
               <div style="margin-bottom:16px">
-                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Tên mục tiêu</label>
-                <input id="newGoalName" class="input" placeholder="VD: iPhone mới, Khóa học, Xe đạp...">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('goalName')}</label>
+                <input id="newGoalName" class="input" placeholder="${t('goalNamePlaceholder')}">
               </div>
               <div style="margin-bottom:24px">
-                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Số tiền cần</label>
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amountNeeded')}</label>
                 <input id="newGoalAmount" class="input" placeholder="10,000,000" style="font-size:20px;font-weight:600;text-align:center">
               </div>
-              <button class="btn" onclick="addCustomGoal()">Thêm mục tiêu</button>
+              <button class="btn" onclick="addCustomGoal()">${t('addGoal')}</button>
             </div>
           </div>
         ` : '';
-        
+
         app.innerHTML = `
           <div class="header">
             <button class="btn-back" onclick="prevStep()">←</button>
@@ -731,14 +1669,14 @@
           <div class="content">
             <div class="ob-center">
               <div class="ob-icon">🎯</div>
-              <div class="ob-title">Bạn đang hướng tới điều gì?</div>
-              <div class="ob-desc">Chọn 1-3 mục tiêu. Moni sẽ giúp bạn theo dõi tiến độ.</div>
+              <div class="ob-title">${t('goalsTitle')}</div>
+              <div class="ob-desc">${t('goalsDesc')}</div>
             </div>
             ${state.goals.length > 0 ? `<div class="selected-goals">${state.goals.map(g => `
               <div class="selected-goal">
                 <span class="selected-goal-icon">${g.e}</span>
                 <div class="selected-goal-info">
-                  <div class="selected-goal-name">${g.name}</div>
+                  <div class="selected-goal-name">${getGoalName(g)}</div>
                   <div class="selected-goal-amount">${fmt(g.amount)}</div>
                 </div>
                 <button class="selected-goal-remove" onclick="removeGoal('${g.id}')">×</button>
@@ -754,12 +1692,12 @@
               ${state.goals.length < 3 ? `
                 <div class="goal-item" onclick="state.showAddGoal=true;render()" style="border-style:dashed">
                   <span class="goal-item-icon">✨</span>
-                  <span class="goal-item-name">Tự tạo</span>
+                  <span class="goal-item-name">${t('createOwn')}</span>
                 </div>
               ` : ''}
             </div>
           </div>
-          <div class="footer"><button class="btn" ${state.goals.length > 0 ? '' : 'disabled'} onclick="nextStep()">Tiếp tục (${state.goals.length}/3) →</button></div>
+          <div class="footer"><button class="btn" ${state.goals.length > 0 ? '' : 'disabled'} onclick="nextStep()">${t('continue')} (${state.goals.length}/3) →</button></div>
           ${addModal}
         `;
         return;
@@ -767,7 +1705,7 @@
 
       // Step 6: Allocation
       if (state.step === 6) {
-        const income = parseInt(state.income) || 0;
+        const incomeVal = parseInt(state.income) || 0;
         const fixed = totalFixed();
         const allocated = totalAllocation();
         const remaining = spendable();
@@ -780,8 +1718,8 @@
           <div class="content">
             <div class="ob-center" style="margin-bottom:24px">
               <div class="ob-icon">💸</div>
-              <div class="ob-title">Mỗi tháng dành bao nhiêu?</div>
-              <div class="ob-desc">Chọn số tiền bạn muốn để dành cho mỗi mục tiêu hàng tháng.</div>
+              <div class="ob-title">${t('allocationTitle')}</div>
+              <div class="ob-desc">${t('allocationDesc')}</div>
             </div>
             ${state.goals.map((g, idx) => {
               const alloc = state.allocations[g.id] || '';
@@ -792,38 +1730,38 @@
                   <div class="allocation-header">
                     <span class="allocation-icon">${g.e}</span>
                     <div>
-                      <div class="allocation-name">${g.name}</div>
-                      <div class="allocation-target">Mục tiêu: ${fmt(g.amount)}</div>
+                      <div class="allocation-name">${getGoalName(g)}</div>
+                      <div class="allocation-target">${t('target')}: ${fmt(g.amount)}</div>
                     </div>
                   </div>
                   <div class="allocation-input-row">
                     <input id="alloc_${idx}" class="allocation-input" placeholder="0" value="${alloc ? parseInt(alloc).toLocaleString('vi-VN') : ''}" onblur="updateAllocation('${g.id}', this.value)">
-                    <span class="allocation-per">VND / tháng</span>
+                    <span class="allocation-per">${t('perMonth')}</span>
                   </div>
-                  <div class="allocation-time" data-time-${idx}>${monthly > 0 ? `Đạt mục tiêu trong <strong>${months} tháng</strong>` : ''}</div>
+                  <div class="allocation-time" data-time-${idx}>${monthly > 0 ? `${t('reachGoalIn')} <strong>${months} ${t('months')}</strong>` : ''}</div>
                 </div>
               `;
             }).join('')}
             <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:8px">
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
-                <span style="color:var(--text-muted);font-size:14px">Thu nhập</span>
-                <span style="font-weight:600">${fmt(income)}</span>
+                <span style="color:var(--text-muted);font-size:14px">${t('income')}</span>
+                <span style="font-weight:600">${fmt(incomeVal)}</span>
               </div>
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
-                <span style="color:var(--text-muted);font-size:14px">Chi phí cố định</span>
+                <span style="color:var(--text-muted);font-size:14px">${t('fixedExpenses')}</span>
                 <span style="font-weight:600;color:var(--text-soft)">-${fmt(fixed)}</span>
               </div>
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
-                <span style="color:var(--text-muted);font-size:14px">Để dành cho goals</span>
+                <span style="color:var(--text-muted);font-size:14px">${t('savingForGoals')}</span>
                 <span data-alloc-total style="font-weight:600;color:var(--orange)">-${fmt(allocated)}</span>
               </div>
               <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between">
-                <span style="font-weight:600">Tiêu thoải mái</span>
+                <span style="font-weight:600">${t('spendComfortably')}</span>
                 <span data-remain-total style="font-weight:700;font-size:18px;color:${remaining >= 0 ? 'var(--green)' : '#ef4444'}">${fmt(remaining)}</span>
               </div>
             </div>
           </div>
-          <div class="footer"><button class="btn" data-finish-btn ${allocated > 0 && remaining >= 0 ? '' : 'disabled'} onclick="finishOnboarding()">Hoàn tất →</button></div>
+          <div class="footer"><button class="btn" data-finish-btn ${allocated > 0 && remaining >= 0 ? '' : 'disabled'} onclick="finishOnboarding()">${t('finish')}</button></div>
         `;
         return;
       }
@@ -832,30 +1770,31 @@
     const renderMain = (app) => {
       app.className = 'phone';
       const remaining = spendable() - todaySpent();
-      const arch = ARCHETYPES[state.archetype];
-      
+      const archetypes = getArchetypes();
+      const arch = archetypes[state.archetype];
+
       const addExpenseModal = state.showAddExpense ? `
         <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
           <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
             <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-              <span style="font-size:20px;font-weight:700">✏️ Thêm chi tiêu</span>
+              <span style="font-size:20px;font-weight:700">${t('addExpenseTitle')}</span>
               <button onclick="closeAddExpense()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
             </div>
             <div style="margin-bottom:16px">
-              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Tên</label>
-              <input id="expenseName" class="input" placeholder="VD: Cafe, Grab, Ăn trưa...">
+              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('name')}</label>
+              <input id="expenseName" class="input" placeholder="${t('namePlaceholderExpense')}">
             </div>
             <div style="margin-bottom:24px">
-              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Số tiền</label>
+              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amount')}</label>
               <input id="expenseAmount" class="input" placeholder="50,000" style="font-size:24px;font-weight:700;text-align:center">
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
               <button onclick="quickAddExpense('☕','Cafe',50000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">☕ Cafe 50k</button>
-              <button onclick="quickAddExpense('🍜','Cơm',45000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🍜 Cơm 45k</button>
+              <button onclick="quickAddExpense('🍜','Lunch',45000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🍜 Lunch 45k</button>
               <button onclick="quickAddExpense('🚗','Grab',85000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🚗 Grab 85k</button>
-              <button onclick="quickAddExpense('🛒','Siêu thị',150000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🛒 Siêu thị 150k</button>
+              <button onclick="quickAddExpense('🛒','Market',150000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🛒 Market 150k</button>
             </div>
-            <button class="btn" onclick="confirmAddExpenseFromModal()">Thêm chi tiêu</button>
+            <button class="btn" onclick="confirmAddExpenseFromModal()">${t('addExpense')}</button>
           </div>
         </div>
       ` : '';
@@ -878,14 +1817,14 @@
             <div class="response-bubble">
               <div class="response-text">${state.chatResponse}</div>
               ${state.chatParsed ? `
-                <div class="response-meta">Sau khi mua: <strong>${fmt(remaining - state.chatParsed.amount)}</strong> còn lại</div>
+                <div class="response-meta">${t('afterPurchase')} <strong>${fmt(remaining - state.chatParsed.amount)}</strong> ${t('leftRemaining')}</div>
                 <div class="response-actions">
-                  <button class="res-btn primary" onclick="confirmChatPurchase()">Mua rồi ✓</button>
-                  <button class="res-btn secondary" onclick="clearChat()">Thôi</button>
+                  <button class="res-btn primary" onclick="confirmChatPurchase()">${t('bought')}</button>
+                  <button class="res-btn secondary" onclick="clearChat()">${t('cancel')}</button>
                 </div>
               ` : `
                 <div class="response-actions">
-                  <button class="res-btn secondary" onclick="clearChat()" style="flex:none;width:100%">Đóng</button>
+                  <button class="res-btn secondary" onclick="clearChat()" style="flex:none;width:100%">${t('close')}</button>
                 </div>
               `}
             </div>
@@ -897,13 +1836,13 @@
         <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
         <div class="content" style="padding: 0 24px;">
           <div class="main-header">
-            <div class="greeting">Hey, ${state.userName} 👋</div>
+            <div class="greeting">${t('hey')} ${state.userName} 👋</div>
             <div class="avatar">${arch?.emoji || '✨'}</div>
           </div>
           <div class="spendable">
-            <div class="spendable-label">Tiêu thoải mái</div>
+            <div class="spendable-label">${t('spendableLabel')}</div>
             <div class="spendable-amount">${(remaining / 1000000).toFixed(1).replace('.0', '')}<span class="unit">tr</span></div>
-            <div class="spendable-sub">còn <span>18 ngày</span> nữa</div>
+            <div class="spendable-sub">${t('remaining')} <span>18 ${t('daysLeft')}</span></div>
           </div>
           <div class="goals-status">
             ${state.goals.slice(0, 2).map((g, i) => {
@@ -913,10 +1852,10 @@
                 <div class="goal-pill ${isOnTrack ? 'on-track' : 'behind'}">
                   <span class="goal-emoji">${g.e}</span>
                   <div class="goal-info">
-                    <div class="goal-name">${g.name}</div>
+                    <div class="goal-name">${getGoalName(g)}</div>
                     <div class="goal-time">
-                      <span class="time-expect">Mục tiêu: ${months} tháng</span>
-                      <span class="time-reality ${isOnTrack ? 'on-track' : 'behind'}">→ Thực tế: ${isOnTrack ? months : months + 1} tháng</span>
+                      <span class="time-expect">${t('goalTarget')}: ${months} ${t('months')}</span>
+                      <span class="time-reality ${isOnTrack ? 'on-track' : 'behind'}">→ ${t('actual')}: ${isOnTrack ? months : months + 1} ${t('months')}</span>
                     </div>
                     <div class="goal-progress"><div class="goal-progress-fill" style="width: ${isOnTrack ? '72' : '40'}%"></div></div>
                   </div>
@@ -926,7 +1865,7 @@
           </div>
           <div class="recent-section">
             <div class="recent-header">
-              <span class="recent-title">Hôm nay</span>
+              <span class="recent-title">${t('today')}</span>
               <span class="recent-total">-${fmt(todaySpent())}</span>
             </div>
             <div class="recent-list">
@@ -944,24 +1883,24 @@
             <div class="ask-container">
               <div class="ask-row">
                 <div class="ask-icon">🌿</div>
-                <input type="text" class="ask-input" placeholder="Muốn mua gì?" id="askInput" onkeydown="if(event.key==='Enter')askMoni()">
+                <input type="text" class="ask-input" placeholder="${t('askPlaceholder')}" id="askInput" onkeydown="if(event.key==='Enter')askMoni()">
                 <button class="ask-btn" onclick="askMoni()">→</button>
               </div>
             </div>
             <div class="chips">
               <button class="chip" onclick="askWithText('Cafe 50k')">☕ Cafe 50k</button>
               <button class="chip" onclick="askWithText('Grab 85k')">🚗 Grab 85k</button>
-              <button class="chip" onclick="askWithText('Ăn tối 150k')">🍜 Ăn tối 150k</button>
+              <button class="chip" onclick="askWithText('Dinner 150k')">🍜 Dinner 150k</button>
             </div>
             ${chatSection}
-            <div class="ask-hint">Hỏi Moni trước khi tiêu</div>
+            <div class="ask-hint">${t('askHint')}</div>
           </div>
         </div>
         <button class="fab" onclick="openAddExpense()">+</button>
         <div class="tab-bar">
-          <button class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
-          <button class="tab"><span class="tab-icon">🎯</span><span class="tab-label">Goals</span></button>
-          <button class="tab"><span class="tab-icon">📊</span><span class="tab-label">History</span></button>
+          <button class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
+          <button class="tab"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
+          <button class="tab"><span class="tab-icon">📊</span><span class="tab-label">${t('history')}</span></button>
         </div>
         ${addExpenseModal}
       `;
@@ -1020,10 +1959,11 @@
     };
     
     // Goals
-    window.addGoal = (id) => { 
-      if (state.goals.length >= 3) return; 
-      const goal = GOALS.find(g => g.id === id); 
-      if (goal) { state.goals.push({...goal}); render(); } 
+    window.addGoal = (id) => {
+      if (state.goals.length >= 3) return;
+      const goals = getGoals();
+      const goalData = GOALS_DATA.find(g => g.id === id);
+      if (goalData) { state.goals.push({...goalData}); render(); }
     };
     window.removeGoal = (id) => { 
       state.goals = state.goals.filter(g => g.id !== id); 
@@ -1074,10 +2014,10 @@
       state.goals.forEach((g, idx) => {
         const alloc = state.allocations[g.id] || 0;
         const monthly = parseInt(alloc) || 0;
-        const months = monthly > 0 ? Math.ceil(g.amount / monthly) : 0;
+        const monthsNum = monthly > 0 ? Math.ceil(g.amount / monthly) : 0;
         const timeEl = document.querySelector(`[data-time-${idx}]`);
         if (timeEl) {
-          timeEl.innerHTML = monthly > 0 ? `Đạt mục tiêu trong <strong>${months} tháng</strong>` : '';
+          timeEl.innerHTML = monthly > 0 ? `${t('reachGoalIn')} <strong>${monthsNum} ${t('months')}</strong>` : '';
         }
       });
     };
@@ -1136,20 +2076,20 @@ Ví dụ response:
             amount *= 1000;
           }
           // Extract item name (everything except the amount part)
-          const item = query.replace(/\d+\s*k?/gi, '').trim() || 'Món này';
+          const item = query.replace(/\d+\s*k?/gi, '').trim() || 'Item';
           const percent = remaining > 0 ? (amount / remaining * 100) : 100;
-          
+
           state.chatParsed = { item, amount };
-          
+
           if (percent < 5) {
-            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — mua đi! 🎉<br><br>Chỉ ${percent.toFixed(1)}% ngân sách, thoải mái!`;
+            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — ${t('buyIt')} 🎉<br><br>${t('onlyPercent')} ${percent.toFixed(1)}% ${t('budget')}, ${t('comfortable')}`;
           } else if (percent < 20) {
-            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — được thôi! 👍<br><br>Chiếm ${percent.toFixed(1)}% ngân sách. Cân nhắc chút nhé.`;
+            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — ${t('okToBuy')} 👍<br><br>${percent.toFixed(1)}% ${t('budget')}. ${t('considerIt')}`;
           } else {
-            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — hơi nhiều đó! 🤔<br><br>Chiếm ${percent.toFixed(1)}% ngân sách còn lại. Bạn chắc chứ?`;
+            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — ${t('tooMuch')} 🤔<br><br>${percent.toFixed(1)}% ${t('percentOfBudget')} ${t('areYouSure')}`;
           }
         } else {
-          state.chatResponse = 'Moni chưa hiểu lắm. Bạn thử nhập kiểu "Cafe 50k" hoặc "Grab 85k" nhé! 😊';
+          state.chatResponse = t('notUnderstand');
         }
       };
 
