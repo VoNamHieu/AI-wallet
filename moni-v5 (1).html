@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moni - Financial Confidence</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg: #faf9f7;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-soft: #6b6b6b;
+      --text-muted: #9a9a9a;
+      --accent: #1a1a1a;
+      --green: #22c55e;
+      --green-light: #f0fdf4;
+      --orange: #f59e0b;
+      --orange-light: #fffbeb;
+      --border: #e8e6e3;
+      --purple: #8b5cf6;
+      --purple-light: #f5f3ff;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      padding: 20px;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 390px;
+      height: 844px;
+      background: var(--bg);
+      border-radius: 44px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .phone.splash-bg {
+      background: linear-gradient(160deg, #1a1a1a 0%, #2d2d2d 100%);
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+    }
+
+    .btn-back {
+      width: 44px;
+      height: 44px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--border);
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      width: 24px;
+      background: var(--text);
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px;
+    }
+
+    .footer {
+      padding: 16px 24px 40px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px 24px;
+      background: var(--text);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .btn:hover { transform: scale(1.02); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn.secondary {
+      background: transparent;
+      color: var(--text-muted);
+      padding: 14px 24px;
+    }
+
+    .btn.white {
+      background: white;
+      color: var(--text);
+    }
+
+    .input {
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      font-size: 17px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      background: var(--card);
+    }
+
+    .input:focus { border-color: var(--text); }
+
+    .hidden { display: none !important; }
+
+    /* Splash */
+    .splash {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 32px 48px;
+      text-align: center;
+    }
+
+    .splash-logo { font-size: 80px; margin-bottom: 16px; }
+    .splash-title { font-size: 48px; font-weight: 800; color: white; letter-spacing: -1px; }
+    .splash-tagline { font-size: 17px; color: rgba(255,255,255,0.7); margin-top: 12px; line-height: 1.5; }
+
+    /* Onboarding */
+    .ob-icon { font-size: 64px; margin-bottom: 20px; }
+    .ob-title { font-size: 26px; font-weight: 700; color: var(--text); margin-bottom: 12px; line-height: 1.3; }
+    .ob-desc { font-size: 16px; color: var(--text-soft); line-height: 1.6; }
+    .ob-center { text-align: center; padding-top: 20px; }
+
+    .benefits { display: flex; flex-direction: column; gap: 14px; margin: 28px 0; }
+    .benefit { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: var(--card); border: 1px solid var(--border); border-radius: 16px; }
+    .benefit-icon { font-size: 24px; }
+    .benefit-text { font-size: 15px; color: var(--text); }
+
+    .quote-box { padding: 20px 24px; background: var(--green-light); border-radius: 20px; text-align: center; }
+    .quote-text { font-size: 15px; color: #166534; font-style: italic; line-height: 1.6; }
+
+    /* Quiz */
+    .quiz-progress { display: flex; align-items: center; gap: 12px; }
+    .quiz-bar { width: 100px; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+    .quiz-bar-fill { height: 100%; background: var(--text); transition: width 0.3s; }
+    .quiz-count { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    .quiz-badge { display: inline-block; padding: 8px 16px; background: var(--purple-light); border-radius: 20px; font-size: 13px; font-weight: 600; color: var(--purple); margin-bottom: 20px; }
+    .quiz-question { font-size: 20px; font-weight: 700; color: var(--text); line-height: 1.5; margin-bottom: 28px; }
+    .quiz-option { display: flex; align-items: center; gap: 14px; width: 100%; padding: 18px 20px; background: var(--card); border: 2px solid var(--border); border-radius: 16px; cursor: pointer; text-align: left; margin-bottom: 12px; transition: all 0.2s; font-family: inherit; }
+    .quiz-option:hover { border-color: var(--text); background: var(--bg); }
+    .quiz-option-icon { font-size: 24px; }
+    .quiz-option-text { font-size: 15px; color: var(--text); }
+
+    /* Result */
+    .result-card { background: linear-gradient(135deg, var(--purple), #a855f7); border-radius: 28px; padding: 36px 28px; text-align: center; color: white; margin: 20px 0; }
+    .result-emoji { font-size: 72px; margin-bottom: 16px; }
+    .result-type { font-size: 28px; font-weight: 800; }
+    .result-tag { font-size: 16px; opacity: 0.9; margin-top: 8px; }
+    .result-desc { font-size: 16px; color: var(--text-soft); line-height: 1.7; text-align: center; margin-top: 20px; }
+
+    /* Income */
+    .income-input-wrap { display: flex; background: var(--card); border-radius: 16px; border: 2px solid var(--border); overflow: hidden; margin: 24px 0; }
+    .income-input-wrap:focus-within { border-color: var(--text); }
+    .income-input { flex: 1; border: none; padding: 20px; font-size: 28px; font-weight: 700; text-align: center; outline: none; font-family: inherit; background: transparent; }
+    .income-unit { display: flex; align-items: center; padding: 0 20px; font-size: 16px; color: var(--text-muted); background: var(--bg); }
+
+    .presets { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 24px; }
+    .preset { padding: 12px 20px; border-radius: 12px; border: 1px solid var(--border); background: var(--card); font-size: 15px; font-weight: 600; color: var(--text-soft); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .preset:hover, .preset.active { background: var(--text); color: white; border-color: var(--text); }
+
+    .privacy-note { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--bg); border-radius: 14px; }
+    .privacy-note span:first-child { font-size: 18px; }
+    .privacy-note span:last-child { font-size: 13px; color: var(--text-muted); }
+
+    /* Goals */
+    .goal-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin: 24px 0; }
+    .goal-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 12px; background: var(--card); border: 2px solid var(--border); border-radius: 18px; cursor: pointer; transition: all 0.2s; }
+    .goal-item:hover { border-color: var(--text-soft); }
+    .goal-item.selected { border-color: var(--green); background: var(--green-light); }
+    .goal-item-icon { font-size: 32px; }
+    .goal-item-name { font-size: 13px; font-weight: 600; color: var(--text); }
+
+    .selected-goals { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+    .selected-goal { display: flex; align-items: center; gap: 14px; padding: 16px 18px; background: var(--green-light); border: 2px solid #86efac; border-radius: 16px; }
+    .selected-goal-icon { font-size: 28px; }
+    .selected-goal-info { flex: 1; }
+    .selected-goal-name { font-size: 15px; font-weight: 600; color: var(--text); }
+    .selected-goal-amount { font-size: 13px; color: var(--text-soft); }
+    .selected-goal-remove { width: 32px; height: 32px; background: #fee2e2; border: none; border-radius: 10px; color: #ef4444; font-size: 18px; cursor: pointer; }
+
+    /* Allocation */
+    .allocation-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 20px; margin-bottom: 16px; }
+    .allocation-header { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+    .allocation-icon { font-size: 32px; }
+    .allocation-name { font-size: 16px; font-weight: 600; color: var(--text); }
+    .allocation-target { font-size: 13px; color: var(--text-muted); }
+    .allocation-input-row { display: flex; align-items: center; gap: 12px; }
+    .allocation-input { flex: 1; padding: 14px 16px; border: 2px solid var(--border); border-radius: 12px; font-size: 18px; font-weight: 600; font-family: inherit; outline: none; text-align: center; }
+    .allocation-input:focus { border-color: var(--text); }
+    .allocation-per { font-size: 14px; color: var(--text-muted); }
+    .allocation-time { margin-top: 12px; padding: 12px; background: var(--bg); border-radius: 10px; text-align: center; font-size: 13px; color: var(--text-soft); }
+    .allocation-time strong { color: var(--green); }
+
+    /* Main App */
+    .status-bar { display: flex; justify-content: space-between; padding: 14px 28px 10px; font-size: 14px; font-weight: 600; }
+    .main-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+    .greeting { font-size: 18px; font-weight: 600; color: var(--text); }
+    .avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+
+    .spendable { text-align: center; margin-bottom: 40px; }
+    .spendable-label { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+    .spendable-amount { font-size: 56px; font-weight: 800; color: var(--text); letter-spacing: -3px; line-height: 1; margin-bottom: 8px; }
+    .spendable-amount .unit { font-size: 32px; font-weight: 600; color: var(--text-soft); }
+    .spendable-sub { font-size: 14px; color: var(--text-muted); }
+    .spendable-sub span { color: var(--text-soft); font-weight: 600; }
+
+    .goals-status { display: flex; gap: 12px; margin-bottom: 24px; }
+    .goal-pill { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+    .goal-pill.on-track { background: var(--green-light); border-color: #bbf7d0; }
+    .goal-pill.behind { background: var(--orange-light); border-color: #fde68a; }
+    .goal-emoji { font-size: 24px; }
+    .goal-info { flex: 1; min-width: 0; }
+    .goal-name { font-size: 13px; font-weight: 600; color: var(--text); }
+    .goal-time { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+    .time-expect { font-size: 11px; color: var(--text-muted); }
+    .time-reality { font-size: 11px; font-weight: 600; }
+    .time-reality.on-track { color: var(--green); }
+    .time-reality.behind { color: var(--orange); }
+    .goal-progress { width: 100%; height: 4px; background: rgba(0,0,0,0.08); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+    .goal-progress-fill { height: 100%; background: var(--green); border-radius: 2px; }
+    .goal-pill.behind .goal-progress-fill { background: var(--orange); }
+
+    .recent-section { margin-bottom: 24px; }
+    .recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+    .recent-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .recent-total { font-size: 14px; font-weight: 600; color: var(--text-soft); }
+    .recent-list { background: var(--card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+    .recent-item { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-bottom: 1px solid var(--border); }
+    .recent-item:last-child { border-bottom: none; }
+    .recent-emoji { font-size: 18px; }
+    .recent-name { flex: 1; font-size: 14px; color: var(--text); }
+    .recent-amount { font-size: 14px; font-weight: 600; color: var(--text-soft); }
+
+    .spacer { flex: 1; }
+
+    .ask-section { padding-bottom: 24px; }
+    .ask-container { background: var(--card); border: 2px solid var(--border); border-radius: 20px; padding: 6px; transition: all 0.2s ease; }
+    .ask-container:focus-within { border-color: var(--text); }
+    .ask-row { display: flex; align-items: center; gap: 12px; }
+    .ask-icon { width: 42px; height: 42px; background: var(--bg); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .ask-input { flex: 1; border: none; background: transparent; font-size: 16px; font-family: inherit; color: var(--text); outline: none; padding: 12px 0; }
+    .ask-input::placeholder { color: var(--text-muted); }
+    .ask-btn { width: 42px; height: 42px; background: var(--text); border: none; border-radius: 14px; color: white; font-size: 18px; cursor: pointer; transition: transform 0.2s; }
+    .ask-btn:hover { transform: scale(1.05); }
+    .ask-hint { text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 16px; }
+
+    .chips { display: flex; gap: 8px; margin-top: 14px; overflow-x: auto; padding-bottom: 4px; }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip { flex-shrink: 0; padding: 10px 16px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; font-size: 14px; color: var(--text-soft); cursor: pointer; transition: all 0.2s; font-family: inherit; }
+    .chip:hover { background: var(--card); border-color: var(--text-soft); }
+
+    .response { margin-top: 20px; }
+    .response.show { display: block; animation: slideUp 0.3s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .response-bubble { background: var(--bg); border-radius: 18px; padding: 18px 20px; }
+    .response-text { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 16px; }
+    .response-meta { font-size: 13px; color: var(--text-muted); padding: 12px 0; border-top: 1px solid var(--border); margin-bottom: 16px; }
+    .response-actions { display: flex; gap: 10px; }
+    .res-btn { flex: 1; padding: 14px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+    .res-btn.primary { background: var(--text); border: none; color: white; }
+    .res-btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--text-soft); }
+
+    .tab-bar { display: flex; justify-content: space-around; padding: 12px 0 32px; background: var(--bg); border-top: 1px solid var(--border); }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: none; cursor: pointer; padding: 8px 20px; }
+    .tab-icon { font-size: 22px; opacity: 0.4; }
+    .tab.active .tab-icon { opacity: 1; }
+    .tab-label { font-size: 11px; font-weight: 600; color: var(--text-muted); }
+    .tab.active .tab-label { color: var(--text); }
+
+    /* FAB */
+    .fab {
+      position: absolute;
+      bottom: 100px;
+      right: 24px;
+      width: 56px;
+      height: 56px;
+      background: var(--text);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 50;
+    }
+    .fab:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+    }
+
+    /* Chat loading */
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 8px 0;
+    }
+    .typing span {
+      width: 8px;
+      height: 8px;
+      background: var(--text-muted);
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out;
+    }
+    .typing span:nth-child(1) { animation-delay: 0s; }
+    .typing span:nth-child(2) { animation-delay: 0.2s; }
+    .typing span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="phone"></div>
+
+  <script>
+    let state = {
+      screen: 'splash',
+      step: 0,
+      quizStep: -1,
+      quizAnswers: [],
+      userName: '',
+      archetype: null,
+      income: '',
+      fixedExpenses: [],  // [{ id, e, name, amount }]
+      goals: [],
+      allocations: {},
+      transactions: [
+        { emoji: '☕', name: 'Cafe', amount: 50000 },
+        { emoji: '🍜', name: 'Cơm trưa', amount: 45000 },
+        { emoji: '🚗', name: 'Grab về nhà', amount: 85000 },
+        { emoji: '🛒', name: 'Siêu thị', amount: 140000 },
+      ],
+      showAddExpense: false,
+      showAddFixed: false,
+      showAddGoal: false,
+      newExpense: { name: '', amount: '' },
+      newFixed: { name: '', amount: '' },
+      newGoal: { name: '', amount: '' },
+      chatLoading: false,
+      chatResponse: null,
+      chatParsed: null, // { item, amount }
+    };
+
+    const DEFAULT_FIXED = [
+      { id: 'rent', e: '🏠', name: 'Tiền nhà', amount: '' },
+      { id: 'electric', e: '💡', name: 'Điện', amount: '' },
+      { id: 'water', e: '💧', name: 'Nước', amount: '' },
+      { id: 'internet', e: '📶', name: 'Internet', amount: '' },
+      { id: 'phone', e: '📱', name: 'Điện thoại', amount: '' },
+      { id: 'insurance', e: '🛡️', name: 'Bảo hiểm', amount: '' },
+    ];
+
+    // Initialize fixed expenses from defaults
+    state.fixedExpenses = DEFAULT_FIXED.map(f => ({...f}));
+
+    const ARCHETYPES = {
+      dreamer: { emoji: '✨', name: 'The Dreamer', tag: 'Người mơ mộng', color: '#8b5cf6' },
+      experiencer: { emoji: '🎢', name: 'The Experiencer', tag: 'Người trải nghiệm', color: '#f97316' },
+      giver: { emoji: '💝', name: 'The Giver', tag: 'Người cho đi', color: '#ec4899' },
+      planner: { emoji: '🎯', name: 'The Planner', tag: 'Người kế hoạch', color: '#10b981' },
+    };
+
+    const QUIZ = [
+      { q: 'Khi nhận được tiền thưởng bất ngờ, bạn thường...', opts: [
+        { e: '📋', text: 'Lên kế hoạch cụ thể cho nó', type: 'planner' },
+        { e: '🎁', text: 'Tự thưởng cho mình ngay', type: 'experiencer' },
+        { e: '💝', text: 'Nghĩ đến quà cho người thân', type: 'giver' },
+        { e: '✨', text: 'Mơ về những possibilities', type: 'dreamer' },
+      ]},
+      { q: 'Bạn hay vượt chi tiêu nhất khi nào?', opts: [
+        { e: '🎉', text: 'Đi chơi với bạn bè', type: 'experiencer' },
+        { e: '🤝', text: 'Có ai đó cần giúp đỡ', type: 'giver' },
+        { e: '🆕', text: 'Bị thu hút bởi cái mới', type: 'dreamer' },
+        { e: '✅', text: 'Hiếm khi vượt chi', type: 'planner' },
+      ]},
+      { q: 'Cảm xúc của bạn khi nghĩ về tiền...', opts: [
+        { e: '🚀', text: 'Excited về tương lai', type: 'dreamer' },
+        { e: '😌', text: 'Thoải mái, sống hiện tại', type: 'experiencer' },
+        { e: '🫂', text: 'Lo lắng cho người thân', type: 'giver' },
+        { e: '💪', text: 'Cảm giác kiểm soát', type: 'planner' },
+      ]},
+      { q: 'Điều nào mô tả bạn nhất?', opts: [
+        { e: '🌈', text: 'Nhiều ước mơ, khó focus', type: 'dreamer' },
+        { e: '📸', text: 'Kỷ niệm quan trọng hơn tiết kiệm', type: 'experiencer' },
+        { e: '😊', text: 'Vui khi được giúp người khác', type: 'giver' },
+        { e: '📊', text: 'Thích kế hoạch rõ ràng', type: 'planner' },
+      ]},
+    ];
+
+    const GOALS = [
+      { id: 'laptop', e: '💻', name: 'Laptop', amount: 25000000 },
+      { id: 'phone', e: '📱', name: 'Điện thoại', amount: 15000000 },
+      { id: 'trip', e: '✈️', name: 'Du lịch', amount: 10000000 },
+      { id: 'bike', e: '🏍️', name: 'Xe máy', amount: 50000000 },
+      { id: 'emergency', e: '🛡️', name: 'Quỹ khẩn cấp', amount: 20000000 },
+      { id: 'wedding', e: '💒', name: 'Đám cưới', amount: 100000000 },
+    ];
+
+    const $ = id => document.getElementById(id);
+    const fmt = n => {
+      if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'tr';
+      if (n >= 1000) return (n / 1000).toFixed(0) + 'k';
+      return n.toString();
+    };
+
+    const totalFixed = () => state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0);
+    const totalAllocation = () => Object.values(state.allocations).reduce((a, b) => a + (parseInt(b) || 0), 0);
+    const spendable = () => (parseInt(state.income) || 0) - totalFixed() - totalAllocation();
+    const todaySpent = () => state.transactions.reduce((a, b) => a + b.amount, 0);
+
+    const render = () => {
+      const app = $('app');
+      if (state.screen === 'splash') renderSplash(app);
+      else if (state.screen === 'onboarding') renderOnboarding(app);
+      else if (state.screen === 'main') renderMain(app);
+    };
+
+    const renderSplash = (app) => {
+      app.className = 'phone splash-bg';
+      app.innerHTML = `
+        <div class="splash">
+          <div></div>
+          <div>
+            <div class="splash-logo">🌿</div>
+            <div class="splash-title">Moni</div>
+            <div class="splash-tagline">Quản lý tiền theo cách của bạn.<br>Không phán xét. Chỉ đồng hành.</div>
+          </div>
+          <button class="btn white" onclick="startOnboarding()">Bắt đầu →</button>
+        </div>
+      `;
+    };
+
+    const renderOnboarding = (app) => {
+      app.className = 'phone';
+      const dots = [0,1,2,3,4,5,6].map(i => `<div class="dot ${i <= state.step ? 'active' : ''}"></div>`).join('');
+      
+      if (state.step === 0) {
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn-back" onclick="goSplash()">←</button>
+            <div class="progress-dots">${dots}</div>
+            <div style="width:44px"></div>
+          </div>
+          <div class="content">
+            <div class="ob-center">
+              <div class="ob-icon">👋</div>
+              <div class="ob-title">Chào mừng đến Moni!</div>
+              <div class="ob-desc">Moni sẽ giúp bạn tiêu tiền có chủ đích — không phải theo dõi từng đồng, mà là biết mình đang ở đâu trên đường đến mục tiêu.</div>
+            </div>
+            <div style="margin-top:40px">
+              <label style="font-size:14px;font-weight:600;color:var(--text-soft);display:block;margin-bottom:12px">Mình gọi bạn là gì nhỉ?</label>
+              <input id="nameInput" class="input" style="text-align:center;font-weight:600" placeholder="Nhập tên của bạn..." value="${state.userName}" onkeyup="state.userName=this.value;updateBtn()">
+            </div>
+          </div>
+          <div class="footer">
+            <button class="btn" id="nextBtn" ${state.userName.trim() ? '' : 'disabled'} onclick="nextStep()">Tiếp tục →</button>
+          </div>
+        `;
+        return;
+      }
+
+      if (state.step === 1) {
+        if (state.quizStep === -1) {
+          app.innerHTML = `
+            <div class="header">
+              <button class="btn-back" onclick="prevStep()">←</button>
+              <div class="progress-dots">${dots}</div>
+              <div style="width:44px"></div>
+            </div>
+            <div class="content">
+              <div class="ob-center" style="margin-bottom:20px">
+                <div class="ob-icon">🪞</div>
+                <div class="ob-title">4 Money Personalities</div>
+                <div class="ob-desc">Bạn thuộc nhóm nào? Làm quiz để khám phá!</div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <div style="background:linear-gradient(135deg, #8b5cf6, #a78bfa);border-radius:20px;padding:20px;color:white;text-align:center">
+                  <div style="font-size:36px;margin-bottom:8px">✨</div>
+                  <div style="font-size:15px;font-weight:700">The Dreamer</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người mơ mộng</div>
+                </div>
+                <div style="background:linear-gradient(135deg, #f97316, #fb923c);border-radius:20px;padding:20px;color:white;text-align:center">
+                  <div style="font-size:36px;margin-bottom:8px">🎢</div>
+                  <div style="font-size:15px;font-weight:700">The Experiencer</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người trải nghiệm</div>
+                </div>
+                <div style="background:linear-gradient(135deg, #ec4899, #f472b6);border-radius:20px;padding:20px;color:white;text-align:center">
+                  <div style="font-size:36px;margin-bottom:8px">💝</div>
+                  <div style="font-size:15px;font-weight:700">The Giver</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người cho đi</div>
+                </div>
+                <div style="background:linear-gradient(135deg, #10b981, #34d399);border-radius:20px;padding:20px;color:white;text-align:center">
+                  <div style="font-size:36px;margin-bottom:8px">🎯</div>
+                  <div style="font-size:15px;font-weight:700">The Planner</div>
+                  <div style="font-size:12px;opacity:0.9;margin-top:4px">Người kế hoạch</div>
+                </div>
+              </div>
+              <div style="margin-top:20px;padding:16px;background:var(--purple-light);border-radius:16px;text-align:center">
+                <div style="font-size:14px;color:#6b21a8">🎯 Moni sẽ đồng hành theo phong cách của bạn</div>
+              </div>
+            </div>
+            <div class="footer">
+              <button class="btn" onclick="startQuiz()">Làm Quiz · 4 câu hỏi →</button>
+              <button class="btn secondary" onclick="skipQuiz()">Bỏ qua</button>
+            </div>
+          `;
+        } else {
+          const q = QUIZ[state.quizStep];
+          app.innerHTML = `
+            <div class="header">
+              <button class="btn-back" onclick="quizBack()">←</button>
+              <div class="quiz-progress">
+                <div class="quiz-bar"><div class="quiz-bar-fill" style="width:${((state.quizStep + 1) / 4) * 100}%"></div></div>
+                <span class="quiz-count">${state.quizStep + 1}/4</span>
+              </div>
+              <div style="width:44px"></div>
+            </div>
+            <div class="content">
+              <div class="quiz-badge">🪞 Money Personality</div>
+              <div class="quiz-question">${q.q}</div>
+              ${q.opts.map(opt => `
+                <button class="quiz-option" onclick="answerQuiz('${opt.type}')">
+                  <span class="quiz-option-icon">${opt.e}</span>
+                  <span class="quiz-option-text">${opt.text}</span>
+                </button>
+              `).join('')}
+            </div>
+          `;
+        }
+        return;
+      }
+
+      if (state.step === 2) {
+        const arch = ARCHETYPES[state.archetype];
+        const desc = {
+          dreamer: 'Bạn có nhiều ước mơ đẹp và trí tưởng tượng phong phú. Moni sẽ giúp bạn focus vào điều quan trọng nhất.',
+          experiencer: 'Bạn tin cuộc sống là để trải nghiệm. Moni sẽ giúp bạn balance giữa tận hưởng và đảm bảo tương lai.',
+          giver: 'Niềm vui của bạn là mang lại niềm vui cho người khác. Moni sẽ nhắc bạn cũng cần invest vào bản thân.',
+          planner: 'Bạn có kỷ luật tài chính tốt. Moni sẽ giúp bạn optimize hơn nữa và celebrate những progress nhỏ.',
+        };
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn-back" onclick="backToQuiz()">←</button>
+            <div class="progress-dots">${dots}</div>
+            <div style="width:44px"></div>
+          </div>
+          <div class="content">
+            <div style="text-align:center;margin-bottom:8px"><span class="quiz-badge">✨ Đây là bạn!</span></div>
+            <div class="result-card" style="background:linear-gradient(135deg, ${arch.color}, ${arch.color}dd)">
+              <div class="result-emoji">${arch.emoji}</div>
+              <div class="result-type">${arch.name}</div>
+              <div class="result-tag">${arch.tag}</div>
+            </div>
+            <p class="result-desc">${desc[state.archetype]}</p>
+          </div>
+          <div class="footer"><button class="btn" onclick="nextStep()">Tiếp tục →</button></div>
+        `;
+        return;
+      }
+
+      if (state.step === 3) {
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn-back" onclick="prevStep()">←</button>
+            <div class="progress-dots">${dots}</div>
+            <div style="width:44px"></div>
+          </div>
+          <div class="content">
+            <div class="ob-center">
+              <div class="ob-icon">💰</div>
+              <div class="ob-title">Thu nhập hàng tháng</div>
+              <div class="ob-desc">Để Moni tính được bạn có thể tiêu thoải mái bao nhiêu mỗi tháng.</div>
+            </div>
+            <div class="income-input-wrap">
+              <input id="incomeInput" class="income-input" placeholder="15,000,000" value="${state.income ? parseInt(state.income).toLocaleString('vi-VN') : ''}" onkeyup="handleIncome(this)">
+              <span class="income-unit">VND</span>
+            </div>
+            <div class="presets">
+              ${[8,10,15,20,25,30].map(n => `<button class="preset ${parseInt(state.income) === n * 1000000 ? 'active' : ''}" onclick="setIncome(${n * 1000000})">${n}tr</button>`).join('')}
+            </div>
+            <div class="privacy-note"><span>🔒</span><span>Thông tin được bảo mật và chỉ lưu trên thiết bị</span></div>
+          </div>
+          <div class="footer"><button class="btn" id="nextBtn" ${state.income ? '' : 'disabled'} onclick="nextStep()">Tiếp tục →</button></div>
+        `;
+        return;
+      }
+
+      // Step 4: Fixed Expenses
+      if (state.step === 4) {
+        const fixed = totalFixed();
+        const addModal = state.showAddFixed ? `
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
+            <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+                <span style="font-size:20px;font-weight:700">➕ Thêm chi phí cố định</span>
+                <button onclick="state.showAddFixed=false;render()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+              </div>
+              <div style="margin-bottom:16px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Tên khoản chi</label>
+                <input id="newFixedName" class="input" placeholder="VD: Gym, Netflix, Học phí...">
+              </div>
+              <div style="margin-bottom:24px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Số tiền / tháng</label>
+                <input id="newFixedAmount" class="input" placeholder="500,000" style="font-size:20px;font-weight:600;text-align:center">
+              </div>
+              <button class="btn" onclick="addCustomFixed()">Thêm</button>
+            </div>
+          </div>
+        ` : '';
+        
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn-back" onclick="prevStep()">←</button>
+            <div class="progress-dots">${dots}</div>
+            <div style="width:44px"></div>
+          </div>
+          <div class="content">
+            <div class="ob-center" style="margin-bottom:24px">
+              <div class="ob-icon">🏠</div>
+              <div class="ob-title">Chi phí cố định hàng tháng</div>
+              <div class="ob-desc">Những khoản phải trả đều đặn. Nhập số tiền hoặc xóa nếu không có.</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+              ${state.fixedExpenses.map((f, idx) => `
+                <div style="display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 16px">
+                  <span style="font-size:24px">${f.e}</span>
+                  <span style="flex:1;font-size:15px;color:var(--text)">${f.name}</span>
+                  <input 
+                    id="fixed_${idx}"
+                    style="width:110px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:15px;text-align:right;font-family:inherit"
+                    placeholder="0"
+                    value="${f.amount ? parseInt(f.amount).toLocaleString('vi-VN') : ''}"
+                    onblur="updateFixedAmount(${idx}, this.value)"
+                  >
+                  <button onclick="removeFixed(${idx})" style="width:32px;height:32px;background:#fee2e2;border:none;border-radius:8px;color:#ef4444;font-size:16px;cursor:pointer">×</button>
+                </div>
+              `).join('')}
+              <button onclick="state.showAddFixed=true;render()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;background:var(--card);border:2px dashed var(--border);border-radius:14px;color:var(--text-muted);font-size:15px;cursor:pointer;font-family:inherit">
+                <span style="font-size:20px">+</span> Thêm khoản khác
+              </button>
+            </div>
+            <div style="margin-top:20px;padding:16px;background:var(--bg);border-radius:14px;display:flex;justify-content:space-between;align-items:center">
+              <span style="font-size:14px;color:var(--text-soft)">Tổng chi phí cố định</span>
+              <span data-fixed-total style="font-size:18px;font-weight:700;color:var(--orange)">${fmt(fixed)}/tháng</span>
+            </div>
+          </div>
+          <div class="footer"><button class="btn" onclick="nextStep()">Tiếp tục →</button></div>
+          ${addModal}
+        `;
+        return;
+      }
+
+      // Step 5: Goals
+      if (state.step === 5) {
+        const selectedIds = state.goals.map(g => g.id);
+        const available = GOALS.filter(g => !selectedIds.includes(g.id));
+        
+        const addModal = state.showAddGoal ? `
+          <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
+            <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+                <span style="font-size:20px;font-weight:700">✨ Tạo mục tiêu mới</span>
+                <button onclick="state.showAddGoal=false;render()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+              </div>
+              <div style="margin-bottom:16px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Tên mục tiêu</label>
+                <input id="newGoalName" class="input" placeholder="VD: iPhone mới, Khóa học, Xe đạp...">
+              </div>
+              <div style="margin-bottom:24px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Số tiền cần</label>
+                <input id="newGoalAmount" class="input" placeholder="10,000,000" style="font-size:20px;font-weight:600;text-align:center">
+              </div>
+              <button class="btn" onclick="addCustomGoal()">Thêm mục tiêu</button>
+            </div>
+          </div>
+        ` : '';
+        
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn-back" onclick="prevStep()">←</button>
+            <div class="progress-dots">${dots}</div>
+            <div style="width:44px"></div>
+          </div>
+          <div class="content">
+            <div class="ob-center">
+              <div class="ob-icon">🎯</div>
+              <div class="ob-title">Bạn đang hướng tới điều gì?</div>
+              <div class="ob-desc">Chọn 1-3 mục tiêu. Moni sẽ giúp bạn theo dõi tiến độ.</div>
+            </div>
+            ${state.goals.length > 0 ? `<div class="selected-goals">${state.goals.map(g => `
+              <div class="selected-goal">
+                <span class="selected-goal-icon">${g.e}</span>
+                <div class="selected-goal-info">
+                  <div class="selected-goal-name">${g.name}</div>
+                  <div class="selected-goal-amount">${fmt(g.amount)}</div>
+                </div>
+                <button class="selected-goal-remove" onclick="removeGoal('${g.id}')">×</button>
+              </div>
+            `).join('')}</div>` : ''}
+            <div class="goal-grid" style="margin-top:${state.goals.length > 0 ? '16px' : '24px'}">
+              ${available.map(g => `
+                <div class="goal-item" onclick="${state.goals.length < 3 ? `addGoal('${g.id}')` : ''}">
+                  <span class="goal-item-icon">${g.e}</span>
+                  <span class="goal-item-name">${g.name}</span>
+                </div>
+              `).join('')}
+              ${state.goals.length < 3 ? `
+                <div class="goal-item" onclick="state.showAddGoal=true;render()" style="border-style:dashed">
+                  <span class="goal-item-icon">✨</span>
+                  <span class="goal-item-name">Tự tạo</span>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+          <div class="footer"><button class="btn" ${state.goals.length > 0 ? '' : 'disabled'} onclick="nextStep()">Tiếp tục (${state.goals.length}/3) →</button></div>
+          ${addModal}
+        `;
+        return;
+      }
+
+      // Step 6: Allocation
+      if (state.step === 6) {
+        const income = parseInt(state.income) || 0;
+        const fixed = totalFixed();
+        const allocated = totalAllocation();
+        const remaining = spendable();
+        app.innerHTML = `
+          <div class="header">
+            <button class="btn-back" onclick="prevStep()">←</button>
+            <div class="progress-dots">${dots}</div>
+            <div style="width:44px"></div>
+          </div>
+          <div class="content">
+            <div class="ob-center" style="margin-bottom:24px">
+              <div class="ob-icon">💸</div>
+              <div class="ob-title">Mỗi tháng dành bao nhiêu?</div>
+              <div class="ob-desc">Chọn số tiền bạn muốn để dành cho mỗi mục tiêu hàng tháng.</div>
+            </div>
+            ${state.goals.map((g, idx) => {
+              const alloc = state.allocations[g.id] || '';
+              const monthly = parseInt(alloc) || 0;
+              const months = monthly > 0 ? Math.ceil(g.amount / monthly) : 0;
+              return `
+                <div class="allocation-card">
+                  <div class="allocation-header">
+                    <span class="allocation-icon">${g.e}</span>
+                    <div>
+                      <div class="allocation-name">${g.name}</div>
+                      <div class="allocation-target">Mục tiêu: ${fmt(g.amount)}</div>
+                    </div>
+                  </div>
+                  <div class="allocation-input-row">
+                    <input id="alloc_${idx}" class="allocation-input" placeholder="0" value="${alloc ? parseInt(alloc).toLocaleString('vi-VN') : ''}" onblur="updateAllocation('${g.id}', this.value)">
+                    <span class="allocation-per">VND / tháng</span>
+                  </div>
+                  <div class="allocation-time" data-time-${idx}>${monthly > 0 ? `Đạt mục tiêu trong <strong>${months} tháng</strong>` : ''}</div>
+                </div>
+              `;
+            }).join('')}
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-top:8px">
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span style="color:var(--text-muted);font-size:14px">Thu nhập</span>
+                <span style="font-weight:600">${fmt(income)}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span style="color:var(--text-muted);font-size:14px">Chi phí cố định</span>
+                <span style="font-weight:600;color:var(--text-soft)">-${fmt(fixed)}</span>
+              </div>
+              <div style="display:flex;justify-content:space-between;margin-bottom:12px">
+                <span style="color:var(--text-muted);font-size:14px">Để dành cho goals</span>
+                <span data-alloc-total style="font-weight:600;color:var(--orange)">-${fmt(allocated)}</span>
+              </div>
+              <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between">
+                <span style="font-weight:600">Tiêu thoải mái</span>
+                <span data-remain-total style="font-weight:700;font-size:18px;color:${remaining >= 0 ? 'var(--green)' : '#ef4444'}">${fmt(remaining)}</span>
+              </div>
+            </div>
+          </div>
+          <div class="footer"><button class="btn" data-finish-btn ${allocated > 0 && remaining >= 0 ? '' : 'disabled'} onclick="finishOnboarding()">Hoàn tất →</button></div>
+        `;
+        return;
+      }
+    };
+
+    const renderMain = (app) => {
+      app.className = 'phone';
+      const remaining = spendable() - todaySpent();
+      const arch = ARCHETYPES[state.archetype];
+      
+      const addExpenseModal = state.showAddExpense ? `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
+          <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
+              <span style="font-size:20px;font-weight:700">✏️ Thêm chi tiêu</span>
+              <button onclick="closeAddExpense()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Tên</label>
+              <input id="expenseName" class="input" placeholder="VD: Cafe, Grab, Ăn trưa...">
+            </div>
+            <div style="margin-bottom:24px">
+              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">Số tiền</label>
+              <input id="expenseAmount" class="input" placeholder="50,000" style="font-size:24px;font-weight:700;text-align:center">
+            </div>
+            <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px">
+              <button onclick="quickAddExpense('☕','Cafe',50000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">☕ Cafe 50k</button>
+              <button onclick="quickAddExpense('🍜','Cơm',45000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🍜 Cơm 45k</button>
+              <button onclick="quickAddExpense('🚗','Grab',85000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🚗 Grab 85k</button>
+              <button onclick="quickAddExpense('🛒','Siêu thị',150000)" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">🛒 Siêu thị 150k</button>
+            </div>
+            <button class="btn" onclick="confirmAddExpenseFromModal()">Thêm chi tiêu</button>
+          </div>
+        </div>
+      ` : '';
+
+      // Chat response section
+      let chatSection = '';
+      if (state.chatLoading) {
+        chatSection = `
+          <div class="response show">
+            <div class="response-bubble">
+              <div class="typing">
+                <span></span><span></span><span></span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (state.chatResponse) {
+        chatSection = `
+          <div class="response show">
+            <div class="response-bubble">
+              <div class="response-text">${state.chatResponse}</div>
+              ${state.chatParsed ? `
+                <div class="response-meta">Sau khi mua: <strong>${fmt(remaining - state.chatParsed.amount)}</strong> còn lại</div>
+                <div class="response-actions">
+                  <button class="res-btn primary" onclick="confirmChatPurchase()">Mua rồi ✓</button>
+                  <button class="res-btn secondary" onclick="clearChat()">Thôi</button>
+                </div>
+              ` : `
+                <div class="response-actions">
+                  <button class="res-btn secondary" onclick="clearChat()" style="flex:none;width:100%">Đóng</button>
+                </div>
+              `}
+            </div>
+          </div>
+        `;
+      }
+      
+      app.innerHTML = `
+        <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
+        <div class="content" style="padding: 0 24px;">
+          <div class="main-header">
+            <div class="greeting">Hey, ${state.userName} 👋</div>
+            <div class="avatar">${arch?.emoji || '✨'}</div>
+          </div>
+          <div class="spendable">
+            <div class="spendable-label">Tiêu thoải mái</div>
+            <div class="spendable-amount">${(remaining / 1000000).toFixed(1).replace('.0', '')}<span class="unit">tr</span></div>
+            <div class="spendable-sub">còn <span>18 ngày</span> nữa</div>
+          </div>
+          <div class="goals-status">
+            ${state.goals.slice(0, 2).map((g, i) => {
+              const isOnTrack = i === 0;
+              const months = Math.ceil(g.amount / (state.allocations[g.id] || 1000000));
+              return `
+                <div class="goal-pill ${isOnTrack ? 'on-track' : 'behind'}">
+                  <span class="goal-emoji">${g.e}</span>
+                  <div class="goal-info">
+                    <div class="goal-name">${g.name}</div>
+                    <div class="goal-time">
+                      <span class="time-expect">Mục tiêu: ${months} tháng</span>
+                      <span class="time-reality ${isOnTrack ? 'on-track' : 'behind'}">→ Thực tế: ${isOnTrack ? months : months + 1} tháng</span>
+                    </div>
+                    <div class="goal-progress"><div class="goal-progress-fill" style="width: ${isOnTrack ? '72' : '40'}%"></div></div>
+                  </div>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="recent-section">
+            <div class="recent-header">
+              <span class="recent-title">Hôm nay</span>
+              <span class="recent-total">-${fmt(todaySpent())}</span>
+            </div>
+            <div class="recent-list">
+              ${state.transactions.slice(0, 4).map(tx => `
+                <div class="recent-item">
+                  <span class="recent-emoji">${tx.emoji}</span>
+                  <span class="recent-name">${tx.name}</span>
+                  <span class="recent-amount">-${fmt(tx.amount)}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          <div class="spacer"></div>
+          <div class="ask-section">
+            <div class="ask-container">
+              <div class="ask-row">
+                <div class="ask-icon">🌿</div>
+                <input type="text" class="ask-input" placeholder="Muốn mua gì?" id="askInput" onkeydown="if(event.key==='Enter')askMoni()">
+                <button class="ask-btn" onclick="askMoni()">→</button>
+              </div>
+            </div>
+            <div class="chips">
+              <button class="chip" onclick="askWithText('Cafe 50k')">☕ Cafe 50k</button>
+              <button class="chip" onclick="askWithText('Grab 85k')">🚗 Grab 85k</button>
+              <button class="chip" onclick="askWithText('Ăn tối 150k')">🍜 Ăn tối 150k</button>
+            </div>
+            ${chatSection}
+            <div class="ask-hint">Hỏi Moni trước khi tiêu</div>
+          </div>
+        </div>
+        <button class="fab" onclick="openAddExpense()">+</button>
+        <div class="tab-bar">
+          <button class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">Home</span></button>
+          <button class="tab"><span class="tab-icon">🎯</span><span class="tab-label">Goals</span></button>
+          <button class="tab"><span class="tab-icon">📊</span><span class="tab-label">History</span></button>
+        </div>
+        ${addExpenseModal}
+      `;
+    };
+
+    window.startOnboarding = () => { state.screen = 'onboarding'; state.step = 0; render(); };
+    window.goSplash = () => { state.screen = 'splash'; render(); };
+    window.nextStep = () => { state.step++; render(); };
+    window.prevStep = () => { state.step--; render(); };
+    window.updateBtn = () => { const btn = $('nextBtn'); if (btn) btn.disabled = !state.userName.trim(); };
+    window.startQuiz = () => { state.quizStep = 0; render(); };
+    window.skipQuiz = () => { state.archetype = 'dreamer'; state.step = 2; render(); };
+    window.quizBack = () => { if (state.quizStep > 0) { state.quizStep--; state.quizAnswers.pop(); } else { state.quizStep = -1; } render(); };
+    window.backToQuiz = () => { state.step = 1; state.quizStep = 3; render(); };
+    window.answerQuiz = (type) => {
+      state.quizAnswers.push(type);
+      if (state.quizStep < 3) { state.quizStep++; render(); }
+      else {
+        const counts = {};
+        state.quizAnswers.forEach(t => counts[t] = (counts[t] || 0) + 1);
+        let maxType = 'dreamer', maxCount = 0;
+        Object.entries(counts).forEach(([t, c]) => { if (c > maxCount) { maxType = t; maxCount = c; } });
+        state.archetype = maxType;
+        state.step = 2;
+        render();
+      }
+    };
+    window.handleIncome = (el) => { state.income = el.value.replace(/\D/g, ''); const btn = $('nextBtn'); if (btn) btn.disabled = !state.income; };
+    window.setIncome = (val) => { state.income = val.toString(); render(); };
+    
+    // Fixed expenses
+    window.updateFixedAmount = (idx, val) => { 
+      state.fixedExpenses[idx].amount = val.replace(/\D/g, ''); 
+      // Update the total display without full re-render
+      const totalEl = document.querySelector('[data-fixed-total]');
+      if (totalEl) totalEl.textContent = fmt(totalFixed()) + '/tháng';
+    };
+    window.removeFixed = (idx) => { 
+      state.fixedExpenses.splice(idx, 1); 
+      render(); 
+    };
+    window.addCustomFixed = () => {
+      const name = $('newFixedName')?.value;
+      const amount = $('newFixedAmount')?.value.replace(/\D/g, '');
+      if (name && amount) {
+        const emojis = ['📦', '🎬', '🏋️', '📚', '🎵', '🚌', '💳', '🔧'];
+        state.fixedExpenses.push({
+          id: 'custom_' + Date.now(),
+          e: emojis[Math.floor(Math.random() * emojis.length)],
+          name: name,
+          amount: amount
+        });
+        state.showAddFixed = false;
+        render();
+      }
+    };
+    
+    // Goals
+    window.addGoal = (id) => { 
+      if (state.goals.length >= 3) return; 
+      const goal = GOALS.find(g => g.id === id); 
+      if (goal) { state.goals.push({...goal}); render(); } 
+    };
+    window.removeGoal = (id) => { 
+      state.goals = state.goals.filter(g => g.id !== id); 
+      delete state.allocations[id]; 
+      render(); 
+    };
+    window.addCustomGoal = () => {
+      const name = $('newGoalName')?.value;
+      const amount = $('newGoalAmount')?.value.replace(/\D/g, '');
+      if (name && amount && state.goals.length < 3) {
+        const emojis = ['🎯', '⭐', '🌟', '💫', '🎁', '🏆', '💎', '🚀'];
+        state.goals.push({
+          id: 'custom_' + Date.now(),
+          e: emojis[Math.floor(Math.random() * emojis.length)],
+          name: name,
+          amount: parseInt(amount)
+        });
+        state.showAddGoal = false;
+        render();
+      }
+    };
+    
+    // Allocation  
+    window.updateAllocation = (id, val) => { 
+      state.allocations[id] = val.replace(/\D/g, ''); 
+      // Update summary without full re-render
+      updateAllocationSummary();
+    };
+    
+    window.updateAllocationSummary = () => {
+      const income = parseInt(state.income) || 0;
+      const fixed = totalFixed();
+      const allocated = totalAllocation();
+      const remaining = spendable();
+      
+      const allocEl = document.querySelector('[data-alloc-total]');
+      const remainEl = document.querySelector('[data-remain-total]');
+      const btn = document.querySelector('[data-finish-btn]');
+      
+      if (allocEl) allocEl.textContent = '-' + fmt(allocated);
+      if (remainEl) {
+        remainEl.textContent = fmt(remaining);
+        remainEl.style.color = remaining >= 0 ? 'var(--green)' : '#ef4444';
+      }
+      if (btn) btn.disabled = !(allocated > 0 && remaining >= 0);
+      
+      // Update time estimates
+      state.goals.forEach((g, idx) => {
+        const alloc = state.allocations[g.id] || 0;
+        const monthly = parseInt(alloc) || 0;
+        const months = monthly > 0 ? Math.ceil(g.amount / monthly) : 0;
+        const timeEl = document.querySelector(`[data-time-${idx}]`);
+        if (timeEl) {
+          timeEl.innerHTML = monthly > 0 ? `Đạt mục tiêu trong <strong>${months} tháng</strong>` : '';
+        }
+      });
+    };
+    
+    window.finishOnboarding = () => { state.screen = 'main'; render(); };
+    window.fillInput = (text) => { const input = $('askInput'); if (input) { input.value = text; input.focus(); } };
+    
+    // Chat functions with Claude API
+    window.askWithText = (text) => {
+      const input = $('askInput');
+      if (input) input.value = text;
+      askMoni();
+    };
+    
+    window.askMoni = async () => {
+      const input = $('askInput');
+      const query = input?.value?.trim();
+      if (!query) return;
+      
+      state.chatLoading = true;
+      state.chatResponse = null;
+      state.chatParsed = null;
+      render();
+      
+      const remaining = spendable() - todaySpent();
+      const goalsInfo = state.goals.map(g => `${g.name}: ${fmt(g.amount)}, tiết kiệm ${fmt(state.allocations[g.id] || 0)}/tháng`).join('; ');
+      
+      const systemPrompt = `Bạn là Moni, một trợ lý tài chính thân thiện. Bạn giúp user quyết định có nên mua một món đồ hay không dựa trên ngân sách của họ.
+
+Thông tin tài chính của user:
+- Số tiền có thể tiêu thoải mái còn lại: ${fmt(remaining)}
+- Còn 18 ngày trong tháng
+- Mục tiêu đang theo đuổi: ${goalsInfo || 'Chưa có'}
+
+Quy tắc:
+1. Trả lời ngắn gọn, thân thiện, dùng emoji
+2. Nếu user hỏi về việc mua một món đồ, hãy phân tích xem có nên mua không
+3. Nếu món đồ < 5% ngân sách còn lại → khuyến khích mua
+4. Nếu món đồ 5-20% ngân sách → cân nhắc, nêu trade-off
+5. Nếu món đồ > 20% ngân sách → cảnh báo nhẹ nhàng
+6. Luôn tôn trọng quyết định của user, không phán xét
+7. Nếu phát hiện được số tiền trong câu hỏi, PHẢI trả về ở cuối response theo format: [PARSED:tên_món:số_tiền]
+
+Ví dụ response:
+"Cafe 50k — mua đi! ☕ Chỉ chiếm 2% ngân sách, không ảnh hưởng gì tới mục tiêu của bạn.
+[PARSED:Cafe:50000]"`;
+
+      // Always use fallback for now (API may not work in artifact)
+      const useFallback = () => {
+        // Parse amount with better regex - handle "50k", "50K", "50000", "150k"
+        const amountMatch = query.match(/(\d+)\s*k/i) || query.match(/(\d{4,})/);
+        if (amountMatch) {
+          let amount = parseInt(amountMatch[1]);
+          // If matched with 'k', multiply by 1000
+          if (query.toLowerCase().includes('k') && amount < 1000) {
+            amount *= 1000;
+          }
+          // Extract item name (everything except the amount part)
+          const item = query.replace(/\d+\s*k?/gi, '').trim() || 'Món này';
+          const percent = remaining > 0 ? (amount / remaining * 100) : 100;
+          
+          state.chatParsed = { item, amount };
+          
+          if (percent < 5) {
+            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — mua đi! 🎉<br><br>Chỉ ${percent.toFixed(1)}% ngân sách, thoải mái!`;
+          } else if (percent < 20) {
+            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — được thôi! 👍<br><br>Chiếm ${percent.toFixed(1)}% ngân sách. Cân nhắc chút nhé.`;
+          } else {
+            state.chatResponse = `<strong>${item} ${fmt(amount)}</strong> — hơi nhiều đó! 🤔<br><br>Chiếm ${percent.toFixed(1)}% ngân sách còn lại. Bạn chắc chứ?`;
+          }
+        } else {
+          state.chatResponse = 'Moni chưa hiểu lắm. Bạn thử nhập kiểu "Cafe 50k" hoặc "Grab 85k" nhé! 😊';
+        }
+      };
+
+      try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 500,
+            system: systemPrompt,
+            messages: [{ role: 'user', content: query }]
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('API error');
+        }
+        
+        const data = await response.json();
+        let text = data.content?.[0]?.text;
+        
+        if (!text) {
+          throw new Error('No response');
+        }
+        
+        // Parse the response for item and amount
+        const parseMatch = text.match(/\[PARSED:(.+?):(\d+)\]/);
+        if (parseMatch) {
+          state.chatParsed = {
+            item: parseMatch[1],
+            amount: parseInt(parseMatch[2])
+          };
+          text = text.replace(/\[PARSED:.+?\]/, '').trim();
+        }
+        
+        state.chatResponse = text.replace(/\n/g, '<br>');
+      } catch (err) {
+        console.error('API Error:', err);
+        useFallback();
+      }
+      
+      state.chatLoading = false;
+      render();
+    };
+    
+    window.clearChat = () => {
+      state.chatResponse = null;
+      state.chatParsed = null;
+      const input = $('askInput');
+      if (input) input.value = '';
+      render();
+    };
+    
+    window.confirmChatPurchase = () => {
+      if (state.chatParsed) {
+        const emojis = ['☕', '🍜', '🚗', '🛒', '🎬', '🛍️', '💊', '📦'];
+        const item = state.chatParsed.item;
+        let emoji = emojis[0];
+        if (item.toLowerCase().includes('cafe') || item.toLowerCase().includes('cà phê')) emoji = '☕';
+        else if (item.toLowerCase().includes('cơm') || item.toLowerCase().includes('ăn')) emoji = '🍜';
+        else if (item.toLowerCase().includes('grab') || item.toLowerCase().includes('xe')) emoji = '🚗';
+        else if (item.toLowerCase().includes('siêu thị') || item.toLowerCase().includes('chợ')) emoji = '🛒';
+        else emoji = emojis[Math.floor(Math.random() * emojis.length)];
+        
+        state.transactions.unshift({
+          emoji,
+          name: state.chatParsed.item,
+          amount: state.chatParsed.amount
+        });
+      }
+      clearChat();
+    };
+    
+    window.openAddExpense = () => { state.showAddExpense = true; render(); };
+    window.closeAddExpense = () => { state.showAddExpense = false; render(); };
+    window.confirmAddExpenseFromModal = () => {
+      const name = $('expenseName')?.value;
+      const amount = $('expenseAmount')?.value?.replace(/\D/g, '');
+      if (name && amount) {
+        const emojis = ['🛍️', '🍽️', '🎬', '🎁', '💊', '📦', '🎮', '✨'];
+        state.transactions.unshift({
+          emoji: emojis[Math.floor(Math.random() * emojis.length)],
+          name,
+          amount: parseInt(amount)
+        });
+        state.showAddExpense = false;
+        render();
+      }
+    };
+    window.quickAddExpense = (emoji, name, amount) => {
+      state.transactions.unshift({ emoji, name, amount });
+      state.showAddExpense = false;
+      render();
+    };
+
+    render();
+  </script>
+</body>
+</html>
