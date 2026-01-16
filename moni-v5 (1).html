@@ -620,10 +620,14 @@
         askPlaceholder: 'Muốn mua gì?',
         askHint: 'Hỏi Moni trước khi tiêu',
         addExpenseTitle: '✏️ Thêm chi tiêu',
+        expenseTextPlaceholder: 'VD: Cafe 50k, Grab 85k, Cơm 45k...',
+        expenseTextHint: '💡 Gõ tên + số tiền, AI sẽ tự phân loại',
         name: 'Tên',
         namePlaceholderExpense: 'VD: Cafe, Grab, Ăn trưa...',
         amount: 'Số tiền',
         addExpense: 'Thêm chi tiêu',
+        expense: 'Chi tiêu',
+        enterValidAmount: 'Vui lòng nhập số tiền hợp lệ',
         viewAll: 'Xem danh mục',
         hideCategories: 'Ẩn danh mục',
         noExpensesYet: 'Chưa có chi tiêu nào hôm nay',
@@ -756,10 +760,14 @@
         askPlaceholder: 'Want to buy something?',
         askHint: 'Ask Moni before spending',
         addExpenseTitle: '✏️ Add expense',
+        expenseTextPlaceholder: 'E.g.: Coffee $5, Uber $25, Lunch $15...',
+        expenseTextHint: '💡 Type name + amount, AI will categorize',
         name: 'Name',
         namePlaceholderExpense: 'E.g.: Coffee, Uber, Lunch...',
         amount: 'Amount',
         addExpense: 'Add expense',
+        expense: 'Expense',
+        enterValidAmount: 'Please enter a valid amount',
         viewAll: 'View categories',
         hideCategories: 'Hide categories',
         noExpensesYet: 'No expenses yet today',
@@ -889,10 +897,14 @@
         askPlaceholder: '想买什么？',
         askHint: '消费前问问Moni',
         addExpenseTitle: '✏️ 添加支出',
+        expenseTextPlaceholder: '例如：咖啡 30元, 打车 50元...',
+        expenseTextHint: '💡 输入名称+金额，AI自动分类',
         name: '名称',
         namePlaceholderExpense: '例如：咖啡、打车、午餐...',
         amount: '金额',
         addExpense: '添加支出',
+        expense: '支出',
+        enterValidAmount: '请输入有效金额',
         viewAll: '查看分类',
         hideCategories: '隐藏分类',
         noExpensesYet: '今天还没有支出',
@@ -1022,10 +1034,14 @@
         askPlaceholder: '何を買いたい？',
         askHint: '使う前にMoniに聞いて',
         addExpenseTitle: '✏️ 支出を追加',
+        expenseTextPlaceholder: '例：コーヒー 500円, タクシー 2000円...',
+        expenseTextHint: '💡 名前+金額を入力、AIが自動分類',
         name: '名前',
         namePlaceholderExpense: '例：コーヒー、タクシー、ランチ...',
         amount: '金額',
         addExpense: '支出を追加',
+        expense: '支出',
+        enterValidAmount: '有効な金額を入力してください',
         viewAll: 'カテゴリを見る',
         hideCategories: 'カテゴリを隠す',
         noExpensesYet: '今日はまだ支出がありません',
@@ -1155,10 +1171,14 @@
         askPlaceholder: '뭘 사고 싶어요?',
         askHint: '쓰기 전에 Moni에게 물어보세요',
         addExpenseTitle: '✏️ 지출 추가',
+        expenseTextPlaceholder: '예: 커피 5000원, 택시 15000원...',
+        expenseTextHint: '💡 이름+금액 입력, AI가 자동 분류',
         name: '이름',
         namePlaceholderExpense: '예: 커피, 택시, 점심...',
         amount: '금액',
         addExpense: '지출 추가',
+        expense: '지출',
+        enterValidAmount: '유효한 금액을 입력하세요',
         viewAll: '카테고리 보기',
         hideCategories: '카테고리 숨기기',
         noExpensesYet: '오늘 아직 지출이 없습니다',
@@ -1288,10 +1308,14 @@
         askPlaceholder: 'Envie d\'acheter?',
         askHint: 'Demandez à Moni avant de dépenser',
         addExpenseTitle: '✏️ Ajouter dépense',
+        expenseTextPlaceholder: 'Ex: Café 4€, Uber 20€, Déjeuner 15€...',
+        expenseTextHint: '💡 Tapez nom + montant, l\'IA catégorise',
         name: 'Nom',
         namePlaceholderExpense: 'Ex: Café, Uber, Déjeuner...',
         amount: 'Montant',
         addExpense: 'Ajouter dépense',
+        expense: 'Dépense',
+        enterValidAmount: 'Veuillez entrer un montant valide',
         viewAll: 'Voir catégories',
         hideCategories: 'Masquer catégories',
         noExpensesYet: 'Pas encore de dépenses aujourd\'hui',
@@ -1421,10 +1445,14 @@
         askPlaceholder: '¿Quieres comprar algo?',
         askHint: 'Pregunta a Moni antes de gastar',
         addExpenseTitle: '✏️ Agregar gasto',
+        expenseTextPlaceholder: 'Ej: Café 3€, Uber 15€, Almuerzo 12€...',
+        expenseTextHint: '💡 Escribe nombre + monto, IA categoriza',
         name: 'Nombre',
         namePlaceholderExpense: 'Ej: Café, Uber, Almuerzo...',
         amount: 'Monto',
         addExpense: 'Agregar gasto',
+        expense: 'Gasto',
+        enterValidAmount: 'Por favor ingrese un monto válido',
         viewAll: 'Ver categorías',
         hideCategories: 'Ocultar categorías',
         noExpensesYet: 'Aún no hay gastos hoy',
@@ -2312,7 +2340,22 @@
       const archetypes = getArchetypes();
       const arch = archetypes[state.archetype];
 
-      // No modal needed - use inline text input at bottom
+      // Simple text-based add expense modal
+      const addExpenseModal = state.showAddExpense ? `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100" onclick="if(event.target===this)closeAddExpense()">
+          <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+              <span style="font-size:20px;font-weight:700">${t('addExpenseTitle')}</span>
+              <button onclick="closeAddExpense()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+            </div>
+            <div style="margin-bottom:20px">
+              <input id="expenseText" class="input" placeholder="${t('expenseTextPlaceholder')}" style="font-size:18px;padding:16px" onkeydown="if(event.key==='Enter')parseAndAddExpense()">
+              <div style="font-size:12px;color:var(--text-muted);margin-top:8px;padding:0 4px">${t('expenseTextHint')}</div>
+            </div>
+            <button class="btn" onclick="parseAndAddExpense()">${t('addExpense')}</button>
+          </div>
+        </div>
+      ` : '';
 
       // Chat response section
       let chatSection = '';
@@ -2501,11 +2544,13 @@
         <div class="content" style="padding: 0 24px;">
           ${tabContent}
         </div>
+        <button class="fab" onclick="openAddExpense()">+</button>
         <div class="tab-bar">
           <button class="tab ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
           <button class="tab ${state.activeTab === 'goals' ? 'active' : ''}" onclick="switchTab('goals')"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
           <button class="tab ${state.activeTab === 'history' ? 'active' : ''}" onclick="switchTab('history')"><span class="tab-icon">📊</span><span class="tab-label">${t('history')}</span></button>
         </div>
+        ${addExpenseModal}
       `;
     };
 
@@ -2788,9 +2833,72 @@ Ví dụ response:
       clearChat();
     };
     
-    window.openAddExpense = () => { state.showAddExpense = true; state.showCategories = false; render(); };
-    window.closeAddExpense = () => { state.showAddExpense = false; state.showCategories = false; render(); };
-    window.toggleCategories = () => { state.showCategories = !state.showCategories; render(); };
+    window.openAddExpense = () => { state.showAddExpense = true; render(); };
+    window.closeAddExpense = () => { state.showAddExpense = false; render(); };
+
+    // AI-powered expense parser with auto category assignment
+    window.parseAndAddExpense = () => {
+      const text = $('expenseText')?.value?.trim();
+      if (!text) return;
+
+      // Parse amount from text
+      const amount = parseAmount(text);
+      if (amount <= 0) {
+        alert(t('enterValidAmount') || 'Please enter a valid amount');
+        return;
+      }
+
+      // Extract name (remove amount-related parts)
+      let name = text
+        .replace(/[\d,.]+\s*(k|tr|triệu|nghìn|ngàn|m|million|thousand|万|만|원|円|¥|€|\$|₫|đ)/gi, '')
+        .replace(/[\d,.]+/g, '')
+        .trim();
+
+      // If no name left, use generic
+      if (!name) name = t('expense') || 'Expense';
+
+      // AI category assignment based on keywords
+      const categoryMap = {
+        '☕': ['cafe', 'coffee', 'cà phê', 'cappuccino', 'latte', 'starbucks', '咖啡', 'コーヒー', '커피'],
+        '🍜': ['cơm', 'phở', 'bún', 'lunch', 'dinner', 'food', 'ăn', 'meal', 'restaurant', '午餐', '晚餐', 'ランチ', '점심', '저녁', 'almuerzo', 'déjeuner'],
+        '🚗': ['grab', 'uber', 'taxi', 'xe', 'car', 'ride', 'gojek', '打车', 'タクシー', '택시'],
+        '🛒': ['chợ', 'siêu thị', 'market', 'grocery', 'supermarket', 'shop', '超市', 'スーパー', '마트', 'courses', 'compras'],
+        '🍺': ['beer', 'bia', 'rượu', 'wine', 'drink', 'bar', 'pub', '啤酒', 'ビール', '맥주'],
+        '🎬': ['movie', 'phim', 'cinema', 'netflix', 'show', '电影', '映画', '영화', 'cine'],
+        '💊': ['thuốc', 'medicine', 'pharmacy', 'doctor', 'hospital', '药', '薬', '약', 'pharmacie', 'farmacia'],
+        '🎮': ['game', 'gaming', 'steam', 'playstation', 'xbox', '游戏', 'ゲーム', '게임'],
+        '👕': ['quần', 'áo', 'clothes', 'fashion', 'shirt', 'dress', '衣服', '服', '옷', 'vêtements', 'ropa'],
+        '💄': ['makeup', 'mỹ phẩm', 'cosmetic', 'beauty', '化妆', '化粧', '화장품', 'maquillage'],
+        '📱': ['phone', 'điện thoại', 'mobile', '手机', '携帯', '핸드폰', 'téléphone', 'teléfono'],
+        '🏠': ['rent', 'thuê nhà', 'housing', '房租', '家賃', '집세', 'loyer', 'alquiler'],
+        '💡': ['điện', 'electric', 'electricity', 'bill', '电费', '電気', '전기', 'électricité'],
+        '📶': ['internet', 'wifi', 'data', '网络', 'インターネット', '인터넷'],
+        '🎁': ['gift', 'quà', 'present', '礼物', 'プレゼント', '선물', 'cadeau', 'regalo'],
+        '✈️': ['travel', 'flight', 'bay', 'trip', 'vacation', '旅行', '여행', 'voyage', 'viaje'],
+        '🏋️': ['gym', 'fitness', 'sport', 'workout', '健身', 'ジム', '헬스'],
+        '📚': ['book', 'sách', 'education', 'course', 'study', '书', '本', '책', 'livre', 'libro'],
+      };
+
+      // Find matching emoji
+      let emoji = '💸'; // default
+      const lowerName = name.toLowerCase();
+      const lowerText = text.toLowerCase();
+
+      for (const [e, keywords] of Object.entries(categoryMap)) {
+        if (keywords.some(kw => lowerName.includes(kw) || lowerText.includes(kw))) {
+          emoji = e;
+          break;
+        }
+      }
+
+      // Capitalize first letter of name
+      name = name.charAt(0).toUpperCase() + name.slice(1);
+
+      // Add transaction
+      state.transactions.unshift({ emoji, name, amount });
+      state.showAddExpense = false;
+      render();
+    };
     window.confirmAddExpenseFromModal = () => {
       const name = $('expenseName')?.value;
       const rawAmount = $('expenseAmount')?.value;
