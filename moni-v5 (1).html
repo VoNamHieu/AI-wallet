@@ -334,38 +334,84 @@
       box-shadow: 0 6px 25px rgba(0,0,0,0.3);
     }
 
-    /* Language Selector */
-    .lang-selector {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
+    /* Language Selector - Compact Dropdown */
+    .lang-selector-wrap {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      z-index: 100;
     }
-    .lang-btn {
-      padding: 10px 16px;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid rgba(255,255,255,0.2);
+    .lang-current {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
       border-radius: 12px;
-      color: rgba(255,255,255,0.7);
+      color: white;
       font-size: 14px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       font-family: inherit;
     }
-    .lang-btn:hover {
-      background: rgba(255,255,255,0.15);
-      border-color: rgba(255,255,255,0.3);
-    }
-    .lang-btn.active {
+    .lang-current:hover {
       background: rgba(255,255,255,0.2);
-      border-color: white;
+      border-color: rgba(255,255,255,0.4);
+    }
+    .lang-current .flag { font-size: 18px; }
+    .lang-current .arrow { font-size: 10px; opacity: 0.7; transition: transform 0.2s; }
+    .lang-selector-wrap.open .lang-current .arrow { transform: rotate(180deg); }
+
+    .lang-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 160px;
+      background: #2d2d2d;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 14px;
+      padding: 8px;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+    }
+    .lang-selector-wrap.open .lang-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .lang-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 10px;
+      color: rgba(255,255,255,0.7);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+      text-align: left;
+    }
+    .lang-option:hover {
+      background: rgba(255,255,255,0.1);
       color: white;
     }
-    .lang-btn .flag {
-      margin-right: 6px;
+    .lang-option.active {
+      background: rgba(255,255,255,0.15);
+      color: white;
     }
+    .lang-option .flag { font-size: 18px; }
+    .lang-option .check { margin-left: auto; opacity: 0; }
+    .lang-option.active .check { opacity: 1; }
 
     /* Chat loading */
     .typing {
@@ -1272,24 +1318,123 @@
     };
 
     const LANGUAGES = {
-      vi: { label: 'Tiếng Việt', flag: '🇻🇳' },
-      en: { label: 'English', flag: '🇬🇧' },
-      zh: { label: '中文', flag: '🇨🇳' },
-      ja: { label: '日本語', flag: '🇯🇵' },
-      ko: { label: '한국어', flag: '🇰🇷' },
-      fr: { label: 'Français', flag: '🇫🇷' },
-      es: { label: 'Español', flag: '🇪🇸' }
+      vi: {
+        label: 'Tiếng Việt', flag: '🇻🇳',
+        currency: 'VND', symbol: '₫', symbolPosition: 'after',
+        incomePresets: [8, 10, 15, 20, 25, 30], // millions
+        multiplier: 1000000, // 1 unit = 1 million VND
+        formatUnit: 'tr',
+        goalAmounts: { laptop: 25000000, phone: 15000000, trip: 10000000, bike: 50000000, emergency: 20000000, wedding: 100000000 }
+      },
+      en: {
+        label: 'English', flag: '🇬🇧',
+        currency: 'USD', symbol: '$', symbolPosition: 'before',
+        incomePresets: [3, 4, 5, 6, 8, 10], // thousands
+        multiplier: 1000, // 1 unit = 1 thousand USD
+        formatUnit: 'k',
+        goalAmounts: { laptop: 1500, phone: 1000, trip: 2000, bike: 5000, emergency: 5000, wedding: 20000 }
+      },
+      zh: {
+        label: '中文', flag: '🇨🇳',
+        currency: 'CNY', symbol: '¥', symbolPosition: 'before',
+        incomePresets: [8, 10, 15, 20, 30, 50], // thousands
+        multiplier: 1000,
+        formatUnit: 'k',
+        goalAmounts: { laptop: 8000, phone: 6000, trip: 10000, bike: 15000, emergency: 20000, wedding: 100000 }
+      },
+      ja: {
+        label: '日本語', flag: '🇯🇵',
+        currency: 'JPY', symbol: '¥', symbolPosition: 'before',
+        incomePresets: [200, 250, 300, 400, 500, 600], // thousands
+        multiplier: 1000, // 1 unit = 1 thousand Yen (万 = 10k)
+        formatUnit: '万',
+        goalAmounts: { laptop: 150000, phone: 100000, trip: 200000, bike: 300000, emergency: 500000, wedding: 3000000 }
+      },
+      ko: {
+        label: '한국어', flag: '🇰🇷',
+        currency: 'KRW', symbol: '₩', symbolPosition: 'before',
+        incomePresets: [2000, 3000, 4000, 5000, 6000, 8000], // thousands
+        multiplier: 1000,
+        formatUnit: '만',
+        goalAmounts: { laptop: 1500000, phone: 1000000, trip: 2000000, bike: 5000000, emergency: 5000000, wedding: 30000000 }
+      },
+      fr: {
+        label: 'Français', flag: '🇫🇷',
+        currency: 'EUR', symbol: '€', symbolPosition: 'after',
+        incomePresets: [2, 2.5, 3, 4, 5, 6], // thousands
+        multiplier: 1000,
+        formatUnit: 'k',
+        goalAmounts: { laptop: 1200, phone: 800, trip: 1500, bike: 4000, emergency: 5000, wedding: 15000 }
+      },
+      es: {
+        label: 'Español', flag: '🇪🇸',
+        currency: 'EUR', symbol: '€', symbolPosition: 'after',
+        incomePresets: [1.5, 2, 2.5, 3, 4, 5], // thousands
+        multiplier: 1000,
+        formatUnit: 'k',
+        goalAmounts: { laptop: 1000, phone: 700, trip: 1200, bike: 3500, emergency: 4000, wedding: 12000 }
+      }
     };
 
     // Translation function
     const t = (key) => TRANSLATIONS[state.language]?.[key] || TRANSLATIONS.vi[key] || key;
+
+    // Currency helpers
+    const getLang = () => LANGUAGES[state.language] || LANGUAGES.vi;
+
+    const formatCurrency = (amount, compact = false) => {
+      const lang = getLang();
+      if (compact) {
+        const unit = lang.multiplier || 1000000;
+        const val = amount / unit;
+        if (lang.symbolPosition === 'before') {
+          return `${lang.symbol}${val.toFixed(val % 1 === 0 ? 0 : 1)}${lang.formatUnit}`;
+        } else {
+          return `${val.toFixed(val % 1 === 0 ? 0 : 1)}${lang.formatUnit}`;
+        }
+      }
+      // Full format
+      if (lang.symbolPosition === 'before') {
+        return `${lang.symbol}${amount.toLocaleString()}`;
+      } else {
+        return `${amount.toLocaleString()} ${lang.symbol}`;
+      }
+    };
+
+    const getIncomePresets = () => {
+      const lang = getLang();
+      return lang.incomePresets.map(n => n * lang.multiplier);
+    };
+
+    const getGoalAmount = (goalId) => {
+      const lang = getLang();
+      return lang.goalAmounts[goalId] || 0;
+    };
 
     // Set language function
     const setLanguage = (lang) => {
       state.language = lang;
       localStorage.setItem('moni_language', lang);
       document.documentElement.lang = lang;
+      // Reset financial data when changing language/currency
+      state.income = '';
+      state.fixedExpenses = getDefaultFixed();
+      state.goals = [];
+      state.allocations = {};
       render();
+    };
+
+    // Toggle language dropdown
+    let langDropdownOpen = false;
+    const toggleLangDropdown = () => {
+      langDropdownOpen = !langDropdownOpen;
+      const wrap = document.querySelector('.lang-selector-wrap');
+      if (wrap) wrap.classList.toggle('open', langDropdownOpen);
+    };
+    const closeLangDropdown = () => {
+      langDropdownOpen = false;
+      const wrap = document.querySelector('.lang-selector-wrap');
+      if (wrap) wrap.classList.remove('open');
     };
 
     let state = {
@@ -1369,21 +1514,40 @@
     ];
 
     const GOALS_DATA = [
-      { id: 'laptop', e: '💻', nameKey: 'laptop', amount: 25000000 },
-      { id: 'phone', e: '📱', nameKey: 'phoneGoal', amount: 15000000 },
-      { id: 'trip', e: '✈️', nameKey: 'trip', amount: 10000000 },
-      { id: 'bike', e: '🏍️', nameKey: 'bike', amount: 50000000 },
-      { id: 'emergency', e: '🛡️', nameKey: 'emergency', amount: 20000000 },
-      { id: 'wedding', e: '💒', nameKey: 'wedding', amount: 100000000 },
+      { id: 'laptop', e: '💻', nameKey: 'laptop' },
+      { id: 'phone', e: '📱', nameKey: 'phoneGoal' },
+      { id: 'trip', e: '✈️', nameKey: 'trip' },
+      { id: 'bike', e: '🏍️', nameKey: 'bike' },
+      { id: 'emergency', e: '🛡️', nameKey: 'emergency' },
+      { id: 'wedding', e: '💒', nameKey: 'wedding' },
     ];
-    const getGoals = () => GOALS_DATA.map(g => ({ ...g, name: t(g.nameKey) }));
+    const getGoals = () => GOALS_DATA.map(g => ({
+      ...g,
+      name: t(g.nameKey),
+      amount: getGoalAmount(g.id)
+    }));
     const getGoalName = (goal) => goal.customName || t(goal.nameKey) || goal.name;
 
     const $ = id => document.getElementById(id);
-    const fmt = n => {
-      if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'tr';
-      if (n >= 1000) return (n / 1000).toFixed(0) + 'k';
-      return n.toString();
+    const fmt = (n) => {
+      const lang = getLang();
+      const symbol = lang.symbol;
+      const pos = lang.symbolPosition;
+
+      let formatted;
+      if (n >= 1000000) {
+        formatted = (n / 1000000).toFixed(1).replace('.0', '') + (lang.formatUnit === 'tr' ? 'tr' : 'M');
+      } else if (n >= 1000) {
+        formatted = (n / 1000).toFixed(0) + 'k';
+      } else {
+        formatted = n.toString();
+      }
+
+      if (pos === 'before') {
+        return symbol + formatted;
+      } else {
+        return formatted + symbol;
+      }
     };
 
     const totalFixed = () => state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0);
@@ -1400,13 +1564,27 @@
 
     const renderSplash = (app) => {
       app.className = 'phone splash-bg';
-      const langButtons = Object.entries(LANGUAGES).map(([code, {label, flag}]) =>
-        `<button class="lang-btn ${state.language === code ? 'active' : ''}" onclick="setLanguage('${code}')"><span class="flag">${flag}</span>${label}</button>`
+      const currentLang = getLang();
+      const langOptions = Object.entries(LANGUAGES).map(([code, {label, flag}]) =>
+        `<button class="lang-option ${state.language === code ? 'active' : ''}" onclick="event.stopPropagation();setLanguage('${code}');closeLangDropdown()">
+          <span class="flag">${flag}</span>
+          <span>${label}</span>
+          <span class="check">✓</span>
+        </button>`
       ).join('');
 
       app.innerHTML = `
         <div class="splash">
-          <div class="lang-selector">${langButtons}</div>
+          <div class="lang-selector-wrap ${langDropdownOpen ? 'open' : ''}" onclick="toggleLangDropdown()">
+            <div class="lang-current">
+              <span class="flag">${currentLang.flag}</span>
+              <span>${currentLang.currency}</span>
+              <span class="arrow">▼</span>
+            </div>
+            <div class="lang-dropdown" onclick="event.stopPropagation()">
+              ${langOptions}
+            </div>
+          </div>
           <div>
             <div class="splash-logo">🌿</div>
             <div class="splash-title">Moni</div>
@@ -1543,6 +1721,10 @@
       }
 
       if (state.step === 3) {
+        const lang = getLang();
+        const presets = getIncomePresets();
+        const presetLabels = lang.incomePresets;
+
         app.innerHTML = `
           <div class="header">
             <button class="btn-back" onclick="prevStep()">←</button>
@@ -1556,11 +1738,11 @@
               <div class="ob-desc">${t('incomeDesc')}</div>
             </div>
             <div class="income-input-wrap">
-              <input id="incomeInput" class="income-input" placeholder="15,000,000" value="${state.income ? parseInt(state.income).toLocaleString('vi-VN') : ''}" onkeyup="handleIncome(this)">
-              <span class="income-unit">VND</span>
+              <input id="incomeInput" class="income-input" placeholder="${formatCurrency(presets[2])}" value="${state.income ? parseInt(state.income).toLocaleString() : ''}" onkeyup="handleIncome(this)">
+              <span class="income-unit">${lang.currency}</span>
             </div>
             <div class="presets">
-              ${[8,10,15,20,25,30].map(n => `<button class="preset ${parseInt(state.income) === n * 1000000 ? 'active' : ''}" onclick="setIncome(${n * 1000000})">${n}tr</button>`).join('')}
+              ${presets.map((val, i) => `<button class="preset ${parseInt(state.income) === val ? 'active' : ''}" onclick="setIncome(${val})">${lang.symbolPosition === 'before' ? lang.symbol : ''}${presetLabels[i]}${lang.formatUnit}${lang.symbolPosition === 'after' ? lang.symbol : ''}</button>`).join('')}
             </div>
             <div class="privacy-note"><span>🔒</span><span>${t('privacyNote')}</span></div>
           </div>
@@ -1705,6 +1887,7 @@
 
       // Step 6: Allocation
       if (state.step === 6) {
+        const lang = getLang();
         const incomeVal = parseInt(state.income) || 0;
         const fixed = totalFixed();
         const allocated = totalAllocation();
@@ -1735,8 +1918,8 @@
                     </div>
                   </div>
                   <div class="allocation-input-row">
-                    <input id="alloc_${idx}" class="allocation-input" placeholder="0" value="${alloc ? parseInt(alloc).toLocaleString('vi-VN') : ''}" onblur="updateAllocation('${g.id}', this.value)">
-                    <span class="allocation-per">${t('perMonth')}</span>
+                    <input id="alloc_${idx}" class="allocation-input" placeholder="0" value="${alloc ? parseInt(alloc).toLocaleString() : ''}" onblur="updateAllocation('${g.id}', this.value)">
+                    <span class="allocation-per">${lang.currency} / ${t('months').slice(0,2)}</span>
                   </div>
                   <div class="allocation-time" data-time-${idx}>${monthly > 0 ? `${t('reachGoalIn')} <strong>${months} ${t('months')}</strong>` : ''}</div>
                 </div>
@@ -1933,10 +2116,10 @@
     
     // Fixed expenses
     window.updateFixedAmount = (idx, val) => { 
-      state.fixedExpenses[idx].amount = val.replace(/\D/g, ''); 
+      state.fixedExpenses[idx].amount = val.replace(/\D/g, '');
       // Update the total display without full re-render
       const totalEl = document.querySelector('[data-fixed-total]');
-      if (totalEl) totalEl.textContent = fmt(totalFixed()) + '/tháng';
+      if (totalEl) totalEl.textContent = fmt(totalFixed()) + '/' + t('months').charAt(0);
     };
     window.removeFixed = (idx) => { 
       state.fixedExpenses.splice(idx, 1); 
@@ -1961,9 +2144,14 @@
     // Goals
     window.addGoal = (id) => {
       if (state.goals.length >= 3) return;
-      const goals = getGoals();
       const goalData = GOALS_DATA.find(g => g.id === id);
-      if (goalData) { state.goals.push({...goalData}); render(); }
+      if (goalData) {
+        state.goals.push({
+          ...goalData,
+          amount: getGoalAmount(goalData.id)
+        });
+        render();
+      }
     };
     window.removeGoal = (id) => { 
       state.goals = state.goals.filter(g => g.id !== id); 
