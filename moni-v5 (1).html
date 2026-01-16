@@ -340,6 +340,8 @@
       display: flex;
       flex-direction: column;
       padding: 48px 24px 32px;
+      overflow-y: auto;
+      max-height: 100%;
     }
     .lang-screen-header {
       text-align: center;
@@ -440,8 +442,12 @@
       color: white;
     }
     .lang-screen-footer {
-      padding-top: 24px;
-      padding-bottom: 16px;
+      padding: 20px 0 16px;
+      background: linear-gradient(transparent, rgba(26, 26, 26, 0.95) 30%);
+      margin: 0 -24px -32px;
+      padding: 24px 24px 32px;
+      position: sticky;
+      bottom: 0;
     }
     .lang-screen-footer .btn {
       background: white;
@@ -610,6 +616,7 @@
         goalTarget: 'Mục tiêu',
         actual: 'Thực tế',
         today: 'Hôm nay',
+        seeAll: 'Xem tất cả',
         askPlaceholder: 'Muốn mua gì?',
         askHint: 'Hỏi Moni trước khi tiêu',
         addExpenseTitle: '✏️ Thêm chi tiêu',
@@ -620,6 +627,11 @@
         viewAll: 'Xem danh mục',
         hideCategories: 'Ẩn danh mục',
         noExpensesYet: 'Chưa có chi tiêu nào hôm nay',
+        noGoalsYet: 'Chưa có mục tiêu nào',
+        goalsWillAppear: 'Mục tiêu sẽ hiển thị ở đây',
+        expensesWillAppear: 'Chi tiêu sẽ hiển thị ở đây',
+        saved: 'đã tiết kiệm',
+        total: 'Tổng',
         afterPurchase: 'Sau khi mua:',
         leftRemaining: 'còn lại',
         bought: 'Mua rồi ✓',
@@ -740,6 +752,7 @@
         goalTarget: 'Target',
         actual: 'Actual',
         today: 'Today',
+        seeAll: 'See all',
         askPlaceholder: 'Want to buy something?',
         askHint: 'Ask Moni before spending',
         addExpenseTitle: '✏️ Add expense',
@@ -750,6 +763,11 @@
         viewAll: 'View categories',
         hideCategories: 'Hide categories',
         noExpensesYet: 'No expenses yet today',
+        noGoalsYet: 'No goals yet',
+        goalsWillAppear: 'Your goals will appear here',
+        expensesWillAppear: 'Your expenses will appear here',
+        saved: 'saved',
+        total: 'Total',
         afterPurchase: 'After purchase:',
         leftRemaining: 'remaining',
         bought: 'Bought ✓',
@@ -867,6 +885,7 @@
         goalTarget: '目标',
         actual: '实际',
         today: '今天',
+        seeAll: '查看全部',
         askPlaceholder: '想买什么？',
         askHint: '消费前问问Moni',
         addExpenseTitle: '✏️ 添加支出',
@@ -877,6 +896,11 @@
         viewAll: '查看分类',
         hideCategories: '隐藏分类',
         noExpensesYet: '今天还没有支出',
+        noGoalsYet: '还没有目标',
+        goalsWillAppear: '你的目标将显示在这里',
+        expensesWillAppear: '你的支出将显示在这里',
+        saved: '已存',
+        total: '总计',
         afterPurchase: '购买后：',
         leftRemaining: '剩余',
         bought: '已购买 ✓',
@@ -994,6 +1018,7 @@
         goalTarget: '目標',
         actual: '実際',
         today: '今日',
+        seeAll: 'すべて見る',
         askPlaceholder: '何を買いたい？',
         askHint: '使う前にMoniに聞いて',
         addExpenseTitle: '✏️ 支出を追加',
@@ -1004,6 +1029,11 @@
         viewAll: 'カテゴリを見る',
         hideCategories: 'カテゴリを隠す',
         noExpensesYet: '今日はまだ支出がありません',
+        noGoalsYet: 'まだ目標がありません',
+        goalsWillAppear: '目標がここに表示されます',
+        expensesWillAppear: '支出がここに表示されます',
+        saved: '貯蓄済み',
+        total: '合計',
         afterPurchase: '購入後：',
         leftRemaining: '残り',
         bought: '購入済み ✓',
@@ -1121,6 +1151,7 @@
         goalTarget: '목표',
         actual: '실제',
         today: '오늘',
+        seeAll: '모두 보기',
         askPlaceholder: '뭘 사고 싶어요?',
         askHint: '쓰기 전에 Moni에게 물어보세요',
         addExpenseTitle: '✏️ 지출 추가',
@@ -1131,6 +1162,11 @@
         viewAll: '카테고리 보기',
         hideCategories: '카테고리 숨기기',
         noExpensesYet: '오늘 아직 지출이 없습니다',
+        noGoalsYet: '아직 목표가 없습니다',
+        goalsWillAppear: '목표가 여기에 표시됩니다',
+        expensesWillAppear: '지출이 여기에 표시됩니다',
+        saved: '저축',
+        total: '합계',
         afterPurchase: '구매 후:',
         leftRemaining: '남음',
         bought: '구매함 ✓',
@@ -1248,6 +1284,7 @@
         goalTarget: 'Objectif',
         actual: 'Réel',
         today: 'Aujourd\'hui',
+        seeAll: 'Voir tout',
         askPlaceholder: 'Envie d\'acheter?',
         askHint: 'Demandez à Moni avant de dépenser',
         addExpenseTitle: '✏️ Ajouter dépense',
@@ -1258,6 +1295,11 @@
         viewAll: 'Voir catégories',
         hideCategories: 'Masquer catégories',
         noExpensesYet: 'Pas encore de dépenses aujourd\'hui',
+        noGoalsYet: 'Pas encore d\'objectifs',
+        goalsWillAppear: 'Vos objectifs apparaîtront ici',
+        expensesWillAppear: 'Vos dépenses apparaîtront ici',
+        saved: 'économisé',
+        total: 'Total',
         afterPurchase: 'Après achat:',
         leftRemaining: 'restant',
         bought: 'Acheté ✓',
@@ -1375,6 +1417,7 @@
         goalTarget: 'Meta',
         actual: 'Real',
         today: 'Hoy',
+        seeAll: 'Ver todo',
         askPlaceholder: '¿Quieres comprar algo?',
         askHint: 'Pregunta a Moni antes de gastar',
         addExpenseTitle: '✏️ Agregar gasto',
@@ -1385,6 +1428,11 @@
         viewAll: 'Ver categorías',
         hideCategories: 'Ocultar categorías',
         noExpensesYet: 'Aún no hay gastos hoy',
+        noGoalsYet: 'Aún no hay metas',
+        goalsWillAppear: 'Tus metas aparecerán aquí',
+        expensesWillAppear: 'Tus gastos aparecerán aquí',
+        saved: 'ahorrado',
+        total: 'Total',
         afterPurchase: 'Después de comprar:',
         leftRemaining: 'restante',
         bought: 'Comprado ✓',
@@ -1636,6 +1684,7 @@
       chatLoading: false,
       chatResponse: null,
       chatParsed: null, // { item, amount }
+      activeTab: 'home', // 'home', 'goals', 'history'
     };
 
     const getDefaultFixed = () => [
@@ -1878,6 +1927,11 @@
 
     window.goToLanguageScreen = () => {
       state.screen = 'language';
+      render();
+    };
+
+    window.switchTab = (tab) => {
+      state.activeTab = tab;
       render();
     };
 
@@ -2258,37 +2312,7 @@
       const archetypes = getArchetypes();
       const arch = archetypes[state.archetype];
 
-      const addExpenseModal = state.showAddExpense ? `
-        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100">
-          <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px">
-              <span style="font-size:20px;font-weight:700">${t('addExpenseTitle')}</span>
-              <button onclick="closeAddExpense()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
-            </div>
-            <div style="margin-bottom:16px">
-              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('name')}</label>
-              <input id="expenseName" class="input" placeholder="${t('namePlaceholderExpense')}">
-            </div>
-            <div style="margin-bottom:16px">
-              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amount')}</label>
-              <input id="expenseAmount" class="input" placeholder="50,000" style="font-size:24px;font-weight:700;text-align:center">
-            </div>
-            <div style="margin-bottom:16px;text-align:center">
-              <button onclick="toggleCategories()" style="background:none;border:none;color:var(--primary);font-size:14px;cursor:pointer;font-family:inherit;padding:8px 16px">
-                ${state.showCategories ? '▲ ' + t('hideCategories') : '▼ ' + t('viewAll')}
-              </button>
-            </div>
-            ${state.showCategories ? `
-              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
-                ${(getLang().quickExpenses || []).map(qe => `
-                  <button onclick="quickAddExpense('${qe.emoji}','${qe.name}',${qe.amount})" style="padding:10px 16px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:14px;cursor:pointer;font-family:inherit">${qe.emoji} ${qe.label}</button>
-                `).join('')}
-              </div>
-            ` : ''}
-            <button class="btn" onclick="confirmAddExpenseFromModal()">${t('addExpense')}</button>
-          </div>
-        </div>
-      ` : '';
+      // No modal needed - use inline text input at bottom
 
       // Chat response section
       let chatSection = '';
@@ -2323,83 +2347,165 @@
         `;
       }
       
+      // Home tab content
+      const homeContent = `
+        <div class="main-header">
+          <div class="greeting">${t('hey')} ${state.userName} 👋</div>
+          <div class="avatar">${arch?.emoji || '✨'}</div>
+        </div>
+        <div class="spendable">
+          <div class="spendable-label">${t('spendableLabel')}</div>
+          <div class="spendable-amount">${formatSpendable(remaining)}</div>
+          <div class="spendable-sub">${t('remaining')} <span>18 ${t('daysLeft')}</span></div>
+        </div>
+        <div class="goals-status">
+          ${state.goals.slice(0, 2).map((g, i) => {
+            const isOnTrack = i === 0;
+            const alloc = state.allocations[g.id] || getLang().multiplier || 1000;
+            const months = Math.ceil(g.amount / alloc);
+            return `
+              <div class="goal-pill ${isOnTrack ? 'on-track' : 'behind'}" onclick="switchTab('goals')" style="cursor:pointer">
+                <span class="goal-emoji">${g.e}</span>
+                <div class="goal-info">
+                  <div class="goal-name">${getGoalName(g)}</div>
+                  <div class="goal-time">
+                    <span class="time-expect">${t('goalTarget')}: ${months} ${t('months')}</span>
+                    <span class="time-reality ${isOnTrack ? 'on-track' : 'behind'}">→ ${t('actual')}: ${isOnTrack ? months : months + 1} ${t('months')}</span>
+                  </div>
+                  <div class="goal-progress"><div class="goal-progress-fill" style="width: ${isOnTrack ? '72' : '40'}%"></div></div>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+        <div class="recent-section">
+          <div class="recent-header">
+            <span class="recent-title">${t('today')}</span>
+            <div style="display:flex;align-items:center;gap:12px">
+              <span class="recent-total">${state.transactions.length > 0 ? '-' + fmt(todaySpent()) : ''}</span>
+              <button onclick="switchTab('history')" style="background:none;border:none;color:var(--primary);font-size:13px;cursor:pointer;font-family:inherit">${t('seeAll')} →</button>
+            </div>
+          </div>
+          <div class="recent-list">
+            ${state.transactions.length > 0 ? state.transactions.slice(0, 4).map(tx => `
+              <div class="recent-item">
+                <span class="recent-emoji">${tx.emoji}</span>
+                <span class="recent-name">${tx.name}</span>
+                <span class="recent-amount">-${fmt(tx.amount)}</span>
+              </div>
+            `).join('') : `
+              <div style="text-align:center;padding:24px;color:var(--text-muted)">
+                <div style="font-size:32px;margin-bottom:8px">✨</div>
+                <div style="font-size:14px">${t('noExpensesYet')}</div>
+              </div>
+            `}
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="ask-section">
+          <div class="ask-container">
+            <div class="ask-row">
+              <div class="ask-icon">🌿</div>
+              <input type="text" class="ask-input" placeholder="${t('askPlaceholder')}" id="askInput" onkeydown="if(event.key==='Enter')askMoni()">
+              <button class="ask-btn" onclick="askMoni()">→</button>
+            </div>
+          </div>
+          <div class="chips">
+            ${(getLang().quickExpenses || []).slice(0, 3).map(qe => `
+              <button class="chip" onclick="askWithText('${qe.label}')">${qe.emoji} ${qe.label}</button>
+            `).join('')}
+          </div>
+          ${chatSection}
+          <div class="ask-hint">${t('askHint')}</div>
+        </div>
+      `;
+
+      // Goals tab content
+      const goalsContent = `
+        <div class="main-header">
+          <div class="greeting">🎯 ${t('goals')}</div>
+          <div class="avatar">${arch?.emoji || '✨'}</div>
+        </div>
+        <div style="margin-top:16px">
+          ${state.goals.length > 0 ? state.goals.map((g, i) => {
+            const alloc = state.allocations[g.id] || 0;
+            const months = alloc > 0 ? Math.ceil(g.amount / alloc) : 0;
+            const progress = alloc > 0 ? Math.min(100, Math.round((alloc * 3) / g.amount * 100)) : 0;
+            return `
+              <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px">
+                <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+                  <span style="font-size:32px">${g.e}</span>
+                  <div style="flex:1">
+                    <div style="font-weight:700;font-size:16px">${getGoalName(g)}</div>
+                    <div style="color:var(--text-muted);font-size:13px">${t('target')}: ${fmt(g.amount)}</div>
+                  </div>
+                </div>
+                <div style="background:var(--bg);border-radius:8px;height:8px;overflow:hidden">
+                  <div style="background:var(--primary);height:100%;width:${progress}%;border-radius:8px"></div>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text-muted)">
+                  <span>${progress}% ${t('saved')}</span>
+                  <span>${months > 0 ? months + ' ' + t('months') + ' ' + t('remaining').toLowerCase() : ''}</span>
+                </div>
+              </div>
+            `;
+          }).join('') : `
+            <div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
+              <div style="font-size:48px;margin-bottom:16px">🎯</div>
+              <div style="font-size:16px;font-weight:600;margin-bottom:8px">${t('noGoalsYet')}</div>
+              <div style="font-size:14px">${t('goalsWillAppear')}</div>
+            </div>
+          `}
+        </div>
+      `;
+
+      // History tab content
+      const historyContent = `
+        <div class="main-header">
+          <div class="greeting">📊 ${t('history')}</div>
+          <div class="avatar">${arch?.emoji || '✨'}</div>
+        </div>
+        <div style="margin-top:16px">
+          ${state.transactions.length > 0 ? `
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px">
+              <div style="font-weight:600;font-size:14px;color:var(--text-muted);margin-bottom:12px">${t('today')}</div>
+              ${state.transactions.map(tx => `
+                <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid var(--border)">
+                  <span style="font-size:24px;margin-right:12px">${tx.emoji}</span>
+                  <span style="flex:1;font-weight:500">${tx.name}</span>
+                  <span style="font-weight:600;color:var(--text-soft)">-${fmt(tx.amount)}</span>
+                </div>
+              `).join('')}
+              <div style="display:flex;justify-content:space-between;padding-top:16px;font-weight:700">
+                <span>${t('total')}</span>
+                <span style="color:var(--orange)">-${fmt(todaySpent())}</span>
+              </div>
+            </div>
+          ` : `
+            <div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
+              <div style="font-size:48px;margin-bottom:16px">📊</div>
+              <div style="font-size:16px;font-weight:600;margin-bottom:8px">${t('noExpensesYet')}</div>
+              <div style="font-size:14px">${t('expensesWillAppear')}</div>
+            </div>
+          `}
+        </div>
+      `;
+
+      // Select content based on active tab
+      let tabContent = homeContent;
+      if (state.activeTab === 'goals') tabContent = goalsContent;
+      else if (state.activeTab === 'history') tabContent = historyContent;
+
       app.innerHTML = `
         <div class="status-bar"><span>9:41</span><span>📶 🔋</span></div>
         <div class="content" style="padding: 0 24px;">
-          <div class="main-header">
-            <div class="greeting">${t('hey')} ${state.userName} 👋</div>
-            <div class="avatar">${arch?.emoji || '✨'}</div>
-          </div>
-          <div class="spendable">
-            <div class="spendable-label">${t('spendableLabel')}</div>
-            <div class="spendable-amount">${formatSpendable(remaining)}</div>
-            <div class="spendable-sub">${t('remaining')} <span>18 ${t('daysLeft')}</span></div>
-          </div>
-          <div class="goals-status">
-            ${state.goals.slice(0, 2).map((g, i) => {
-              const isOnTrack = i === 0;
-              const alloc = state.allocations[g.id] || getLang().multiplier || 1000;
-              const months = Math.ceil(g.amount / alloc);
-              return `
-                <div class="goal-pill ${isOnTrack ? 'on-track' : 'behind'}">
-                  <span class="goal-emoji">${g.e}</span>
-                  <div class="goal-info">
-                    <div class="goal-name">${getGoalName(g)}</div>
-                    <div class="goal-time">
-                      <span class="time-expect">${t('goalTarget')}: ${months} ${t('months')}</span>
-                      <span class="time-reality ${isOnTrack ? 'on-track' : 'behind'}">→ ${t('actual')}: ${isOnTrack ? months : months + 1} ${t('months')}</span>
-                    </div>
-                    <div class="goal-progress"><div class="goal-progress-fill" style="width: ${isOnTrack ? '72' : '40'}%"></div></div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-          <div class="recent-section">
-            <div class="recent-header">
-              <span class="recent-title">${t('today')}</span>
-              <span class="recent-total">${state.transactions.length > 0 ? '-' + fmt(todaySpent()) : ''}</span>
-            </div>
-            <div class="recent-list">
-              ${state.transactions.length > 0 ? state.transactions.slice(0, 4).map(tx => `
-                <div class="recent-item">
-                  <span class="recent-emoji">${tx.emoji}</span>
-                  <span class="recent-name">${tx.name}</span>
-                  <span class="recent-amount">-${fmt(tx.amount)}</span>
-                </div>
-              `).join('') : `
-                <div style="text-align:center;padding:24px;color:var(--text-muted)">
-                  <div style="font-size:32px;margin-bottom:8px">✨</div>
-                  <div style="font-size:14px">${t('noExpensesYet')}</div>
-                </div>
-              `}
-            </div>
-          </div>
-          <div class="spacer"></div>
-          <div class="ask-section">
-            <div class="ask-container">
-              <div class="ask-row">
-                <div class="ask-icon">🌿</div>
-                <input type="text" class="ask-input" placeholder="${t('askPlaceholder')}" id="askInput" onkeydown="if(event.key==='Enter')askMoni()">
-                <button class="ask-btn" onclick="askMoni()">→</button>
-              </div>
-            </div>
-            <div class="chips">
-              ${(getLang().quickExpenses || []).slice(0, 3).map(qe => `
-                <button class="chip" onclick="askWithText('${qe.label}')">${qe.emoji} ${qe.label}</button>
-              `).join('')}
-            </div>
-            ${chatSection}
-            <div class="ask-hint">${t('askHint')}</div>
-          </div>
+          ${tabContent}
         </div>
-        <button class="fab" onclick="openAddExpense()">+</button>
         <div class="tab-bar">
-          <button class="tab active"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
-          <button class="tab"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
-          <button class="tab"><span class="tab-icon">📊</span><span class="tab-label">${t('history')}</span></button>
+          <button class="tab ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
+          <button class="tab ${state.activeTab === 'goals' ? 'active' : ''}" onclick="switchTab('goals')"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
+          <button class="tab ${state.activeTab === 'history' ? 'active' : ''}" onclick="switchTab('history')"><span class="tab-icon">📊</span><span class="tab-label">${t('history')}</span></button>
         </div>
-        ${addExpenseModal}
       `;
     };
 
