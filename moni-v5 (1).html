@@ -441,14 +441,24 @@
     }
     .lang-screen-footer {
       padding-top: 24px;
+      padding-bottom: 16px;
     }
     .lang-screen-footer .btn {
       background: white;
       color: #1a1a1a;
+      font-size: 18px;
+      padding: 20px 24px;
+      font-weight: 700;
+      box-shadow: 0 4px 20px rgba(255,255,255,0.3);
+    }
+    .lang-screen-footer .btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 6px 25px rgba(255,255,255,0.4);
     }
     .lang-screen-footer .btn:disabled {
       background: rgba(255,255,255,0.3);
       color: rgba(255,255,255,0.5);
+      box-shadow: none;
     }
 
     /* Small language button on splash */
@@ -584,7 +594,7 @@
         allocationTitle: 'Mỗi tháng dành bao nhiêu?',
         allocationDesc: 'Chọn số tiền bạn muốn để dành cho mỗi mục tiêu hàng tháng.',
         target: 'Mục tiêu',
-        perMonth: 'VND / tháng',
+        perMonth: '/ tháng',
         reachGoalIn: 'Đạt mục tiêu trong',
         months: 'tháng',
         income: 'Thu nhập',
@@ -712,7 +722,7 @@
         allocationTitle: 'How much to save monthly?',
         allocationDesc: 'Choose how much you want to save for each goal monthly.',
         target: 'Target',
-        perMonth: 'VND / month',
+        perMonth: '/ month',
         reachGoalIn: 'Reach goal in',
         months: 'months',
         income: 'Income',
@@ -836,7 +846,7 @@
         allocationTitle: '每月存多少？',
         allocationDesc: '选择您每月想为每个目标存多少钱。',
         target: '目标',
-        perMonth: '越南盾 / 月',
+        perMonth: '/ 月',
         reachGoalIn: '达成目标需要',
         months: '个月',
         income: '收入',
@@ -960,7 +970,7 @@
         allocationTitle: '毎月いくら貯める？',
         allocationDesc: '各目標に毎月いくら貯めるか選択してください。',
         target: '目標',
-        perMonth: 'VND / 月',
+        perMonth: '/ 月',
         reachGoalIn: '目標達成まで',
         months: 'ヶ月',
         income: '収入',
@@ -1084,7 +1094,7 @@
         allocationTitle: '매월 얼마나 저축할까요?',
         allocationDesc: '각 목표에 매월 얼마를 저축할지 선택하세요.',
         target: '목표',
-        perMonth: 'VND / 월',
+        perMonth: '/ 월',
         reachGoalIn: '목표 달성까지',
         months: '개월',
         income: '수입',
@@ -1208,7 +1218,7 @@
         allocationTitle: 'Combien épargner par mois?',
         allocationDesc: 'Choisissez combien épargner pour chaque objectif mensuellement.',
         target: 'Objectif',
-        perMonth: 'VND / mois',
+        perMonth: '/ mois',
         reachGoalIn: 'Atteindre l\'objectif en',
         months: 'mois',
         income: 'Revenu',
@@ -1332,7 +1342,7 @@
         allocationTitle: '¿Cuánto ahorrar al mes?',
         allocationDesc: 'Elige cuánto quieres ahorrar para cada meta mensualmente.',
         target: 'Meta',
-        perMonth: 'VND / mes',
+        perMonth: '/ mes',
         reachGoalIn: 'Alcanzar meta en',
         months: 'meses',
         income: 'Ingreso',
@@ -1593,14 +1603,37 @@
       const lang = getLang();
       const symbol = lang.symbol;
       const pos = lang.symbolPosition;
+      const unit = lang.formatUnit;
 
       let formatted;
-      if (n >= 1000000) {
-        formatted = (n / 1000000).toFixed(1).replace('.0', '') + (lang.formatUnit === 'tr' ? 'tr' : 'M');
-      } else if (n >= 1000) {
-        formatted = (n / 1000).toFixed(0) + 'k';
+      // Different formatting based on currency type
+      if (unit === 'tr') {
+        // Vietnamese: use triệu (tr) and nghìn (k)
+        if (n >= 1000000) {
+          formatted = (n / 1000000).toFixed(1).replace('.0', '') + 'tr';
+        } else if (n >= 1000) {
+          formatted = (n / 1000).toFixed(0) + 'k';
+        } else {
+          formatted = n.toString();
+        }
+      } else if (unit === '万' || unit === '만') {
+        // Japanese/Chinese/Korean: use 万/만 (10k units)
+        if (n >= 10000) {
+          formatted = (n / 10000).toFixed(1).replace('.0', '') + unit;
+        } else if (n >= 1000) {
+          formatted = (n / 1000).toFixed(0) + 'k';
+        } else {
+          formatted = n.toString();
+        }
       } else {
-        formatted = n.toString();
+        // Western currencies (USD, EUR): use k and M
+        if (n >= 1000000) {
+          formatted = (n / 1000000).toFixed(1).replace('.0', '') + 'M';
+        } else if (n >= 1000) {
+          formatted = (n / 1000).toFixed(1).replace('.0', '') + 'k';
+        } else {
+          formatted = n.toString();
+        }
       }
 
       if (pos === 'before') {
@@ -1951,7 +1984,7 @@
                     id="fixed_${idx}"
                     style="width:110px;padding:10px 12px;border:1px solid var(--border);border-radius:10px;font-size:15px;text-align:right;font-family:inherit"
                     placeholder="0"
-                    value="${f.amount ? parseInt(f.amount).toLocaleString('vi-VN') : ''}"
+                    value="${f.amount ? parseInt(f.amount).toLocaleString() : ''}"
                     onblur="updateFixedAmount(${idx}, this.value)"
                   >
                   <button onclick="removeFixed(${idx})" style="width:32px;height:32px;background:#fee2e2;border:none;border-radius:8px;color:#ef4444;font-size:16px;cursor:pointer">×</button>
@@ -2028,9 +2061,8 @@
                 </div>
               `).join('')}
               ${state.goals.length < 3 ? `
-                <div class="goal-item" onclick="state.showAddGoal=true;render()" style="border-style:dashed">
-                  <span class="goal-item-icon">✨</span>
-                  <span class="goal-item-name">${t('createOwn')}</span>
+                <div class="goal-item" onclick="state.showAddGoal=true;render()" style="border-style:dashed;background:transparent">
+                  <span class="goal-item-icon" style="font-size:28px;opacity:0.6">+</span>
                 </div>
               ` : ''}
             </div>
