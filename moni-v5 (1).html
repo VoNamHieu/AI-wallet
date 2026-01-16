@@ -334,38 +334,147 @@
       box-shadow: 0 6px 25px rgba(0,0,0,0.3);
     }
 
-    /* Language Selector */
-    .lang-selector {
+    /* Language Selection Screen */
+    .lang-screen {
+      flex: 1;
       display: flex;
-      justify-content: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin-bottom: 24px;
+      flex-direction: column;
+      padding: 48px 24px 32px;
     }
-    .lang-btn {
-      padding: 10px 16px;
-      background: rgba(255,255,255,0.1);
-      border: 2px solid rgba(255,255,255,0.2);
-      border-radius: 12px;
-      color: rgba(255,255,255,0.7);
+    .lang-screen-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .lang-screen-icon {
+      font-size: 56px;
+      margin-bottom: 16px;
+    }
+    .lang-screen-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: white;
+      margin-bottom: 8px;
+    }
+    .lang-screen-subtitle {
+      font-size: 15px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.5;
+    }
+    .lang-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 4px;
+      margin: 0 -4px;
+    }
+    .lang-list::-webkit-scrollbar { width: 0; }
+    .lang-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: rgba(255,255,255,0.08);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: inherit;
+      text-align: left;
+      width: 100%;
+    }
+    .lang-card:hover {
+      background: rgba(255,255,255,0.12);
+      border-color: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+    .lang-card.selected {
+      background: rgba(255,255,255,0.15);
+      border-color: rgba(255,255,255,0.5);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    }
+    .lang-card-flag {
+      font-size: 36px;
+      line-height: 1;
+    }
+    .lang-card-info {
+      flex: 1;
+    }
+    .lang-card-name {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 2px;
+    }
+    .lang-card-currency {
+      font-size: 13px;
+      color: rgba(255,255,255,0.5);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lang-card-currency-badge {
+      padding: 2px 8px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 12px;
+      color: rgba(255,255,255,0.8);
+    }
+    .lang-card-check {
+      width: 26px;
+      height: 26px;
+      border-radius: 13px;
+      border: 2px solid rgba(255,255,255,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 14px;
+      color: transparent;
+      transition: all 0.2s;
+    }
+    .lang-card.selected .lang-card-check {
+      background: #22c55e;
+      border-color: #22c55e;
+      color: white;
+    }
+    .lang-screen-footer {
+      padding-top: 24px;
+    }
+    .lang-screen-footer .btn {
+      background: white;
+      color: #1a1a1a;
+    }
+    .lang-screen-footer .btn:disabled {
+      background: rgba(255,255,255,0.3);
+      color: rgba(255,255,255,0.5);
+    }
+
+    /* Small language button on splash */
+    .splash-lang-btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.8);
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
       font-family: inherit;
     }
-    .lang-btn:hover {
+    .splash-lang-btn:hover {
       background: rgba(255,255,255,0.15);
       border-color: rgba(255,255,255,0.3);
     }
-    .lang-btn.active {
-      background: rgba(255,255,255,0.2);
-      border-color: white;
-      color: white;
-    }
-    .lang-btn .flag {
-      margin-right: 6px;
-    }
+    .splash-lang-btn .flag { font-size: 16px; }
 
     /* Chat loading */
     .typing {
@@ -1272,29 +1381,121 @@
     };
 
     const LANGUAGES = {
-      vi: { label: 'Tiếng Việt', flag: '🇻🇳' },
-      en: { label: 'English', flag: '🇬🇧' },
-      zh: { label: '中文', flag: '🇨🇳' },
-      ja: { label: '日本語', flag: '🇯🇵' },
-      ko: { label: '한국어', flag: '🇰🇷' },
-      fr: { label: 'Français', flag: '🇫🇷' },
-      es: { label: 'Español', flag: '🇪🇸' }
+      vi: {
+        label: 'Tiếng Việt', flag: '🇻🇳',
+        currency: 'VND', symbol: '₫', symbolPosition: 'after',
+        incomePresets: [8, 10, 15, 20, 25, 30], // millions
+        multiplier: 1000000, // 1 unit = 1 million VND
+        formatUnit: 'tr',
+        goalAmounts: { laptop: 25000000, phone: 15000000, trip: 10000000, bike: 50000000, emergency: 20000000, wedding: 100000000 }
+      },
+      en: {
+        label: 'English', flag: '🇬🇧',
+        currency: 'USD', symbol: '$', symbolPosition: 'before',
+        incomePresets: [3, 4, 5, 6, 8, 10], // thousands
+        multiplier: 1000, // 1 unit = 1 thousand USD
+        formatUnit: 'k',
+        goalAmounts: { laptop: 1500, phone: 1000, trip: 2000, bike: 5000, emergency: 5000, wedding: 20000 }
+      },
+      zh: {
+        label: '中文', flag: '🇨🇳',
+        currency: 'CNY', symbol: '¥', symbolPosition: 'before',
+        incomePresets: [8, 10, 15, 20, 30, 50], // thousands
+        multiplier: 1000,
+        formatUnit: 'k',
+        goalAmounts: { laptop: 8000, phone: 6000, trip: 10000, bike: 15000, emergency: 20000, wedding: 100000 }
+      },
+      ja: {
+        label: '日本語', flag: '🇯🇵',
+        currency: 'JPY', symbol: '¥', symbolPosition: 'before',
+        incomePresets: [200, 250, 300, 400, 500, 600], // thousands
+        multiplier: 1000, // 1 unit = 1 thousand Yen (万 = 10k)
+        formatUnit: '万',
+        goalAmounts: { laptop: 150000, phone: 100000, trip: 200000, bike: 300000, emergency: 500000, wedding: 3000000 }
+      },
+      ko: {
+        label: '한국어', flag: '🇰🇷',
+        currency: 'KRW', symbol: '₩', symbolPosition: 'before',
+        incomePresets: [2000, 3000, 4000, 5000, 6000, 8000], // thousands
+        multiplier: 1000,
+        formatUnit: '만',
+        goalAmounts: { laptop: 1500000, phone: 1000000, trip: 2000000, bike: 5000000, emergency: 5000000, wedding: 30000000 }
+      },
+      fr: {
+        label: 'Français', flag: '🇫🇷',
+        currency: 'EUR', symbol: '€', symbolPosition: 'after',
+        incomePresets: [2, 2.5, 3, 4, 5, 6], // thousands
+        multiplier: 1000,
+        formatUnit: 'k',
+        goalAmounts: { laptop: 1200, phone: 800, trip: 1500, bike: 4000, emergency: 5000, wedding: 15000 }
+      },
+      es: {
+        label: 'Español', flag: '🇪🇸',
+        currency: 'EUR', symbol: '€', symbolPosition: 'after',
+        incomePresets: [1.5, 2, 2.5, 3, 4, 5], // thousands
+        multiplier: 1000,
+        formatUnit: 'k',
+        goalAmounts: { laptop: 1000, phone: 700, trip: 1200, bike: 3500, emergency: 4000, wedding: 12000 }
+      }
     };
 
     // Translation function
     const t = (key) => TRANSLATIONS[state.language]?.[key] || TRANSLATIONS.vi[key] || key;
+
+    // Currency helpers
+    const getLang = () => LANGUAGES[state.language] || LANGUAGES.vi;
+
+    const formatCurrency = (amount, compact = false) => {
+      const lang = getLang();
+      if (compact) {
+        const unit = lang.multiplier || 1000000;
+        const val = amount / unit;
+        if (lang.symbolPosition === 'before') {
+          return `${lang.symbol}${val.toFixed(val % 1 === 0 ? 0 : 1)}${lang.formatUnit}`;
+        } else {
+          return `${val.toFixed(val % 1 === 0 ? 0 : 1)}${lang.formatUnit}`;
+        }
+      }
+      // Full format
+      if (lang.symbolPosition === 'before') {
+        return `${lang.symbol}${amount.toLocaleString()}`;
+      } else {
+        return `${amount.toLocaleString()} ${lang.symbol}`;
+      }
+    };
+
+    const getIncomePresets = () => {
+      const lang = getLang();
+      return lang.incomePresets.map(n => n * lang.multiplier);
+    };
+
+    const getGoalAmount = (goalId) => {
+      const lang = getLang();
+      return lang.goalAmounts[goalId] || 0;
+    };
 
     // Set language function
     const setLanguage = (lang) => {
       state.language = lang;
       localStorage.setItem('moni_language', lang);
       document.documentElement.lang = lang;
+      // Reset financial data when changing language/currency
+      state.income = '';
+      state.fixedExpenses = getDefaultFixed();
+      state.goals = [];
+      state.allocations = {};
       render();
     };
 
+    // Toggle language dropdown
+
+    // Check if first time user (no language saved)
+    const savedLang = localStorage.getItem('moni_language');
+    const isFirstTime = !savedLang;
+
     let state = {
-      screen: 'splash',
-      language: localStorage.getItem('moni_language') || 'vi',
+      screen: isFirstTime ? 'language' : 'splash',
+      language: savedLang || 'vi',
       step: 0,
       quizStep: -1,
       quizAnswers: [],
@@ -1369,21 +1570,40 @@
     ];
 
     const GOALS_DATA = [
-      { id: 'laptop', e: '💻', nameKey: 'laptop', amount: 25000000 },
-      { id: 'phone', e: '📱', nameKey: 'phoneGoal', amount: 15000000 },
-      { id: 'trip', e: '✈️', nameKey: 'trip', amount: 10000000 },
-      { id: 'bike', e: '🏍️', nameKey: 'bike', amount: 50000000 },
-      { id: 'emergency', e: '🛡️', nameKey: 'emergency', amount: 20000000 },
-      { id: 'wedding', e: '💒', nameKey: 'wedding', amount: 100000000 },
+      { id: 'laptop', e: '💻', nameKey: 'laptop' },
+      { id: 'phone', e: '📱', nameKey: 'phoneGoal' },
+      { id: 'trip', e: '✈️', nameKey: 'trip' },
+      { id: 'bike', e: '🏍️', nameKey: 'bike' },
+      { id: 'emergency', e: '🛡️', nameKey: 'emergency' },
+      { id: 'wedding', e: '💒', nameKey: 'wedding' },
     ];
-    const getGoals = () => GOALS_DATA.map(g => ({ ...g, name: t(g.nameKey) }));
+    const getGoals = () => GOALS_DATA.map(g => ({
+      ...g,
+      name: t(g.nameKey),
+      amount: getGoalAmount(g.id)
+    }));
     const getGoalName = (goal) => goal.customName || t(goal.nameKey) || goal.name;
 
     const $ = id => document.getElementById(id);
-    const fmt = n => {
-      if (n >= 1000000) return (n / 1000000).toFixed(1).replace('.0', '') + 'tr';
-      if (n >= 1000) return (n / 1000).toFixed(0) + 'k';
-      return n.toString();
+    const fmt = (n) => {
+      const lang = getLang();
+      const symbol = lang.symbol;
+      const pos = lang.symbolPosition;
+
+      let formatted;
+      if (n >= 1000000) {
+        formatted = (n / 1000000).toFixed(1).replace('.0', '') + (lang.formatUnit === 'tr' ? 'tr' : 'M');
+      } else if (n >= 1000) {
+        formatted = (n / 1000).toFixed(0) + 'k';
+      } else {
+        formatted = n.toString();
+      }
+
+      if (pos === 'before') {
+        return symbol + formatted;
+      } else {
+        return formatted + symbol;
+      }
     };
 
     const totalFixed = () => state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0);
@@ -1393,20 +1613,78 @@
 
     const render = () => {
       const app = $('app');
-      if (state.screen === 'splash') renderSplash(app);
+      if (state.screen === 'language') renderLanguageSelection(app);
+      else if (state.screen === 'splash') renderSplash(app);
       else if (state.screen === 'onboarding') renderOnboarding(app);
       else if (state.screen === 'main') renderMain(app);
     };
 
+    // ============= LANGUAGE SELECTION SCREEN =============
+    const renderLanguageSelection = (app) => {
+      app.className = 'phone splash-bg';
+      const langCards = Object.entries(LANGUAGES).map(([code, lang]) => `
+        <button class="lang-card ${state.language === code ? 'selected' : ''}" onclick="selectLanguage('${code}')">
+          <span class="lang-card-flag">${lang.flag}</span>
+          <div class="lang-card-info">
+            <div class="lang-card-name">${lang.label}</div>
+            <div class="lang-card-currency">
+              <span class="lang-card-currency-badge">${lang.currency}</span>
+              <span>${lang.symbol}</span>
+            </div>
+          </div>
+          <div class="lang-card-check">✓</div>
+        </button>
+      `).join('');
+
+      app.innerHTML = `
+        <div class="lang-screen">
+          <div class="lang-screen-header">
+            <div class="lang-screen-icon">🌍</div>
+            <div class="lang-screen-title">Choose Language</div>
+            <div class="lang-screen-subtitle">Select your preferred language and currency</div>
+          </div>
+          <div class="lang-list">
+            ${langCards}
+          </div>
+          <div class="lang-screen-footer">
+            <button class="btn" onclick="confirmLanguage()">Continue →</button>
+          </div>
+        </div>
+      `;
+    };
+
+    window.selectLanguage = (code) => {
+      state.language = code;
+      render();
+    };
+
+    window.confirmLanguage = () => {
+      localStorage.setItem('moni_language', state.language);
+      document.documentElement.lang = state.language;
+      state.screen = 'splash';
+      // Reset financial data for new currency
+      state.income = '';
+      state.fixedExpenses = getDefaultFixed();
+      state.goals = [];
+      state.allocations = {};
+      render();
+    };
+
+    window.goToLanguageScreen = () => {
+      state.screen = 'language';
+      render();
+    };
+
     const renderSplash = (app) => {
       app.className = 'phone splash-bg';
-      const langButtons = Object.entries(LANGUAGES).map(([code, {label, flag}]) =>
-        `<button class="lang-btn ${state.language === code ? 'active' : ''}" onclick="setLanguage('${code}')"><span class="flag">${flag}</span>${label}</button>`
-      ).join('');
+      const currentLang = getLang();
 
       app.innerHTML = `
         <div class="splash">
-          <div class="lang-selector">${langButtons}</div>
+          <button class="splash-lang-btn" onclick="goToLanguageScreen()">
+            <span class="flag">${currentLang.flag}</span>
+            <span>${currentLang.label}</span>
+          </button>
           <div>
             <div class="splash-logo">🌿</div>
             <div class="splash-title">Moni</div>
@@ -1543,6 +1821,10 @@
       }
 
       if (state.step === 3) {
+        const lang = getLang();
+        const presets = getIncomePresets();
+        const presetLabels = lang.incomePresets;
+
         app.innerHTML = `
           <div class="header">
             <button class="btn-back" onclick="prevStep()">←</button>
@@ -1556,11 +1838,11 @@
               <div class="ob-desc">${t('incomeDesc')}</div>
             </div>
             <div class="income-input-wrap">
-              <input id="incomeInput" class="income-input" placeholder="15,000,000" value="${state.income ? parseInt(state.income).toLocaleString('vi-VN') : ''}" onkeyup="handleIncome(this)">
-              <span class="income-unit">VND</span>
+              <input id="incomeInput" class="income-input" placeholder="${formatCurrency(presets[2])}" value="${state.income ? parseInt(state.income).toLocaleString() : ''}" onkeyup="handleIncome(this)">
+              <span class="income-unit">${lang.currency}</span>
             </div>
             <div class="presets">
-              ${[8,10,15,20,25,30].map(n => `<button class="preset ${parseInt(state.income) === n * 1000000 ? 'active' : ''}" onclick="setIncome(${n * 1000000})">${n}tr</button>`).join('')}
+              ${presets.map((val, i) => `<button class="preset ${parseInt(state.income) === val ? 'active' : ''}" onclick="setIncome(${val})">${lang.symbolPosition === 'before' ? lang.symbol : ''}${presetLabels[i]}${lang.formatUnit}${lang.symbolPosition === 'after' ? lang.symbol : ''}</button>`).join('')}
             </div>
             <div class="privacy-note"><span>🔒</span><span>${t('privacyNote')}</span></div>
           </div>
@@ -1705,6 +1987,7 @@
 
       // Step 6: Allocation
       if (state.step === 6) {
+        const lang = getLang();
         const incomeVal = parseInt(state.income) || 0;
         const fixed = totalFixed();
         const allocated = totalAllocation();
@@ -1735,8 +2018,8 @@
                     </div>
                   </div>
                   <div class="allocation-input-row">
-                    <input id="alloc_${idx}" class="allocation-input" placeholder="0" value="${alloc ? parseInt(alloc).toLocaleString('vi-VN') : ''}" onblur="updateAllocation('${g.id}', this.value)">
-                    <span class="allocation-per">${t('perMonth')}</span>
+                    <input id="alloc_${idx}" class="allocation-input" placeholder="0" value="${alloc ? parseInt(alloc).toLocaleString() : ''}" onblur="updateAllocation('${g.id}', this.value)">
+                    <span class="allocation-per">${lang.currency} / ${t('months').slice(0,2)}</span>
                   </div>
                   <div class="allocation-time" data-time-${idx}>${monthly > 0 ? `${t('reachGoalIn')} <strong>${months} ${t('months')}</strong>` : ''}</div>
                 </div>
@@ -1933,10 +2216,10 @@
     
     // Fixed expenses
     window.updateFixedAmount = (idx, val) => { 
-      state.fixedExpenses[idx].amount = val.replace(/\D/g, ''); 
+      state.fixedExpenses[idx].amount = val.replace(/\D/g, '');
       // Update the total display without full re-render
       const totalEl = document.querySelector('[data-fixed-total]');
-      if (totalEl) totalEl.textContent = fmt(totalFixed()) + '/tháng';
+      if (totalEl) totalEl.textContent = fmt(totalFixed()) + '/' + t('months').charAt(0);
     };
     window.removeFixed = (idx) => { 
       state.fixedExpenses.splice(idx, 1); 
@@ -1961,9 +2244,14 @@
     // Goals
     window.addGoal = (id) => {
       if (state.goals.length >= 3) return;
-      const goals = getGoals();
       const goalData = GOALS_DATA.find(g => g.id === id);
-      if (goalData) { state.goals.push({...goalData}); render(); }
+      if (goalData) {
+        state.goals.push({
+          ...goalData,
+          amount: getGoalAmount(goalData.id)
+        });
+        render();
+      }
     };
     window.removeGoal = (id) => { 
       state.goals = state.goals.filter(g => g.id !== id); 
