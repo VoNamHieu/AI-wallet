@@ -22,6 +22,12 @@
       --border: #e8e6e3;
       --purple: #8b5cf6;
       --purple-light: #f5f3ff;
+      --primary: #8b5cf6;
+      /* Archetype colors */
+      --dreamer: #8b5cf6;
+      --experiencer: #f97316;
+      --giver: #ec4899;
+      --planner: #10b981;
     }
 
     body {
@@ -247,20 +253,14 @@
     .spendable-sub span { color: var(--text-soft); font-weight: 600; }
 
     .goals-status { display: flex; gap: 12px; margin-bottom: 24px; }
-    .goal-pill { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
-    .goal-pill.on-track { background: var(--green-light); border-color: #bbf7d0; }
-    .goal-pill.behind { background: var(--orange-light); border-color: #fde68a; }
+    .goal-pill { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px; display: flex; align-items: center; gap: 12px; transition: transform 0.2s, box-shadow 0.2s; }
+    .goal-pill:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
     .goal-emoji { font-size: 24px; }
     .goal-info { flex: 1; min-width: 0; }
     .goal-name { font-size: 13px; font-weight: 600; color: var(--text); }
-    .goal-time { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
-    .time-expect { font-size: 11px; color: var(--text-muted); }
-    .time-reality { font-size: 11px; font-weight: 600; }
-    .time-reality.on-track { color: var(--green); }
-    .time-reality.behind { color: var(--orange); }
-    .goal-progress { width: 100%; height: 4px; background: rgba(0,0,0,0.08); border-radius: 2px; margin-top: 8px; overflow: hidden; }
-    .goal-progress-fill { height: 100%; background: var(--green); border-radius: 2px; }
-    .goal-pill.behind .goal-progress-fill { background: var(--orange); }
+    .goal-meta { font-size: 12px; color: var(--text-muted); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+    .goal-progress { width: 100%; height: 6px; background: rgba(0,0,0,0.06); border-radius: 3px; margin-top: 8px; overflow: hidden; }
+    .goal-progress-fill { height: 100%; background: var(--primary); border-radius: 3px; transition: width 0.5s ease; }
 
     .recent-section { margin-bottom: 24px; }
     .recent-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
@@ -294,6 +294,20 @@
     .response { margin-top: 20px; }
     .response.show { display: block; animation: slideUp 0.3s ease; }
     @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* Celebration animations */
+    @keyframes confetti-fall { 0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+    @keyframes celebrate-pop { 0% { transform: scale(0.8); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+    @keyframes pulse-glow { 0%, 100% { box-shadow: 0 0 20px var(--primary); } 50% { box-shadow: 0 0 40px var(--primary); } }
+    .celebration-banner { animation: celebrate-pop 0.5s ease forwards; background: linear-gradient(135deg, var(--primary), var(--purple)); color: white; padding: 16px 20px; border-radius: 16px; margin-bottom: 16px; display: flex; align-items: center; gap: 12px; }
+    .celebration-banner .icon { font-size: 32px; }
+    .celebration-banner .text { flex: 1; }
+    .celebration-banner .title { font-weight: 700; font-size: 15px; }
+    .celebration-banner .desc { font-size: 13px; opacity: 0.9; margin-top: 2px; }
+    .celebration-banner .dismiss { background: rgba(255,255,255,0.2); border: none; color: white; width: 28px; height: 28px; border-radius: 14px; cursor: pointer; font-size: 16px; }
+    .confetti { position: fixed; width: 10px; height: 10px; top: -10px; animation: confetti-fall 3s linear forwards; pointer-events: none; z-index: 1000; }
+    .streak-badge { display: inline-flex; align-items: center; gap: 4px; background: var(--orange-light); color: var(--orange); padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 600; }
+    .milestone-ring { animation: pulse-glow 2s ease-in-out infinite; }
     .response-bubble { background: var(--bg); border-radius: 18px; padding: 18px 20px; }
     .response-text { font-size: 15px; color: var(--text); line-height: 1.6; margin-bottom: 16px; }
     .response-meta { font-size: 13px; color: var(--text-muted); padding: 12px 0; border-top: 1px solid var(--border); margin-bottom: 16px; }
@@ -572,6 +586,39 @@
         experiencerDesc: 'Bạn tin cuộc sống là để trải nghiệm. Moni sẽ giúp bạn balance giữa tận hưởng và đảm bảo tương lai.',
         giverDesc: 'Niềm vui của bạn là mang lại niềm vui cho người khác. Moni sẽ nhắc bạn cũng cần invest vào bản thân.',
         plannerDesc: 'Bạn có kỷ luật tài chính tốt. Moni sẽ giúp bạn optimize hơn nữa và celebrate những progress nhỏ.',
+        // Archetype quotes
+        dreamerQuote1: 'Ước mơ thành hiện thực, từng bước nhỏ ✨',
+        dreamerQuote2: 'Tầm nhìn của bạn là kim chỉ nam 🌟',
+        dreamerQuote3: 'Điều lớn lao bắt đầu từ tiết kiệm nhỏ 💫',
+        experiencerQuote1: 'Cuộc sống là những khoảnh khắc đáng giá 🎢',
+        experiencerQuote2: 'Phiêu lưu đang chờ, bạn đang chuẩn bị tốt! 🌈',
+        experiencerQuote3: 'Mỗi lần tiết kiệm đưa trải nghiệm gần hơn 🎯',
+        giverQuote1: 'Sự rộng rãi bắt đầu từ tự chăm sóc 💝',
+        giverQuote2: 'Đeo mặt nạ oxy cho mình trước đã 🤝',
+        giverQuote3: 'Tài chính vững giúp bạn cho đi nhiều hơn 💕',
+        plannerQuote1: 'Mọi chi tiết đều quan trọng, bạn đang on track 📋',
+        plannerQuote2: 'Tiến bộ có hệ thống dẫn đến thành công 🎯',
+        plannerQuote3: 'Kế hoạch của bạn đang hoạt động tuyệt vời ✅',
+        // Celebration translations
+        firstExpenseTitle: 'Chi tiêu đầu tiên!',
+        firstExpenseDesc: 'Bạn đang trên đường đi!',
+        tenExpensesTitle: 'Ngày càng tổ chức!',
+        tenExpensesDesc: 'Đã ghi 10 khoản chi!',
+        goalCompleteDesc: 'Thành tựu tuyệt vời!',
+        keepGoingDesc: 'Tiếp tục nhé!',
+        toward: 'hướng tới',
+        dayStreak: 'Ngày liên tục',
+        streakDesc: 'Bạn đang cháy!',
+        days: 'ngày',
+        // Moni mood messages
+        moniCelebrating: 'Woohoo! Bạn làm được rồi!',
+        moniHappy: 'Ngày tuyệt vời!',
+        moniExcited: 'Bạn đang làm tốt lắm!',
+        moniProud: 'Nhìn tiến độ kìa!',
+        moniEncouraging: 'Khởi đầu mới hôm nay!',
+        moniCalm: 'Cân bằng và ổn định.',
+        moniFriendly: 'Chào bạn!',
+        moniSupportive: 'Ngày mai là ngày mới!',
         // Income Step
         incomeTitle: 'Thu nhập hàng tháng',
         incomeDesc: 'Để Moni tính được bạn có thể tiêu thoải mái bao nhiêu mỗi tháng.',
@@ -641,6 +688,7 @@
         enterWithdrawAmount: 'Nhập số tiền rút',
         remaining: 'Còn lại',
         available: 'Có sẵn',
+        setAllocation: 'Đặt mục tiêu hàng tháng',
         expensesWillAppear: 'Chi tiêu sẽ hiển thị ở đây',
         saved: 'đã tiết kiệm',
         total: 'Tổng',
@@ -725,6 +773,39 @@
         experiencerDesc: 'You believe life is for experiencing. Moni will help you balance enjoying now and securing your future.',
         giverDesc: 'Your joy is bringing joy to others. Moni will remind you to invest in yourself too.',
         plannerDesc: 'You have great financial discipline. Moni will help you optimize further and celebrate small wins.',
+        // Archetype quotes
+        dreamerQuote1: 'Dreams become reality, one step at a time ✨',
+        dreamerQuote2: 'Your vision is your compass 🌟',
+        dreamerQuote3: 'Big things start with small savings 💫',
+        experiencerQuote1: 'Life is made of moments worth funding 🎢',
+        experiencerQuote2: 'Adventures await, you\'re preparing well! 🌈',
+        experiencerQuote3: 'Each save brings new experiences closer 🎯',
+        giverQuote1: 'Your generosity starts with self-care 💝',
+        giverQuote2: 'Secure your mask first, then help others 🤝',
+        giverQuote3: 'Financial wellness lets you give more 💕',
+        plannerQuote1: 'Every detail matters, you\'re on track 📋',
+        plannerQuote2: 'Systematic progress leads to success 🎯',
+        plannerQuote3: 'Your plan is working beautifully ✅',
+        // Celebration translations
+        firstExpenseTitle: 'First Expense!',
+        firstExpenseDesc: 'You\'re on your way!',
+        tenExpensesTitle: 'Getting Organized!',
+        tenExpensesDesc: '10 expenses tracked!',
+        goalCompleteDesc: 'Amazing achievement!',
+        keepGoingDesc: 'Keep it up!',
+        toward: 'toward',
+        dayStreak: 'Day Streak',
+        streakDesc: 'You\'re on fire!',
+        days: 'days',
+        // Moni mood messages
+        moniCelebrating: 'Woohoo! You did it!',
+        moniHappy: 'Great day so far!',
+        moniExcited: 'You\'re on a roll!',
+        moniProud: 'Look at that progress!',
+        moniEncouraging: 'Fresh start today!',
+        moniCalm: 'Balanced and steady.',
+        moniFriendly: 'Hey there, friend!',
+        moniSupportive: 'Tomorrow is a new day!',
         incomeTitle: 'Monthly Income',
         incomeDesc: 'So Moni can calculate how much you can comfortably spend each month.',
         privacyNote: 'Information is secure and stored only on your device',
@@ -789,6 +870,7 @@
         enterWithdrawAmount: 'Enter withdrawal amount',
         remaining: 'Remaining',
         available: 'Available',
+        setAllocation: 'Set monthly goal',
         expensesWillAppear: 'Your expenses will appear here',
         saved: 'saved',
         total: 'Total',
@@ -870,6 +952,39 @@
         experiencerDesc: '您相信生活就是要体验。Moni将帮助您在享受当下和确保未来之间取得平衡。',
         giverDesc: '您的快乐是给他人带来快乐。Moni会提醒您也要投资自己。',
         plannerDesc: '您有很好的财务纪律。Moni将帮助您进一步优化并庆祝小胜利。',
+        // Archetype quotes
+        dreamerQuote1: '梦想一步步成为现实 ✨',
+        dreamerQuote2: '你的愿景是你的指南针 🌟',
+        dreamerQuote3: '大事从小存开始 💫',
+        experiencerQuote1: '生活由值得投资的时刻组成 🎢',
+        experiencerQuote2: '冒险在等待，你准备得很好！🌈',
+        experiencerQuote3: '每次储蓄都让新体验更近 🎯',
+        giverQuote1: '慷慨从自我关爱开始 💝',
+        giverQuote2: '先戴好自己的氧气面罩 🤝',
+        giverQuote3: '财务健康让你给予更多 💕',
+        plannerQuote1: '每个细节都重要，你在正轨上 📋',
+        plannerQuote2: '系统性的进步通向成功 🎯',
+        plannerQuote3: '你的计划运行得很完美 ✅',
+        // Celebration translations
+        firstExpenseTitle: '第一笔支出！',
+        firstExpenseDesc: '你正在路上！',
+        tenExpensesTitle: '越来越有条理！',
+        tenExpensesDesc: '已记录10笔支出！',
+        goalCompleteDesc: '了不起的成就！',
+        keepGoingDesc: '继续加油！',
+        toward: '朝向',
+        dayStreak: '天连续',
+        streakDesc: '你太棒了！',
+        days: '天',
+        // Moni mood messages
+        moniCelebrating: '太棒了！你做到了！',
+        moniHappy: '美好的一天！',
+        moniExcited: '你势不可挡！',
+        moniProud: '看看这进步！',
+        moniEncouraging: '今天新开始！',
+        moniCalm: '平衡稳定。',
+        moniFriendly: '嗨，朋友！',
+        moniSupportive: '明天又是新的一天！',
         incomeTitle: '月收入',
         incomeDesc: '这样Moni可以计算您每月可以舒适地花多少钱。',
         privacyNote: '信息安全，仅存储在您的设备上',
@@ -934,6 +1049,7 @@
         enterWithdrawAmount: '输入取款金额',
         remaining: '剩余',
         available: '可用',
+        setAllocation: '设置每月目标',
         expensesWillAppear: '你的支出将显示在这里',
         saved: '已存',
         total: '总计',
@@ -1015,6 +1131,39 @@
         experiencerDesc: '人生は体験するためにあると信じています。Moniは今を楽しみながら将来も確保するバランスをお手伝いします。',
         giverDesc: 'あなたの喜びは他の人に喜びをもたらすこと。Moniは自分自身への投資も忘れないようリマインドします。',
         plannerDesc: '素晴らしい金融規律を持っています。Moniはさらに最適化し、小さな勝利を祝うお手伝いをします。',
+        // Archetype quotes
+        dreamerQuote1: '夢は一歩ずつ現実になる ✨',
+        dreamerQuote2: 'あなたのビジョンが羅針盤 🌟',
+        dreamerQuote3: '大きなことは小さな貯金から始まる 💫',
+        experiencerQuote1: '人生は投資に値する瞬間でできている 🎢',
+        experiencerQuote2: '冒険が待っている、準備万端！🌈',
+        experiencerQuote3: '貯金するたびに新しい体験が近づく 🎯',
+        giverQuote1: '寛大さは自己ケアから始まる 💝',
+        giverQuote2: 'まず自分の酸素マスクを 🤝',
+        giverQuote3: '経済的健康でもっと与えられる 💕',
+        plannerQuote1: 'すべての詳細が重要、順調です 📋',
+        plannerQuote2: '計画的な進歩が成功につながる 🎯',
+        plannerQuote3: '計画は美しく機能しています ✅',
+        // Celebration translations
+        firstExpenseTitle: '最初の支出！',
+        firstExpenseDesc: '順調です！',
+        tenExpensesTitle: '整理上手！',
+        tenExpensesDesc: '10件の支出を記録！',
+        goalCompleteDesc: '素晴らしい達成！',
+        keepGoingDesc: 'その調子！',
+        toward: 'に向けて',
+        dayStreak: '日連続',
+        streakDesc: '絶好調です！',
+        days: '日',
+        // Moni mood messages
+        moniCelebrating: 'やったね！できました！',
+        moniHappy: '素晴らしい一日！',
+        moniExcited: '絶好調ですね！',
+        moniProud: 'この進歩を見て！',
+        moniEncouraging: '今日は新しいスタート！',
+        moniCalm: 'バランス良く安定。',
+        moniFriendly: 'こんにちは、友達！',
+        moniSupportive: '明日は新しい日！',
         incomeTitle: '月収',
         incomeDesc: 'Moniが毎月快適に使える金額を計算できるようにします。',
         privacyNote: '情報は安全で、デバイスにのみ保存されます',
@@ -1079,6 +1228,7 @@
         enterWithdrawAmount: '出金額を入力',
         remaining: '残り',
         available: '利用可能',
+        setAllocation: '月間目標を設定',
         expensesWillAppear: '支出がここに表示されます',
         saved: '貯蓄済み',
         total: '合計',
@@ -1160,6 +1310,39 @@
         experiencerDesc: '인생은 경험하기 위한 것이라고 믿습니다. Moni가 현재를 즐기면서 미래도 확보하는 균형을 도와드립니다.',
         giverDesc: '당신의 기쁨은 다른 사람에게 기쁨을 주는 것입니다. Moni가 자신에게도 투자하라고 알려드립니다.',
         plannerDesc: '훌륭한 재정 규율을 가지고 있습니다. Moni가 더 최적화하고 작은 승리를 축하하도록 도와드립니다.',
+        // Archetype quotes
+        dreamerQuote1: '꿈은 한 걸음씩 현실이 됩니다 ✨',
+        dreamerQuote2: '당신의 비전이 나침반입니다 🌟',
+        dreamerQuote3: '큰 일은 작은 저축에서 시작됩니다 💫',
+        experiencerQuote1: '인생은 투자할 가치가 있는 순간들로 이루어져 있습니다 🎢',
+        experiencerQuote2: '모험이 기다리고 있어요, 잘 준비하고 있어요! 🌈',
+        experiencerQuote3: '저축할 때마다 새로운 경험이 가까워집니다 🎯',
+        giverQuote1: '관대함은 자기 관리에서 시작됩니다 💝',
+        giverQuote2: '먼저 자신의 산소마스크를 쓰세요 🤝',
+        giverQuote3: '재정 건강이 더 많이 줄 수 있게 해줍니다 💕',
+        plannerQuote1: '모든 세부 사항이 중요해요, 순조롭습니다 📋',
+        plannerQuote2: '체계적인 진전이 성공으로 이끕니다 🎯',
+        plannerQuote3: '계획이 아름답게 작동하고 있어요 ✅',
+        // Celebration translations
+        firstExpenseTitle: '첫 번째 지출!',
+        firstExpenseDesc: '잘 하고 있어요!',
+        tenExpensesTitle: '점점 정리돼요!',
+        tenExpensesDesc: '10개의 지출 기록!',
+        goalCompleteDesc: '대단한 성취!',
+        keepGoingDesc: '계속 화이팅!',
+        toward: '향해',
+        dayStreak: '일 연속',
+        streakDesc: '대단해요!',
+        days: '일',
+        // Moni mood messages
+        moniCelebrating: '와! 해냈어요!',
+        moniHappy: '좋은 하루예요!',
+        moniExcited: '대단해요!',
+        moniProud: '이 진전을 보세요!',
+        moniEncouraging: '오늘 새로운 시작!',
+        moniCalm: '균형 잡힌 하루.',
+        moniFriendly: '안녕하세요, 친구!',
+        moniSupportive: '내일은 새로운 날!',
         incomeTitle: '월 수입',
         incomeDesc: 'Moni가 매월 편안하게 쓸 수 있는 금액을 계산할 수 있게 해줍니다.',
         privacyNote: '정보는 안전하며 기기에만 저장됩니다',
@@ -1224,6 +1407,7 @@
         enterWithdrawAmount: '출금액 입력',
         remaining: '남은',
         available: '이용 가능',
+        setAllocation: '월간 목표 설정',
         expensesWillAppear: '지출이 여기에 표시됩니다',
         saved: '저축',
         total: '합계',
@@ -1305,6 +1489,39 @@
         experiencerDesc: 'Vous croyez que la vie est faite pour être vécue. Moni vous aidera à équilibrer plaisir et avenir.',
         giverDesc: 'Votre joie est d\'apporter de la joie aux autres. Moni vous rappellera d\'investir en vous aussi.',
         plannerDesc: 'Vous avez une excellente discipline financière. Moni vous aidera à optimiser et célébrer les petites victoires.',
+        // Archetype quotes
+        dreamerQuote1: 'Les rêves deviennent réalité, pas à pas ✨',
+        dreamerQuote2: 'Votre vision est votre boussole 🌟',
+        dreamerQuote3: 'Les grandes choses commencent par de petites économies 💫',
+        experiencerQuote1: 'La vie est faite de moments qui valent l\'investissement 🎢',
+        experiencerQuote2: 'Les aventures attendent, vous vous préparez bien ! 🌈',
+        experiencerQuote3: 'Chaque économie rapproche de nouvelles expériences 🎯',
+        giverQuote1: 'La générosité commence par prendre soin de soi 💝',
+        giverQuote2: 'Mettez d\'abord votre masque à oxygène 🤝',
+        giverQuote3: 'La santé financière permet de donner plus 💕',
+        plannerQuote1: 'Chaque détail compte, vous êtes sur la bonne voie 📋',
+        plannerQuote2: 'Le progrès systématique mène au succès 🎯',
+        plannerQuote3: 'Votre plan fonctionne à merveille ✅',
+        // Celebration translations
+        firstExpenseTitle: 'Première dépense !',
+        firstExpenseDesc: 'Vous êtes en bonne voie !',
+        tenExpensesTitle: 'De plus en plus organisé !',
+        tenExpensesDesc: '10 dépenses suivies !',
+        goalCompleteDesc: 'Accomplissement incroyable !',
+        keepGoingDesc: 'Continuez !',
+        toward: 'vers',
+        dayStreak: 'Jours consécutifs',
+        streakDesc: 'Vous êtes en feu !',
+        days: 'jours',
+        // Moni mood messages
+        moniCelebrating: 'Woohoo ! Tu l\'as fait !',
+        moniHappy: 'Super journée !',
+        moniExcited: 'Tu es en feu !',
+        moniProud: 'Regarde ces progrès !',
+        moniEncouraging: 'Nouveau départ aujourd\'hui !',
+        moniCalm: 'Équilibré et stable.',
+        moniFriendly: 'Salut, ami !',
+        moniSupportive: 'Demain est un nouveau jour !',
         incomeTitle: 'Revenu Mensuel',
         incomeDesc: 'Pour que Moni calcule combien vous pouvez dépenser confortablement chaque mois.',
         privacyNote: 'Les informations sont sécurisées et stockées uniquement sur votre appareil',
@@ -1369,6 +1586,7 @@
         enterWithdrawAmount: 'Entrez le montant du retrait',
         remaining: 'Restant',
         available: 'Disponible',
+        setAllocation: 'Définir l\'objectif mensuel',
         expensesWillAppear: 'Vos dépenses apparaîtront ici',
         saved: 'économisé',
         total: 'Total',
@@ -1450,6 +1668,39 @@
         experiencerDesc: 'Crees que la vida es para experimentar. Moni te ayudará a equilibrar disfrutar y asegurar tu futuro.',
         giverDesc: 'Tu alegría es dar alegría a otros. Moni te recordará invertir en ti también.',
         plannerDesc: 'Tienes gran disciplina financiera. Moni te ayudará a optimizar más y celebrar pequeñas victorias.',
+        // Archetype quotes
+        dreamerQuote1: 'Los sueños se hacen realidad, paso a paso ✨',
+        dreamerQuote2: 'Tu visión es tu brújula 🌟',
+        dreamerQuote3: 'Las grandes cosas empiezan con pequeños ahorros 💫',
+        experiencerQuote1: 'La vida está hecha de momentos que vale la pena financiar 🎢',
+        experiencerQuote2: '¡Las aventuras esperan, te preparas bien! 🌈',
+        experiencerQuote3: 'Cada ahorro acerca nuevas experiencias 🎯',
+        giverQuote1: 'La generosidad empieza con el autocuidado 💝',
+        giverQuote2: 'Ponte primero tu máscara de oxígeno 🤝',
+        giverQuote3: 'La salud financiera te permite dar más 💕',
+        plannerQuote1: 'Cada detalle importa, vas por buen camino 📋',
+        plannerQuote2: 'El progreso sistemático lleva al éxito 🎯',
+        plannerQuote3: 'Tu plan está funcionando perfectamente ✅',
+        // Celebration translations
+        firstExpenseTitle: '¡Primer gasto!',
+        firstExpenseDesc: '¡Vas por buen camino!',
+        tenExpensesTitle: '¡Cada vez más organizado!',
+        tenExpensesDesc: '¡10 gastos registrados!',
+        goalCompleteDesc: '¡Logro increíble!',
+        keepGoingDesc: '¡Sigue así!',
+        toward: 'hacia',
+        dayStreak: 'Días seguidos',
+        streakDesc: '¡Estás en racha!',
+        days: 'días',
+        // Moni mood messages
+        moniCelebrating: '¡Woohoo! ¡Lo lograste!',
+        moniHappy: '¡Gran día!',
+        moniExcited: '¡Estás en racha!',
+        moniProud: '¡Mira ese progreso!',
+        moniEncouraging: '¡Nuevo comienzo hoy!',
+        moniCalm: 'Equilibrado y estable.',
+        moniFriendly: '¡Hola, amigo!',
+        moniSupportive: '¡Mañana es un nuevo día!',
         incomeTitle: 'Ingreso Mensual',
         incomeDesc: 'Para que Moni calcule cuánto puedes gastar cómodamente cada mes.',
         privacyNote: 'La información es segura y se almacena solo en tu dispositivo',
@@ -1514,6 +1765,7 @@
         enterWithdrawAmount: 'Ingrese el monto del retiro',
         remaining: 'Restante',
         available: 'Disponible',
+        setAllocation: 'Establecer meta mensual',
         expensesWillAppear: 'Tus gastos aparecerán aquí',
         saved: 'ahorrado',
         total: 'Total',
@@ -1759,6 +2011,10 @@
         transactions: state.transactions,
         goalDeposits: state.goalDeposits,
         onboardingCompleted: state.onboardingCompleted,
+        milestonesAchieved: state.milestonesAchieved,
+        streakDays: state.streakDays,
+        lastActiveDate: state.lastActiveDate,
+        totalExpensesLogged: state.totalExpensesLogged,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
     };
@@ -1792,10 +2048,16 @@
       transactions: savedData?.transactions || [],
       goalDeposits: savedData?.goalDeposits || {},
       onboardingCompleted: savedData?.onboardingCompleted || false,
+      // Celebration tracking (persisted)
+      milestonesAchieved: savedData?.milestonesAchieved || [],
+      streakDays: savedData?.streakDays || 0,
+      lastActiveDate: savedData?.lastActiveDate || null,
+      totalExpensesLogged: savedData?.totalExpensesLogged || 0,
       // UI state (not persisted)
       showAddExpense: false,
       showAddFixed: false,
       showAddGoal: false,
+      showCelebration: null,
       newExpense: { name: '', amount: '' },
       newFixed: { name: '', amount: '' },
       newGoal: { name: '', amount: '' },
@@ -2026,6 +2288,141 @@
 
     const todaySpent = () => getTodayTransactions().reduce((a, b) => a + b.amount, 0);
     const monthSpent = () => getThisMonthTransactions().reduce((a, b) => a + b.amount, 0);
+
+    // ============= CELEBRATION SYSTEM =============
+    const triggerConfetti = (count = 50) => {
+      const colors = ['#8b5cf6', '#f97316', '#ec4899', '#10b981', '#fbbf24', '#3b82f6'];
+      for (let i = 0; i < count; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = Math.random() * 100 + 'vw';
+        confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animationDelay = Math.random() * 2 + 's';
+        confetti.style.borderRadius = Math.random() > 0.5 ? '50%' : '0';
+        document.body.appendChild(confetti);
+        setTimeout(() => confetti.remove(), 3500);
+      }
+    };
+
+    const checkMilestones = () => {
+      const milestones = [];
+
+      // First expense logged
+      if (state.totalExpensesLogged === 1 && !state.milestonesAchieved.includes('first_expense')) {
+        milestones.push({ id: 'first_expense', icon: '🎉', title: t('firstExpenseTitle') || 'First Expense!', desc: t('firstExpenseDesc') || 'You\'re on your way!' });
+      }
+
+      // 10 expenses logged
+      if (state.totalExpensesLogged >= 10 && !state.milestonesAchieved.includes('ten_expenses')) {
+        milestones.push({ id: 'ten_expenses', icon: '🌟', title: t('tenExpensesTitle') || 'Getting Organized!', desc: t('tenExpensesDesc') || '10 expenses tracked!' });
+      }
+
+      // Goal milestones (25%, 50%, 75%, 100%)
+      state.goals.forEach(g => {
+        const deposited = state.goalDeposits[g.id] || 0;
+        const progress = Math.round((deposited / g.amount) * 100);
+        const milestonePoints = [25, 50, 75, 100];
+
+        milestonePoints.forEach(point => {
+          const milestoneId = `goal_${g.id}_${point}`;
+          if (progress >= point && !state.milestonesAchieved.includes(milestoneId)) {
+            if (point === 100) {
+              milestones.push({ id: milestoneId, icon: '🏆', title: `${getGoalName(g)} ${t('completed') || 'Completed'}!`, desc: t('goalCompleteDesc') || 'Amazing achievement!' });
+            } else {
+              milestones.push({ id: milestoneId, icon: point === 75 ? '🔥' : point === 50 ? '💪' : '🌱', title: `${point}% ${t('toward') || 'toward'} ${getGoalName(g)}!`, desc: t('keepGoingDesc') || 'Keep it up!' });
+            }
+          }
+        });
+      });
+
+      // Streak milestones
+      const streakMilestones = [3, 7, 14, 30];
+      streakMilestones.forEach(days => {
+        const milestoneId = `streak_${days}`;
+        if (state.streakDays >= days && !state.milestonesAchieved.includes(milestoneId)) {
+          milestones.push({ id: milestoneId, icon: '🔥', title: `${days} ${t('dayStreak') || 'Day Streak'}!`, desc: t('streakDesc') || 'You\'re on fire!' });
+        }
+      });
+
+      return milestones;
+    };
+
+    const celebrateMilestone = (milestone) => {
+      state.milestonesAchieved.push(milestone.id);
+      state.showCelebration = milestone;
+      triggerConfetti(milestone.id.includes('100') || milestone.id.includes('streak_30') ? 80 : 40);
+      saveState();
+    };
+
+    window.dismissCelebration = () => {
+      state.showCelebration = null;
+      render();
+    };
+
+    const updateStreak = () => {
+      const today = new Date().toDateString();
+      if (state.lastActiveDate === today) return; // Already updated today
+
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if (state.lastActiveDate === yesterday.toDateString()) {
+        state.streakDays++;
+      } else if (state.lastActiveDate !== today) {
+        state.streakDays = 1; // Reset streak
+      }
+
+      state.lastActiveDate = today;
+      saveState();
+    };
+
+    // ============= MONI CHARACTER SYSTEM =============
+    const getMoniMood = () => {
+      const remaining = spendable() - todaySpent();
+      const dailyBudget = spendable() / 30;
+      const todayUsage = todaySpent() / dailyBudget;
+      const hasGoalProgress = state.goals.some(g => (state.goalDeposits[g.id] || 0) > 0);
+      const streakActive = state.streakDays >= 3;
+
+      // Determine Moni's mood based on context
+      if (state.showCelebration) return 'celebrating';
+      if (remaining < 0) return 'supportive'; // Over budget - be supportive, not judgmental
+      if (todayUsage === 0 && remaining > dailyBudget * 0.5) return 'encouraging';
+      if (todayUsage < 0.5) return 'happy';
+      if (todayUsage < 1) return 'calm';
+      if (hasGoalProgress) return 'proud';
+      if (streakActive) return 'excited';
+      return 'friendly';
+    };
+
+    const getMoniExpression = (mood) => {
+      const expressions = {
+        celebrating: '🎉',
+        happy: '😊',
+        excited: '🤩',
+        proud: '🥳',
+        encouraging: '💪',
+        calm: '😌',
+        friendly: '🌿',
+        supportive: '🤗',
+      };
+      return expressions[mood] || '🌿';
+    };
+
+    const getMoniMessage = (mood) => {
+      const messages = {
+        celebrating: [t('moniCelebrating') || 'Woohoo! You did it!'],
+        happy: [t('moniHappy') || 'Great day so far!'],
+        excited: [t('moniExcited') || 'You\'re on a roll!'],
+        proud: [t('moniProud') || 'Look at that progress!'],
+        encouraging: [t('moniEncouraging') || 'Fresh start today!'],
+        calm: [t('moniCalm') || 'Balanced and steady.'],
+        friendly: [t('moniFriendly') || 'Hey there, friend!'],
+        supportive: [t('moniSupportive') || 'Tomorrow is a new day!'],
+      };
+      const moodMessages = messages[mood] || messages.friendly;
+      return moodMessages[Math.floor(Math.random() * moodMessages.length)];
+    };
 
     const render = () => {
       const app = $('app');
@@ -2474,6 +2871,38 @@
       const archetypes = getArchetypes();
       const arch = archetypes[state.archetype];
 
+      // Apply archetype-specific theme color
+      const archColor = arch?.color || '#8b5cf6';
+      document.documentElement.style.setProperty('--primary', archColor);
+
+      // Archetype-specific encouraging messages
+      const getArchetypeQuote = () => {
+        const quotes = {
+          dreamer: [
+            t('dreamerQuote1') || 'Dreams become reality, one step at a time ✨',
+            t('dreamerQuote2') || 'Your vision is your compass 🌟',
+            t('dreamerQuote3') || 'Big things start with small savings 💫'
+          ],
+          experiencer: [
+            t('experiencerQuote1') || 'Life is made of moments worth funding 🎢',
+            t('experiencerQuote2') || 'Adventures await, you\'re preparing well! 🌈',
+            t('experiencerQuote3') || 'Each save brings new experiences closer 🎯'
+          ],
+          giver: [
+            t('giverQuote1') || 'Your generosity starts with self-care 💝',
+            t('giverQuote2') || 'Secure your mask first, then help others 🤝',
+            t('giverQuote3') || 'Financial wellness lets you give more 💕'
+          ],
+          planner: [
+            t('plannerQuote1') || 'Every detail matters, you\'re on track 📋',
+            t('plannerQuote2') || 'Systematic progress leads to success 🎯',
+            t('plannerQuote3') || 'Your plan is working beautifully ✅'
+          ]
+        };
+        const typeQuotes = quotes[state.archetype] || quotes.dreamer;
+        return typeQuotes[Math.floor(Math.random() * typeQuotes.length)];
+      };
+
       // Simple text-based add expense modal
       const addExpenseModal = state.showAddExpense ? `
         <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100" onclick="if(event.target===this)closeAddExpense()">
@@ -2525,10 +2954,32 @@
       }
       
       // Home tab content
+      const moniMood = getMoniMood();
+      const moniExpression = getMoniExpression(moniMood);
+      const moniQuote = getArchetypeQuote();
+      const celebrationBanner = state.showCelebration ? `
+        <div class="celebration-banner">
+          <div class="icon">${state.showCelebration.icon}</div>
+          <div class="text">
+            <div class="title">${state.showCelebration.title}</div>
+            <div class="desc">${state.showCelebration.desc}</div>
+          </div>
+          <button class="dismiss" onclick="dismissCelebration()">×</button>
+        </div>
+      ` : '';
+      const streakBadge = state.streakDays >= 3 ? `<span class="streak-badge">🔥 ${state.streakDays} ${t('days') || 'days'}</span>` : '';
       const homeContent = `
         <div class="main-header">
-          <div class="greeting">${t('hey')} ${state.userName} 👋</div>
-          <div class="avatar">${arch?.emoji || '✨'}</div>
+          <div class="greeting">${t('hey')} ${state.userName} 👋 ${streakBadge}</div>
+          <div class="avatar-container" style="position:relative">
+            <div class="avatar" style="background:linear-gradient(135deg, ${archColor}22, ${archColor}11)">${arch?.emoji || '✨'}</div>
+            <div style="position:absolute;bottom:-2px;right:-2px;font-size:10px;background:${archColor};color:white;padding:2px 6px;border-radius:8px;font-weight:600">${arch?.tag || ''}</div>
+          </div>
+        </div>
+        ${celebrationBanner}
+        <div style="background:linear-gradient(135deg, ${archColor}11, ${archColor}05);border:1px solid ${archColor}22;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
+          <span style="font-size:20px">${moniExpression}</span>
+          <span style="font-size:13px;color:var(--text-soft);font-style:italic">${moniQuote}</span>
         </div>
         <div class="spendable">
           <div class="spendable-label">${t('spendableLabel')}</div>
@@ -2537,19 +2988,19 @@
         </div>
         <div class="goals-status">
           ${state.goals.slice(0, 2).map((g, i) => {
-            const isOnTrack = i === 0;
-            const alloc = state.allocations[g.id] || getLang().multiplier || 1000;
-            const months = Math.ceil(g.amount / alloc);
+            const deposited = state.goalDeposits[g.id] || 0;
+            const progress = Math.min(100, Math.round((deposited / g.amount) * 100));
+            const remaining = g.amount - deposited;
+            const alloc = parseInt(state.allocations[g.id]) || 0;
+            const monthsLeft = alloc > 0 ? Math.ceil(remaining / alloc) : 0;
+            const encouragement = progress >= 75 ? '🔥' : progress >= 50 ? '💪' : progress >= 25 ? '🌱' : '✨';
             return `
-              <div class="goal-pill ${isOnTrack ? 'on-track' : 'behind'}" onclick="switchTab('goals')" style="cursor:pointer">
+              <div class="goal-pill" onclick="switchTab('goals')" style="cursor:pointer">
                 <span class="goal-emoji">${g.e}</span>
                 <div class="goal-info">
                   <div class="goal-name">${getGoalName(g)}</div>
-                  <div class="goal-time">
-                    <span class="time-expect">${t('goalTarget')}: ${months} ${t('months')}</span>
-                    <span class="time-reality ${isOnTrack ? 'on-track' : 'behind'}">→ ${t('actual')}: ${isOnTrack ? months : months + 1} ${t('months')}</span>
-                  </div>
-                  <div class="goal-progress"><div class="goal-progress-fill" style="width: ${isOnTrack ? '72' : '40'}%"></div></div>
+                  <div class="goal-meta">${progress > 0 ? fmt(deposited) + ' · ' : ''}${monthsLeft > 0 ? monthsLeft + ' ' + t('months') + ' ' + t('remaining').toLowerCase() : t('setAllocation')} ${encouragement}</div>
+                  <div class="goal-progress"><div class="goal-progress-fill" style="width: ${progress}%"></div></div>
                 </div>
               </div>
             `;
@@ -2559,7 +3010,7 @@
           <div class="recent-header">
             <span class="recent-title">${t('today')}</span>
             <div style="display:flex;align-items:center;gap:12px">
-              <span class="recent-total">${getTodayTransactions().length > 0 ? '-' + fmt(todaySpent()) : ''}</span>
+              <span class="recent-total">${getTodayTransactions().length > 0 ? fmt(todaySpent()) : ''}</span>
               <button onclick="switchTab('history')" style="background:none;border:none;color:var(--primary);font-size:13px;cursor:pointer;font-family:inherit">${t('seeAll')} →</button>
             </div>
           </div>
@@ -2568,7 +3019,7 @@
               <div class="recent-item">
                 <span class="recent-emoji">${tx.emoji}</span>
                 <span class="recent-name">${tx.name}</span>
-                <span class="recent-amount">-${fmt(tx.amount)}</span>
+                <span class="recent-amount">${fmt(tx.amount)}</span>
               </div>
             `).join('') : `
               <div style="text-align:center;padding:24px;color:var(--text-muted)">
@@ -2673,7 +3124,7 @@
             <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
               <div style="display:flex;justify-content:space-between;align-items:center">
                 <span style="font-weight:600">${t('thisMonth')}</span>
-                <span style="font-weight:700;color:var(--orange)">-${fmt(monthSpent())}</span>
+                <span style="font-weight:700;color:var(--text)">${fmt(monthSpent())}</span>
               </div>
             </div>
             ${groupKeys.map(dateKey => {
@@ -2684,13 +3135,13 @@
                 <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
                   <div style="display:flex;justify-content:space-between;font-weight:600;font-size:14px;color:var(--text-muted);margin-bottom:12px">
                     <span>${dateLabel}</span>
-                    <span>-${fmt(dayTotal)}</span>
+                    <span>${fmt(dayTotal)}</span>
                   </div>
                   ${txs.map(tx => `
                     <div style="display:flex;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)">
                       <span style="font-size:24px;margin-right:12px">${tx.emoji}</span>
                       <span style="flex:1;font-weight:500">${tx.name}</span>
-                      <span style="font-weight:600;color:var(--text-soft)">-${fmt(tx.amount)}</span>
+                      <span style="font-weight:600;color:var(--text-soft)">${fmt(tx.amount)}</span>
                     </div>
                   `).join('')}
                 </div>
@@ -3075,8 +3526,17 @@ Ví dụ response:
 
       // Add transaction with timestamp
       state.transactions.unshift({ emoji, name, amount, timestamp: Date.now() });
+      state.totalExpensesLogged++;
       state.showAddExpense = false;
+      updateStreak();
       saveState();
+
+      // Check for milestones
+      const milestones = checkMilestones();
+      if (milestones.length > 0) {
+        celebrateMilestone(milestones[0]);
+      }
+
       render();
     };
     window.confirmAddExpenseFromModal = () => {
@@ -3118,6 +3578,13 @@ Ví dụ response:
       if (amount > 0) {
         state.goalDeposits[goalId] = currentDeposit + Math.min(amount, remaining);
         saveState();
+
+        // Check for goal milestones
+        const milestones = checkMilestones();
+        if (milestones.length > 0) {
+          celebrateMilestone(milestones[0]);
+        }
+
         render();
       }
     };
