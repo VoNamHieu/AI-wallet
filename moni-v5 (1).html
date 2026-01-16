@@ -3487,7 +3487,7 @@
                   <span style="font-size:14px;letter-spacing:1px;color:${peaceColor}">${dots}</span>
                   <span style="font-size:13px;font-weight:600;color:${peaceColor}">${peaceStatus} ${peaceEmoji}</span>
                 </div>
-                <div style="font-size:12px;color:var(--text-muted)">${t('remaining')} ${daysLeft} ${t('daysLeft').toLowerCase()} · ${paceMessage}</div>
+                <div style="font-size:12px;color:var(--text-muted)">${t('remaining')} ${daysLeft} ${(t('daysLeft') || 'days left').toLowerCase()} · ${paceMessage}</div>
               </div>
             `;
           })()}
@@ -3836,7 +3836,9 @@
       `;
 
       // Settings tab content
-      const totalFixed = Object.values(state.fixedExpenses).reduce((a, b) => a + (parseInt(b) || 0), 0);
+      const totalFixedSettings = Array.isArray(state.fixedExpenses)
+        ? state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0)
+        : 0;
       const totalAlloc = Object.values(state.allocations).reduce((a, b) => a + (parseInt(b) || 0), 0);
       const settingsContent = `
         <div class="main-header">
@@ -3865,13 +3867,15 @@
                 <span style="font-size:24px">🏠</span>
                 <div>
                   <div style="font-size:13px;color:var(--text-muted)">${t('fixedExpenses') || 'Fixed Expenses'}</div>
-                  <div style="font-size:18px;font-weight:700">${fmt(totalFixed)}/${t('month') || 'mo'}</div>
+                  <div style="font-size:18px;font-weight:700">${fmt(totalFixedSettings)}/${t('month') || 'mo'}</div>
                 </div>
               </div>
               <button onclick="editFixedExpenses()" style="padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('edit') || 'Edit'}</button>
             </div>
             <div style="font-size:12px;color:var(--text-muted);padding-left:36px">
-              ${Object.entries(state.fixedExpenses).filter(([k, v]) => v > 0).map(([k, v]) => `${t(k) || k}: ${fmt(v)}`).join(' · ') || t('noFixedExpenses') || 'No fixed expenses'}
+              ${Array.isArray(state.fixedExpenses) && state.fixedExpenses.filter(f => parseInt(f.amount) > 0).length > 0
+                ? state.fixedExpenses.filter(f => parseInt(f.amount) > 0).map(f => `${t(f.nameKey) || f.nameKey}: ${fmt(f.amount)}`).join(' · ')
+                : (t('noFixedExpenses') || 'No fixed expenses')}
             </div>
           </div>
 
@@ -4419,14 +4423,14 @@ Ví dụ response:
 
     window.editFixedExpenses = () => {
       // Cycle through each fixed expense and let user edit
-      const expenses = ['rent', 'electric', 'water', 'internet', 'phone', 'insurance'];
-      expenses.forEach(key => {
-        const current = state.fixedExpenses[key] || 0;
-        const label = t(key) || key;
-        const input = prompt(`${label}:`, current > 0 ? fmt(current) : '0');
+      if (!Array.isArray(state.fixedExpenses)) return;
+      state.fixedExpenses.forEach((expense, index) => {
+        const current = parseInt(expense.amount) || 0;
+        const label = t(expense.nameKey) || expense.nameKey;
+        const input = prompt(`${expense.e} ${label}:`, current > 0 ? current.toString() : '0');
         if (input !== null) {
           const amount = parseAmount(input);
-          state.fixedExpenses[key] = amount;
+          state.fixedExpenses[index].amount = amount.toString();
         }
       });
       saveState();
@@ -4435,6 +4439,10 @@ Ví dụ response:
 
     window.editGoalsAllocation = () => {
       // Let user edit allocation for each goal
+      if (!Array.isArray(state.goals) || state.goals.length === 0) {
+        alert(t('noGoals') || 'No goals set');
+        return;
+      }
       state.goals.forEach(g => {
         const current = state.allocations[g.id] || 0;
         const goalName = getGoalName(g);
