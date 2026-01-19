@@ -4132,58 +4132,6 @@
         { key: 'necessities', emoji: '🎯', label: t('necessities') || 'Necessities', color: '#10b981', amount: categoryTotals.necessities },
       ];
 
-      const analyticsContent = `
-        <div class="main-header">
-          <div class="greeting">📊 ${t('analytics') || 'Analytics'}</div>
-          <div class="avatar" style="background:linear-gradient(135deg, ${archColor}22, ${archColor}11)">${arch?.emoji || '✨'}</div>
-        </div>
-        <div style="margin-top:16px">
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:20px;padding:24px;margin-bottom:16px">
-            <div style="text-align:center;margin-bottom:20px">
-              <div style="font-size:13px;color:var(--text-muted);margin-bottom:4px">${t('thisMonthSpending') || 'This month you spent'}</div>
-              <div style="font-size:32px;font-weight:700">${fmt(totalSpent)}</div>
-            </div>
-            <div style="font-size:14px;font-weight:600;margin-bottom:16px;color:var(--text-muted)">${t('meaningAttached') || 'Meaning attached to spending'}:</div>
-            ${categoryData.map(cat => {
-              const percent = totalSpent > 0 ? Math.round((cat.amount / totalSpent) * 100) : 0;
-              return `
-                <div style="margin-bottom:16px">
-                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-                    <div style="display:flex;align-items:center;gap:8px">
-                      <span style="font-size:20px">${cat.emoji}</span>
-                      <span style="font-weight:600">${cat.label}</span>
-                    </div>
-                    <div style="text-align:right">
-                      <span style="font-weight:700">${fmt(cat.amount)}</span>
-                      <span style="color:var(--text-muted);font-size:13px;margin-left:4px">(${percent}%)</span>
-                    </div>
-                  </div>
-                  <div style="background:var(--bg);border-radius:6px;height:8px;overflow:hidden">
-                    <div style="background:${cat.color};height:100%;width:${percent}%;border-radius:6px;transition:width 0.3s"></div>
-                  </div>
-                </div>
-              `;
-            }).join('')}
-          </div>
-          ${monthTx.length === 0 ? `
-            <div style="text-align:center;padding:32px;color:var(--text-muted)">
-              <div style="font-size:40px;margin-bottom:12px">📊</div>
-              <div style="font-size:14px">${t('noDataYet') || 'Add expenses to see analytics'}</div>
-            </div>
-          ` : `
-            <div style="background:linear-gradient(135deg, ${archColor}11, ${archColor}05);border:1px solid ${archColor}22;border-radius:16px;padding:16px">
-              <div style="font-size:13px;color:var(--text-soft);text-align:center">
-                ${categoryTotals.relationships > categoryTotals.selfcare && categoryTotals.relationships > categoryTotals.necessities
-                  ? `💝 ${t('relationshipsFocus') || 'You prioritize relationships - beautiful!'}`
-                  : categoryTotals.selfcare > categoryTotals.necessities
-                    ? `🧘 ${t('selfCareFocus') || 'You\'re taking care of yourself - important!'}`
-                    : `✅ ${t('necessitiesFocus') || 'Focused on essentials - practical!'}`}
-              </div>
-            </div>
-          `}
-        </div>
-      `;
-
       // Settings tab content
       const totalFixedSettings = Array.isArray(state.fixedExpenses)
         ? state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0)
@@ -4371,7 +4319,6 @@
       // Select content based on active tab
       let tabContent = homeContent;
       if (state.activeTab === 'goals') tabContent = goalsContent;
-      else if (state.activeTab === 'analytics') tabContent = analyticsContent;
       else if (state.activeTab === 'history') tabContent = historyContent;
       else if (state.activeTab === 'settings') tabContent = settingsContent;
 
@@ -4384,7 +4331,6 @@
         <div class="tab-bar">
           <button class="tab ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
           <button class="tab ${state.activeTab === 'goals' ? 'active' : ''}" onclick="switchTab('goals')"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
-          <button class="tab ${state.activeTab === 'analytics' ? 'active' : ''}" onclick="switchTab('analytics')"><span class="tab-icon">📊</span><span class="tab-label">${t('analytics') || 'Stats'}</span></button>
           <button class="tab ${state.activeTab === 'history' ? 'active' : ''}" onclick="switchTab('history')"><span class="tab-icon">📜</span><span class="tab-label">${t('history')}</span></button>
           <button class="tab ${state.activeTab === 'settings' ? 'active' : ''}" onclick="switchTab('settings')"><span class="tab-icon">⚙️</span><span class="tab-label">${t('settings') || 'Settings'}</span></button>
         </div>
