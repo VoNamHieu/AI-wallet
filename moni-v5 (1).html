@@ -2483,8 +2483,11 @@
 
     // Load saved data
     const savedData = loadState();
-    // Always show onboarding first (for testing/development)
-    const isReturningUser = false;
+    // Only skip onboarding if user has completed it with valid data
+    const isReturningUser = savedData &&
+                            savedData.onboardingCompleted &&
+                            savedData.userName &&
+                            savedData.income;
 
     let state = {
       screen: isReturningUser ? 'main' : 'language',
@@ -3303,11 +3306,11 @@
               </div>
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
                 <span style="color:var(--text-muted);font-size:14px">${t('fixedExpenses')}</span>
-                <span style="font-weight:600;color:var(--text-soft)">-${fmt(fixed)}</span>
+                <span style="font-weight:600;color:var(--text-soft)">${fmt(fixed)}</span>
               </div>
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
                 <span style="color:var(--text-muted);font-size:14px">${t('savingForGoals')}</span>
-                <span data-alloc-total style="font-weight:600;color:var(--orange)">-${fmt(allocated)}</span>
+                <span data-alloc-total style="font-weight:600;color:var(--orange)">${fmt(allocated)}</span>
               </div>
               <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between">
                 <span style="font-weight:600">${t('spendComfortably')}</span>
@@ -3331,7 +3334,7 @@
       const archColor = arch?.color || '#8b5cf6';
       document.documentElement.style.setProperty('--primary', archColor);
 
-      // Archetype-specific encouraging messages
+      // Archetype-specific encouraging messages (cached for the day)
       const getArchetypeQuote = () => {
         const quotes = {
           dreamer: [
@@ -3356,7 +3359,9 @@
           ]
         };
         const typeQuotes = quotes[state.archetype] || quotes.dreamer;
-        return typeQuotes[Math.floor(Math.random() * typeQuotes.length)];
+        // Use day of year as index to keep same quote all day
+        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+        return typeQuotes[dayOfYear % typeQuotes.length];
       };
 
       // Simple text-based add expense modal
