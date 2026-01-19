@@ -4137,7 +4137,6 @@
       const totalFixedSettings = Array.isArray(state.fixedExpenses)
         ? state.fixedExpenses.reduce((a, b) => a + (parseInt(b.amount) || 0), 0)
         : 0;
-      const totalAlloc = Object.values(state.allocations).reduce((a, b) => a + (parseInt(b) || 0), 0);
       const settingsContent = `
         <div class="main-header">
           <div class="greeting">⚙️ ${t('settings') || 'Settings'}</div>
@@ -4193,23 +4192,6 @@
                 </button>
               </div>
             ` : ''}
-          </div>
-
-          <!-- Goals & Allocation -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-              <div style="display:flex;align-items:center;gap:12px">
-                <span style="font-size:24px">🎯</span>
-                <div>
-                  <div style="font-size:13px;color:var(--text-muted)">${t('goalsAllocation') || 'Goals & Allocation'}</div>
-                  <div style="font-size:18px;font-weight:700">${fmt(totalAlloc)}/${t('month') || 'mo'}</div>
-                </div>
-              </div>
-              <button onclick="editGoalsAllocation()" style="padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('edit') || 'Edit'}</button>
-            </div>
-            <div style="font-size:12px;color:var(--text-muted);padding-left:36px">
-              ${state.goals.map(g => `${g.e} ${getGoalName(g)}: ${fmt(state.allocations[g.id] || 0)}/${t('month') || 'mo'}`).join(' · ') || t('noGoals') || 'No goals set'}
-            </div>
           </div>
 
           <!-- Personality -->
