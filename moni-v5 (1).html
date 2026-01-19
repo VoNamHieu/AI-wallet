@@ -2731,7 +2731,9 @@
       showAddExpense: false,
       showAddFixed: false,
       showAddGoal: false,
+      showFabMenu: false,
       fixedExpanded: false,
+      selectedGoalEmoji: '🎯',
       showCelebration: null,
       newExpense: { name: '', amount: '' },
       newFixed: { name: '', amount: '' },
@@ -3707,6 +3709,57 @@
         </div>
       ` : '';
 
+      // Add Goal Modal
+      const addGoalModal = state.showAddGoal ? `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100" onclick="if(event.target===this)closeAddGoal()">
+          <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+              <span style="font-size:20px;font-weight:700">🎯 ${t('addGoal') || 'Thêm mục tiêu'}</span>
+              <button onclick="closeAddGoal()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+            </div>
+            ${state.goals.length >= 3 ? `
+              <div style="text-align:center;padding:24px;color:var(--text-muted)">
+                <div style="font-size:32px;margin-bottom:12px">🎯</div>
+                <div style="font-size:14px">${t('maxGoalsReached') || 'Bạn đã có tối đa 3 mục tiêu'}</div>
+              </div>
+            ` : `
+              <div style="margin-bottom:16px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('goalName') || 'Tên mục tiêu'}</label>
+                <input id="newGoalNameInput" class="input" placeholder="${t('goalNamePlaceholder') || 'VD: MacBook, Du lịch Đà Lạt...'}" style="font-size:16px">
+              </div>
+              <div style="margin-bottom:20px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amountNeeded') || 'Số tiền cần'}</label>
+                <input id="newGoalAmountInput" class="input" placeholder="5,000,000" style="font-size:18px;font-weight:600">
+              </div>
+              <div style="margin-bottom:20px">
+                <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('chooseEmoji') || 'Chọn biểu tượng'}</label>
+                <div style="display:flex;flex-wrap:wrap;gap:8px">
+                  ${['🎯', '✈️', '🏠', '💻', '📱', '🎓', '💍', '🚗', '👜', '⌚', '🎸', '📷'].map(e => `
+                    <button onclick="selectGoalEmoji('${e}')" style="width:44px;height:44px;border-radius:12px;border:2px solid ${state.selectedGoalEmoji === e ? 'var(--primary)' : 'var(--border)'};background:${state.selectedGoalEmoji === e ? 'var(--primary)' + '15' : 'var(--card)'};font-size:20px;cursor:pointer;transition:all 0.2s">${e}</button>
+                  `).join('')}
+                </div>
+              </div>
+              <button class="btn" onclick="submitNewGoal()">${t('addGoal') || 'Thêm mục tiêu'}</button>
+            `}
+          </div>
+        </div>
+      ` : '';
+
+      // FAB Menu
+      const fabMenu = state.showFabMenu ? `
+        <div style="position:absolute;inset:0;z-index:90" onclick="closeFabMenu()"></div>
+        <div style="position:fixed;bottom:160px;right:24px;z-index:95;display:flex;flex-direction:column;gap:12px;animation:slideUp 0.2s ease">
+          <button onclick="openAddGoalFromFab()" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.1);cursor:pointer;font-family:inherit">
+            <span style="width:36px;height:36px;background:linear-gradient(135deg,#10b981,#059669);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">🎯</span>
+            <span style="font-size:14px;font-weight:600;color:var(--text)">${t('addGoal') || 'Thêm mục tiêu'}</span>
+          </button>
+          <button onclick="openAddExpenseFromFab()" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.1);cursor:pointer;font-family:inherit">
+            <span style="width:36px;height:36px;background:linear-gradient(135deg,#f97316,#ea580c);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">💸</span>
+            <span style="font-size:14px;font-weight:600;color:var(--text)">${t('addExpense') || 'Thêm chi tiêu'}</span>
+          </button>
+        </div>
+      ` : '';
+
       // Chat response section
       let chatSection = '';
       if (state.chatLoading) {
@@ -4047,14 +4100,9 @@
             <div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
               <div style="font-size:48px;margin-bottom:16px">${arch?.emoji || '🎯'}</div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px">${t('noGoalsYet') || 'Chưa có mục tiêu'}</div>
-              <div style="font-size:14px">${t('goalsWillAppear') || 'Thêm mục tiêu để bắt đầu'}</div>
+              <div style="font-size:14px">${t('goalsWillAppear') || 'Bấm + để thêm mục tiêu mới'}</div>
             </div>
           `}
-          ${state.goals.length < 3 ? `
-            <button onclick="openAddGoalModal()" style="width:100%;margin-top:16px;padding:16px;background:var(--card);border:1px dashed var(--border);border-radius:16px;font-size:15px;color:var(--text-soft);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s" onmouseover="this.style.borderColor='${archColor}';this.style.color='${archColor}'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-soft)'">
-              <span style="font-size:20px">+</span> ${t('addGoal') || 'Thêm mục tiêu'}
-            </button>
-          ` : ''}
         </div>
       `;
 
@@ -4333,7 +4381,8 @@
         <div class="content" style="padding: 0 24px;">
           ${tabContent}
         </div>
-        <button class="fab" onclick="openAddExpense()">+</button>
+        <button class="fab" onclick="toggleFabMenu()" style="transform:rotate(${state.showFabMenu ? '45deg' : '0deg'});transition:transform 0.2s">+</button>
+        ${fabMenu}
         <div class="tab-bar">
           <button class="tab ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
           <button class="tab ${state.activeTab === 'goals' ? 'active' : ''}" onclick="switchTab('goals')"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
@@ -4341,6 +4390,7 @@
           <button class="tab ${state.activeTab === 'settings' ? 'active' : ''}" onclick="switchTab('settings')"><span class="tab-icon">⚙️</span><span class="tab-label">${t('settings') || 'Settings'}</span></button>
         </div>
         ${addExpenseModal}
+        ${addGoalModal}
       `;
     };
 
@@ -4445,30 +4495,61 @@
       }
     };
 
-    window.openAddGoalModal = () => {
-      if (state.goals.length >= 3) {
-        alert(t('maxGoalsReached') || 'Bạn đã có tối đa 3 mục tiêu');
+    // FAB Menu functions
+    window.toggleFabMenu = () => {
+      state.showFabMenu = !state.showFabMenu;
+      render();
+    };
+    window.closeFabMenu = () => {
+      state.showFabMenu = false;
+      render();
+    };
+    window.openAddExpenseFromFab = () => {
+      state.showFabMenu = false;
+      state.showAddExpense = true;
+      render();
+      setTimeout(() => $('expenseText')?.focus(), 100);
+    };
+    window.openAddGoalFromFab = () => {
+      state.showFabMenu = false;
+      state.showAddGoal = true;
+      state.selectedGoalEmoji = '🎯';
+      render();
+      setTimeout(() => $('newGoalNameInput')?.focus(), 100);
+    };
+
+    // Goal Modal functions
+    window.closeAddGoal = () => {
+      state.showAddGoal = false;
+      render();
+    };
+    window.selectGoalEmoji = (emoji) => {
+      state.selectedGoalEmoji = emoji;
+      render();
+    };
+    window.submitNewGoal = () => {
+      const name = $('newGoalNameInput')?.value;
+      const amountStr = $('newGoalAmountInput')?.value;
+      if (!name || !name.trim()) {
+        alert(t('enterGoalName') || 'Vui lòng nhập tên mục tiêu');
         return;
       }
-      const name = prompt(t('goalName') || 'Tên mục tiêu:', '');
-      if (!name || !name.trim()) return;
-      const amountStr = prompt(t('amountNeeded') || 'Số tiền cần:', '');
-      if (!amountStr) return;
       const amount = parseAmount(amountStr);
       if (amount <= 0) {
         alert(t('invalidAmount') || 'Số tiền không hợp lệ');
         return;
       }
-      const emojis = ['🎯', '⭐', '🌟', '💫', '🎁', '🏆', '💎', '🚀', '✈️', '🏠', '💻', '📱', '🎓', '💍', '🚗'];
-      state.goals.push({
+      const newGoal = {
         id: 'custom_' + Date.now(),
-        e: emojis[Math.floor(Math.random() * emojis.length)],
+        e: state.selectedGoalEmoji || '🎯',
         customName: name.trim(),
         nameKey: '',
         amount: amount
-      });
-      state.goalDeposits[state.goals[state.goals.length - 1].id] = 0;
-      state.allocations[state.goals[state.goals.length - 1].id] = 0;
+      };
+      state.goals.push(newGoal);
+      state.goalDeposits[newGoal.id] = 0;
+      state.allocations[newGoal.id] = 0;
+      state.showAddGoal = false;
       saveState();
       render();
     };
