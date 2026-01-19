@@ -4046,10 +4046,15 @@
           ${state.goals.length > 0 ? state.goals.map(g => renderGoalCard(g)).join('') : `
             <div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
               <div style="font-size:48px;margin-bottom:16px">${arch?.emoji || '🎯'}</div>
-              <div style="font-size:16px;font-weight:600;margin-bottom:8px">${t('noGoalsYet')}</div>
-              <div style="font-size:14px">${t('goalsWillAppear')}</div>
+              <div style="font-size:16px;font-weight:600;margin-bottom:8px">${t('noGoalsYet') || 'Chưa có mục tiêu'}</div>
+              <div style="font-size:14px">${t('goalsWillAppear') || 'Thêm mục tiêu để bắt đầu'}</div>
             </div>
           `}
+          ${state.goals.length < 3 ? `
+            <button onclick="openAddGoalModal()" style="width:100%;margin-top:16px;padding:16px;background:var(--card);border:1px dashed var(--border);border-radius:16px;font-size:15px;color:var(--text-soft);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s" onmouseover="this.style.borderColor='${archColor}';this.style.color='${archColor}'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--text-soft)'">
+              <span style="font-size:20px">+</span> ${t('addGoal') || 'Thêm mục tiêu'}
+            </button>
+          ` : ''}
         </div>
       `;
 
@@ -4439,7 +4444,35 @@
         render();
       }
     };
-    
+
+    window.openAddGoalModal = () => {
+      if (state.goals.length >= 3) {
+        alert(t('maxGoalsReached') || 'Bạn đã có tối đa 3 mục tiêu');
+        return;
+      }
+      const name = prompt(t('goalName') || 'Tên mục tiêu:', '');
+      if (!name || !name.trim()) return;
+      const amountStr = prompt(t('amountNeeded') || 'Số tiền cần:', '');
+      if (!amountStr) return;
+      const amount = parseAmount(amountStr);
+      if (amount <= 0) {
+        alert(t('invalidAmount') || 'Số tiền không hợp lệ');
+        return;
+      }
+      const emojis = ['🎯', '⭐', '🌟', '💫', '🎁', '🏆', '💎', '🚀', '✈️', '🏠', '💻', '📱', '🎓', '💍', '🚗'];
+      state.goals.push({
+        id: 'custom_' + Date.now(),
+        e: emojis[Math.floor(Math.random() * emojis.length)],
+        customName: name.trim(),
+        nameKey: '',
+        amount: amount
+      });
+      state.goalDeposits[state.goals[state.goals.length - 1].id] = 0;
+      state.allocations[state.goals[state.goals.length - 1].id] = 0;
+      saveState();
+      render();
+    };
+
     // Allocation  
     window.updateAllocation = (id, val) => {
       // AI parse for allocation: "500k", "1tr", "1 million", etc.
