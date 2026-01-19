@@ -245,44 +245,208 @@
     .greeting { font-size: 18px; font-weight: 600; color: var(--text); }
     .avatar { width: 40px; height: 40px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
 
-    /* New Homepage Design */
-    .home-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-    .home-date { font-size: 16px; font-weight: 600; color: var(--text); }
-    .home-profile { width: 40px; height: 40px; background: linear-gradient(135deg, #e0e0e0, #f5f5f5); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+    /* New Homepage Design - Glass & Green Gradient */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.7);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.8);
+      border-radius: 20px;
+    }
 
-    .spendable-section { text-align: center; margin-bottom: 20px; }
-    .spendable-title { font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
-    .spendable-value { font-size: 42px; font-weight: 800; color: var(--text); letter-spacing: -2px; }
+    .slide-up {
+      animation: slideUp 0.5s ease-out forwards;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 
-    .finance-card { background: linear-gradient(135deg, #438EFE, #5B7CF8); border-radius: 20px; padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden; }
-    .finance-card::before { content: ''; position: absolute; top: -50%; right: -30%; width: 200px; height: 200px; background: rgba(255,255,255,0.1); border-radius: 50%; }
-    .finance-card-content { position: relative; z-index: 1; }
-    .finance-box { background: rgba(255,255,255,0.2); backdrop-filter: blur(10px); border-radius: 14px; padding: 16px; }
-    .finance-box-label { font-size: 12px; color: rgba(255,255,255,0.8); margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
-    .finance-box-label .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; }
-    .finance-box-value { font-size: 22px; font-weight: 700; color: white; }
-    .finance-cycle { margin-top: 14px; font-size: 13px; color: rgba(255,255,255,0.8); text-align: center; }
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0 16px;
+    }
+    .home-greeting { color: var(--text-muted); font-size: 14px; }
+    .home-name { font-size: 24px; font-weight: 700; color: var(--text); }
+    .home-avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #10b981, #059669);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+      font-size: 18px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
 
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
-    .section-link { font-size: 13px; color: var(--primary); cursor: pointer; }
+    .main-card {
+      background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+      box-shadow: 0 20px 40px -12px rgba(16, 185, 129, 0.4);
+      border-radius: 24px;
+      padding: 24px;
+      color: white;
+      margin-bottom: 16px;
+    }
+    .main-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+    }
+    .main-card-label { font-size: 14px; color: rgba(255,255,255,0.8); margin-bottom: 4px; }
+    .main-card-amount { font-size: 36px; font-weight: 800; letter-spacing: -1px; }
+    .main-card-sub { font-size: 12px; color: rgba(255,255,255,0.7); margin-top: 4px; }
+    .main-card-badge {
+      background: rgba(255,255,255,0.2);
+      backdrop-filter: blur(10px);
+      border-radius: 14px;
+      padding: 10px 14px;
+      text-align: center;
+    }
+    .main-card-badge-label { font-size: 11px; color: rgba(255,255,255,0.8); }
+    .main-card-badge-value { font-size: 15px; font-weight: 700; }
+    .main-card-progress {
+      background: rgba(255,255,255,0.15);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 14px 16px;
+    }
+    .main-card-progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+    .main-card-progress-label { color: rgba(255,255,255,0.8); }
+    .main-card-progress-value { font-weight: 600; }
+    .main-card-progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.2);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .main-card-progress-fill {
+      height: 100%;
+      background: white;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .quick-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .stat-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+    }
+    .stat-icon.buffer { background: #fef3c7; }
+    .stat-icon.compare { background: #dbeafe; }
+    .stat-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+    .stat-value { font-size: 18px; font-weight: 700; color: var(--text); }
+    .stat-value.positive { color: #10b981; }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .section-title { font-size: 16px; font-weight: 600; color: var(--text); }
+    .section-link { font-size: 13px; color: #10b981; cursor: pointer; font-weight: 500; }
 
     .goal-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-    .goal-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; cursor: pointer; transition: all 0.2s; }
-    .goal-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .goal-card-icon { font-size: 28px; }
+    .goal-card {
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .goal-card:hover { transform: translateX(4px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+    .goal-card-icon {
+      width: 48px;
+      height: 48px;
+      background: var(--bg);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
     .goal-card-info { flex: 1; }
-    .goal-card-name { font-size: 14px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
-    .goal-card-progress-bar { width: 100%; height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
-    .goal-card-progress-fill { height: 100%; background: var(--primary); border-radius: 3px; }
-    .goal-card-percent { font-size: 14px; font-weight: 700; color: var(--primary); }
+    .goal-card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .goal-card-name { font-size: 15px; font-weight: 600; color: var(--text); }
+    .goal-card-percent { font-size: 14px; font-weight: 600; color: var(--text-muted); }
+    .goal-card-percent.complete { color: #10b981; }
+    .goal-card-progress-bar { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; }
+    .goal-card-progress-fill { height: 100%; background: linear-gradient(90deg, #10b981, #34d399); border-radius: 4px; transition: width 0.7s ease; }
+    .goal-card-progress-fill.complete { background: #10b981; }
+    .goal-card-meta { font-size: 12px; color: var(--text-muted); margin-top: 6px; }
 
-    .buffer-card { background: linear-gradient(135deg, #10b98115, #10b98108); border: 1px solid #10b98133; border-radius: 14px; padding: 14px 16px; margin-bottom: 20px; display: flex; align-items: center; gap: 14px; }
-    .buffer-icon { font-size: 24px; }
-    .buffer-info { flex: 1; }
-    .buffer-label { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
-    .buffer-value { font-size: 18px; font-weight: 700; color: #10b981; }
-    .buffer-action { padding: 8px 14px; background: #10b981; color: white; border: none; border-radius: 10px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+    .tx-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+    .tx-card {
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .tx-card:hover { transform: translateX(4px); }
+    .tx-card-left { display: flex; align-items: center; gap: 12px; }
+    .tx-card-icon {
+      width: 44px;
+      height: 44px;
+      background: var(--bg);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .tx-card-name { font-size: 14px; font-weight: 500; color: var(--text); }
+    .tx-card-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .tx-card-amount { font-size: 15px; font-weight: 600; color: var(--text); }
+
+    .fab-btn {
+      position: fixed;
+      bottom: 100px;
+      right: 32px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      font-size: 28px;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(16, 185, 129, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 100;
+    }
+    .fab-btn:hover { transform: scale(1.1); }
+    .fab-btn:active { transform: scale(0.95); }
 
     /* Legacy support */
     .spendable { text-align: center; margin-bottom: 40px; }
@@ -3600,88 +3764,126 @@
         </div>
       ` : '';
       const streakBadge = state.streakDays >= 3 ? `<span class="streak-badge">🔥 ${state.streakDays} ${t('days') || 'days'}</span>` : '';
+      // Calculate spending stats
+      const spent = cycleSpent();
+      const monthlyBudget = state.income - totalFixed();
+      const spentPercent = monthlyBudget > 0 ? Math.min(100, Math.round((spent / monthlyBudget) * 100)) : 0;
+
       const homeContent = `
         ${celebrationBanner}
-        <!-- Header with Date & Profile -->
-        <div class="home-header">
-          <div class="home-date">${t('hey')} ${state.userName} ${streakBadge}</div>
-          <div class="home-profile" style="background:${archColor};color:white;font-size:14px;font-weight:700">${state.userName?.charAt(0)?.toUpperCase() || '👤'}</div>
+
+        <!-- Header -->
+        <div class="home-header slide-up">
+          <div>
+            <div class="home-greeting">Xin chào 👋</div>
+            <div class="home-name">${state.userName} ${streakBadge}</div>
+          </div>
+          <div class="home-avatar">${state.userName?.charAt(0)?.toUpperCase() || 'M'}</div>
         </div>
 
-        <!-- Spendable Section -->
-        <div class="spendable-section">
-          <div class="spendable-title">${t('spendableLabel')}</div>
-          <div class="spendable-value">${formatSpendable(remaining > 0 ? remaining : 0)}</div>
-        </div>
-
-        <!-- Finance Card with Expense -->
-        <div class="finance-card">
-          <div class="finance-card-content">
-            <div class="finance-box">
-              <div class="finance-box-label"><span class="dot"></span> ${t('totalExpenses') || 'Chi tiêu'}</div>
-              <div class="finance-box-value">${fmt(cycleSpent())}</div>
+        <!-- Main Balance Card -->
+        <div class="main-card slide-up" style="animation-delay:0.1s">
+          <div class="main-card-top">
+            <div>
+              <div class="main-card-label">${t('spendableLabel') || 'Có thể chi tiêu'}</div>
+              <div class="main-card-amount">${formatSpendable(remaining > 0 ? remaining : 0)}</div>
+              <div class="main-card-sub">≈ ${fmt(remaining > 0 ? remaining : 0)}</div>
             </div>
-            <div class="finance-cycle">
-              ${getDaysRemainingInCycle()} ${t('daysLeft') || 'ngày'} · Reset ngày ${state.cycleDay || 1}
+            <div class="main-card-badge">
+              <div class="main-card-badge-label">Còn lại</div>
+              <div class="main-card-badge-value">${getDaysRemainingInCycle()} ngày</div>
+            </div>
+          </div>
+          <div class="main-card-progress">
+            <div class="main-card-progress-header">
+              <span class="main-card-progress-label">Đã chi tháng này</span>
+              <span class="main-card-progress-value">${fmt(spent)} / ${fmt(monthlyBudget)}</span>
+            </div>
+            <div class="main-card-progress-bar">
+              <div class="main-card-progress-fill" style="width:${spentPercent}%"></div>
             </div>
           </div>
         </div>
 
-        <!-- Buffer Section -->
-        ${state.buffer > 0 ? `
-          <div class="buffer-card">
-            <div class="buffer-icon">🛡️</div>
-            <div class="buffer-info">
-              <div class="buffer-label">${t('bufferLabel') || 'Quỹ dự phòng'}</div>
-              <div class="buffer-value">${fmt(state.buffer)}</div>
+        <!-- Quick Stats -->
+        <div class="quick-stats slide-up" style="animation-delay:0.2s">
+          <div class="glass-card stat-card">
+            <div class="stat-icon buffer">🛡️</div>
+            <div>
+              <div class="stat-label">Quỹ dự phòng</div>
+              <div class="stat-value">${fmt(state.buffer || 0)}</div>
             </div>
-            <button class="buffer-action" onclick="switchTab('settings')">${t('manage') || 'Quản lý'}</button>
           </div>
-        ` : ''}
+          <div class="glass-card stat-card">
+            <div class="stat-icon compare">📊</div>
+            <div>
+              <div class="stat-label">Ngày reset</div>
+              <div class="stat-value">${state.cycleDay || 1}</div>
+            </div>
+          </div>
+        </div>
 
         <!-- Goals Section -->
-        <div class="section-header">
+        <div class="section-header slide-up" style="animation-delay:0.3s">
           <span class="section-title">${t('yourGoals') || 'Mục tiêu'}</span>
-          <span class="section-link" onclick="switchTab('goals')">${t('seeAll')} →</span>
+          <span class="section-link" onclick="switchTab('goals')">Xem tất cả →</span>
         </div>
-        <div class="goal-cards">
+        <div class="goal-cards slide-up" style="animation-delay:0.3s">
           ${state.goals.slice(0, 2).map((g, i) => {
             const deposited = state.goalDeposits[g.id] || 0;
             const progress = Math.min(100, Math.round((deposited / g.amount) * 100));
+            const isComplete = progress >= 100;
             return `
-              <div class="goal-card" onclick="switchTab('goals')">
+              <div class="glass-card goal-card" onclick="switchTab('goals')">
                 <div class="goal-card-icon">${g.e}</div>
                 <div class="goal-card-info">
-                  <div class="goal-card-name">${getGoalName(g)}</div>
-                  <div class="goal-card-progress-bar"><div class="goal-card-progress-fill" style="width:${progress}%"></div></div>
+                  <div class="goal-card-header">
+                    <span class="goal-card-name">${getGoalName(g)}</span>
+                    <span class="goal-card-percent ${isComplete ? 'complete' : ''}">${isComplete ? '✓ Hoàn thành' : progress + '%'}</span>
+                  </div>
+                  <div class="goal-card-progress-bar">
+                    <div class="goal-card-progress-fill ${isComplete ? 'complete' : ''}" style="width:${progress}%"></div>
+                  </div>
+                  <div class="goal-card-meta">${fmt(deposited)} / ${fmt(g.amount)}</div>
                 </div>
-                <div class="goal-card-percent">${progress}%</div>
               </div>
             `;
           }).join('')}
         </div>
 
-        <!-- Recent Transactions -->
-        <div class="section-header">
-          <span class="section-title">${t('recentTransactions') || 'Giao dịch gần đây'}</span>
-          <span class="section-link" onclick="switchTab('history')">${t('seeAll')} →</span>
+        <!-- Today's Transactions -->
+        <div class="section-header slide-up" style="animation-delay:0.4s">
+          <span class="section-title">Giao dịch hôm nay</span>
+          <span class="section-link" onclick="switchTab('history')">Lịch sử →</span>
         </div>
-        <div class="recent-list">
-          ${getTodayTransactions().length > 0 ? getTodayTransactions().slice(0, 4).map(tx => `
-            <div class="recent-item">
-              <span class="recent-emoji">${tx.emoji}</span>
-              <span class="recent-name">${tx.name}</span>
-              <span class="recent-amount">${fmt(tx.amount)}</span>
-            </div>
-          `).join('') : `
-            <div style="text-align:center;padding:24px;color:var(--text-muted)">
-              <div style="font-size:32px;margin-bottom:8px">✨</div>
-              <div style="font-size:14px">${t('noExpensesYet')}</div>
+        <div class="tx-cards slide-up" style="animation-delay:0.4s">
+          ${getTodayTransactions().length > 0 ? getTodayTransactions().slice(0, 4).map(tx => {
+            const txTime = new Date(tx.date);
+            const timeStr = txTime.getHours().toString().padStart(2,'0') + ':' + txTime.getMinutes().toString().padStart(2,'0');
+            return `
+              <div class="glass-card tx-card">
+                <div class="tx-card-left">
+                  <div class="tx-card-icon">${tx.emoji}</div>
+                  <div>
+                    <div class="tx-card-name">${tx.name}</div>
+                    <div class="tx-card-time">${timeStr}</div>
+                  </div>
+                </div>
+                <div class="tx-card-amount">-${fmt(tx.amount)}</div>
+              </div>
+            `;
+          }).join('') : `
+            <div class="glass-card" style="text-align:center;padding:32px;color:var(--text-muted)">
+              <div style="font-size:40px;margin-bottom:12px">✨</div>
+              <div style="font-size:14px">${t('noExpensesYet') || 'Chưa có giao dịch hôm nay'}</div>
             </div>
           `}
         </div>
 
-        <div class="spacer"></div>
+        <div style="height:80px"></div>
+
+        <!-- FAB Button -->
+        <button class="fab-btn" onclick="document.getElementById('askInput').focus()">+</button>
 
         <!-- Ask Moni Section -->
         <div class="ask-section">
@@ -3698,7 +3900,6 @@
             `).join('')}
           </div>
           ${chatSection}
-          <div class="ask-hint">${t('askHint')}</div>
         </div>
       `;
 
