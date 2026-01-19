@@ -2776,7 +2776,7 @@
       // Goal milestones (25%, 50%, 75%, 100%)
       state.goals.forEach(g => {
         const deposited = state.goalDeposits[g.id] || 0;
-        const progress = Math.round((deposited / g.amount) * 100);
+        const progress = g.amount > 0 ? Math.round((deposited / g.amount) * 100) : 0;
         const milestonePoints = [25, 50, 75, 100];
 
         milestonePoints.forEach(point => {
@@ -2836,7 +2836,7 @@
     const getMoniMood = () => {
       const remaining = spendable() - todaySpent();
       const dailyBudget = spendable() / 30;
-      const todayUsage = todaySpent() / dailyBudget;
+      const todayUsage = dailyBudget > 0 ? todaySpent() / dailyBudget : 0;
       const hasGoalProgress = state.goals.some(g => (state.goalDeposits[g.id] || 0) > 0);
       const streakActive = state.streakDays >= 3;
 
@@ -4130,7 +4130,7 @@
       render();
       
       const remaining = spendable() - todaySpent();
-      const goalsInfo = state.goals.map(g => `${g.name}: ${fmt(g.amount)}, tiết kiệm ${fmt(state.allocations[g.id] || 0)}/tháng`).join('; ');
+      const goalsInfo = state.goals.map(g => `${getGoalName(g)}: ${fmt(g.amount)}, tiết kiệm ${fmt(state.allocations[g.id] || 0)}/tháng`).join('; ');
       
       const systemPrompt = `Bạn là Moni, một trợ lý tài chính thân thiện. Bạn giúp user quyết định có nên mua một món đồ hay không dựa trên ngân sách của họ.
 
