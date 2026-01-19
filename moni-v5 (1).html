@@ -2734,6 +2734,7 @@
       fixedExpanded: false,
       selectedGoalEmoji: '🎯',
       inputModal: null, // Generic input modal config
+      confirmModal: null, // Confirm dialog modal config
       showCelebration: null,
       newExpense: { name: '', amount: '' },
       newFixed: { name: '', amount: '' },
@@ -3785,6 +3786,21 @@
         </div>
       ` : '';
 
+      // Confirm Modal - for delete confirmations
+      const confirmModal = state.confirmModal ? `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:center;justify-content:center;z-index:100" onclick="if(event.target===this)closeConfirmModal()">
+          <div style="background:var(--bg);border-radius:20px;padding:24px;width:calc(100% - 48px);max-width:340px;text-align:center">
+            <div style="font-size:48px;margin-bottom:16px">${state.confirmModal.icon || '⚠️'}</div>
+            <div style="font-size:18px;font-weight:700;margin-bottom:8px">${state.confirmModal.title}</div>
+            <div style="font-size:14px;color:var(--text-muted);margin-bottom:24px">${state.confirmModal.message}</div>
+            <div style="display:flex;gap:12px">
+              <button onclick="closeConfirmModal()" style="flex:1;padding:14px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">${state.confirmModal.cancelText || 'Huỷ'}</button>
+              <button onclick="state.confirmModal.onConfirm()" style="flex:1;padding:14px;background:#ef4444;color:white;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit">${state.confirmModal.confirmText || 'Xoá'}</button>
+            </div>
+          </div>
+        </div>
+      ` : '';
+
       // Chat response section
       let chatSection = '';
       if (state.chatLoading) {
@@ -3993,6 +4009,9 @@
         const archetype = state.archetype;
         const goalNote = state.goalNotes[g.id] || '';
 
+        // Delete button - shared across all archetypes
+        const deleteBtn = `<button onclick="event.stopPropagation();confirmDeleteGoal('${g.id}')" style="position:absolute;top:12px;right:12px;width:28px;height:28px;background:rgba(0,0,0,0.1);border:none;border-radius:8px;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;opacity:0.6;transition:opacity 0.2s" onmouseover="this.style.opacity='1';this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.opacity='0.6';this.style.background='rgba(0,0,0,0.1)'">🗑️</button>`;
+
         // Future Self note section - shared across all archetypes
         const noteSection = `
           <div style="background:var(--bg);border-radius:12px;padding:12px;margin:12px 0;cursor:pointer" onclick="editGoalNote('${g.id}')">
@@ -4008,7 +4027,8 @@
           const quote = progress >= 50 ? (t('dreamerGoalQuote1') || 'Your dream is taking shape ✨') : (t('dreamerGoalQuote2') || 'Every step brings you closer 🌟');
           return `
             <div style="background:linear-gradient(135deg, ${archColor}11, ${archColor}05);border:1px solid ${archColor}33;border-radius:20px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden">
-              <div style="position:absolute;top:12px;right:12px;font-size:40px;opacity:0.15">${g.e}</div>
+              ${deleteBtn}
+              <div style="position:absolute;top:12px;right:48px;font-size:40px;opacity:0.15">${g.e}</div>
               <div style="font-size:11px;text-transform:uppercase;letter-spacing:1px;color:${archColor};font-weight:600;margin-bottom:8px">✨ ${t('dreamGoal') || 'Dream Goal'}</div>
               <div style="font-size:20px;font-weight:700;margin-bottom:4px">${getGoalName(g)}</div>
               <div style="font-size:13px;color:var(--text-muted);font-style:italic;margin-bottom:16px">${quote}</div>
@@ -4035,7 +4055,8 @@
           const dailyTarget = alloc > 0 ? Math.round(alloc / 30) : 0;
           const completionDate = monthsLeft > 0 ? new Date(Date.now() + monthsLeft * 30 * 24 * 60 * 60 * 1000).toLocaleDateString(state.language, { month: 'short', year: 'numeric' }) : '';
           return `
-            <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px">
+            <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px;position:relative">
+              ${deleteBtn}
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
                 <div style="display:flex;align-items:center;gap:12px">
                   <span style="font-size:28px">${g.e}</span>
@@ -4062,7 +4083,8 @@
         if (archetype === 'giver') {
           const impactMessage = g.id === 'trip' ? (t('giverTripImpact') || 'Create memories with loved ones') : g.id === 'emergency' ? (t('giverEmergencyImpact') || 'Be there when others need you') : (t('giverDefaultImpact') || 'Enable your generous heart');
           return `
-            <div style="background:linear-gradient(135deg, #ec489911, #ec489905);border:1px solid #ec489933;border-radius:16px;padding:20px;margin-bottom:12px">
+            <div style="background:linear-gradient(135deg, #ec489911, #ec489905);border:1px solid #ec489933;border-radius:16px;padding:20px;margin-bottom:12px;position:relative">
+              ${deleteBtn}
               <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
                 <span style="font-size:32px">${g.e}</span>
                 <div style="flex:1"><div style="font-weight:700;font-size:16px">${getGoalName(g)}</div><div style="font-size:12px;color:#ec4899;font-style:italic">${impactMessage}</div></div>
@@ -4084,7 +4106,8 @@
         // EXPERIENCER: Adventure/memory style - exciting, bold
         if (archetype === 'experiencer') {
           return `
-            <div style="background:linear-gradient(135deg, #f9731611, #f9731605);border:1px solid #f9731633;border-radius:20px;overflow:hidden;margin-bottom:16px">
+            <div style="background:linear-gradient(135deg, #f9731611, #f9731605);border:1px solid #f9731633;border-radius:20px;overflow:hidden;margin-bottom:16px;position:relative">
+              ${deleteBtn}
               <div style="background:linear-gradient(135deg, #f97316, #fb923c);padding:20px;color:white">
                 <div style="display:flex;align-items:center;gap:12px">
                   <span style="font-size:36px">${g.e}</span>
@@ -4109,7 +4132,8 @@
         }
 
         // Default fallback
-        return `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px">
+        return `<div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;margin-bottom:12px;position:relative">
+          ${deleteBtn}
           <div style="display:flex;align-items:center;gap:12px"><span style="font-size:32px">${g.e}</span><div><div style="font-weight:700">${getGoalName(g)}</div><div style="color:var(--text-muted)">${fmt(deposited)} / ${fmt(g.amount)}</div></div></div>
         </div>`;
       };
@@ -4423,6 +4447,7 @@
         ${addGoalModal}
         ${addFixedModal}
         ${inputModal}
+        ${confirmModal}
       `;
     };
 
@@ -4503,10 +4528,34 @@
         render();
       }
     };
-    window.removeGoal = (id) => { 
-      state.goals = state.goals.filter(g => g.id !== id); 
-      delete state.allocations[id]; 
-      render(); 
+    window.removeGoal = (id) => {
+      state.goals = state.goals.filter(g => g.id !== id);
+      delete state.allocations[id];
+      delete state.goalDeposits[id];
+      delete state.goalNotes[id];
+      render();
+    };
+    window.confirmDeleteGoal = (goalId) => {
+      const goal = state.goals.find(g => g.id === goalId);
+      if (!goal) return;
+      const goalName = goal.customName || t(goal.nameKey) || goal.id;
+      state.confirmModal = {
+        title: t('deleteGoal') || 'Xoá mục tiêu',
+        message: `${t('confirmDeleteGoal') || 'Bạn có chắc muốn xoá mục tiêu'} "${goalName}"?`,
+        icon: '🗑️',
+        confirmText: t('delete') || 'Xoá',
+        cancelText: t('cancel') || 'Huỷ',
+        onConfirm: () => {
+          removeGoal(goalId);
+          state.confirmModal = null;
+          render();
+        }
+      };
+      render();
+    };
+    window.closeConfirmModal = () => {
+      state.confirmModal = null;
+      render();
     };
     window.addCustomGoal = () => {
       const name = $('newGoalName')?.value;
