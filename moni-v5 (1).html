@@ -2731,6 +2731,7 @@
       showAddExpense: false,
       showAddFixed: false,
       showAddGoal: false,
+      fixedExpanded: false,
       showCelebration: null,
       newExpense: { name: '', amount: '' },
       newFixed: { name: '', amount: '' },
@@ -4157,23 +4158,41 @@
             </div>
           </div>
 
-          <!-- Fixed Expenses -->
-          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <!-- Fixed Expenses - Collapsible -->
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:12px">
+            <div onclick="toggleFixedExpenses()" style="display:flex;justify-content:space-between;align-items:center;padding:16px;cursor:pointer;transition:background 0.2s" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
               <div style="display:flex;align-items:center;gap:12px">
                 <span style="font-size:24px">🏠</span>
                 <div>
-                  <div style="font-size:13px;color:var(--text-muted)">${t('fixedExpenses') || 'Fixed Expenses'}</div>
-                  <div style="font-size:18px;font-weight:700">${fmt(totalFixedSettings)}/${t('month') || 'mo'}</div>
+                  <div style="font-size:13px;color:var(--text-muted)">${t('fixedExpenses') || 'Chi phí cố định'}</div>
+                  <div style="font-size:18px;font-weight:700">${fmt(totalFixedSettings)}/${t('month') || 'tháng'}</div>
                 </div>
               </div>
-              <button onclick="editFixedExpenses()" style="padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('edit') || 'Edit'}</button>
+              <span style="font-size:16px;color:var(--text-muted);transition:transform 0.3s;transform:rotate(${state.fixedExpanded ? '180deg' : '0deg'})">▼</span>
             </div>
-            <div style="font-size:12px;color:var(--text-muted);padding-left:36px">
-              ${Array.isArray(state.fixedExpenses) && state.fixedExpenses.filter(f => parseInt(f.amount) > 0).length > 0
-                ? state.fixedExpenses.filter(f => parseInt(f.amount) > 0).map(f => `${t(f.nameKey) || f.nameKey}: ${fmt(f.amount)}`).join(' · ')
-                : (t('noFixedExpenses') || 'No fixed expenses')}
-            </div>
+            ${state.fixedExpanded ? `
+              <div style="border-top:1px solid var(--border);padding:12px 16px;background:var(--bg)">
+                ${Array.isArray(state.fixedExpenses) ? state.fixedExpenses.map((f, idx) => `
+                  <div style="display:flex;align-items:center;gap:12px;padding:10px 0;${idx > 0 ? 'border-top:1px solid var(--border);' : ''}">
+                    <span style="font-size:18px">${f.emoji || '📦'}</span>
+                    <div style="flex:1;font-size:14px;color:var(--text)">${t(f.nameKey) || f.nameKey}</div>
+                    <div style="display:flex;align-items:center;gap:4px">
+                      <input
+                        type="text"
+                        value="${parseInt(f.amount) || ''}"
+                        onchange="updateFixedExpense(${idx}, this.value)"
+                        placeholder="0"
+                        style="width:100px;padding:8px 12px;border:1px solid var(--border);border-radius:8px;font-size:14px;font-weight:600;text-align:right;font-family:inherit;background:var(--card)"
+                      >
+                      <span style="font-size:12px;color:var(--text-muted)">/${t('month') || 'th'}</span>
+                    </div>
+                  </div>
+                `).join('') : ''}
+                <button onclick="addNewFixedExpense()" style="width:100%;margin-top:12px;padding:12px;background:var(--card);border:1px dashed var(--border);border-radius:10px;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px">
+                  <span>+</span> ${t('addOther') || 'Thêm khoản khác'}
+                </button>
+              </div>
+            ` : ''}
           </div>
 
           <!-- Goals & Allocation -->
@@ -4808,6 +4827,35 @@ Ví dụ response:
           const amount = parseAmount(input);
           state.fixedExpenses[index].amount = amount.toString();
         }
+      });
+      saveState();
+      render();
+    };
+
+    window.toggleFixedExpenses = () => {
+      state.fixedExpanded = !state.fixedExpanded;
+      render();
+    };
+
+    window.updateFixedExpense = (idx, value) => {
+      if (!Array.isArray(state.fixedExpenses) || !state.fixedExpenses[idx]) return;
+      const amount = parseAmount(value);
+      state.fixedExpenses[idx].amount = amount.toString();
+      saveState();
+      render();
+    };
+
+    window.addNewFixedExpense = () => {
+      const name = prompt(t('expenseName') || 'Tên khoản chi:', '');
+      if (!name || !name.trim()) return;
+      const amountStr = prompt(t('amountPerMonth') || 'Số tiền / tháng:', '0');
+      if (amountStr === null) return;
+      const amount = parseAmount(amountStr);
+      if (!Array.isArray(state.fixedExpenses)) state.fixedExpenses = [];
+      state.fixedExpenses.push({
+        nameKey: name.trim(),
+        emoji: '📦',
+        amount: amount.toString()
       });
       saveState();
       render();
