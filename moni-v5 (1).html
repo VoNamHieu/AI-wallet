@@ -3547,11 +3547,8 @@
           </div>
         `;
       }
-      
+
       // Home tab content
-      const moniMood = getMoniMood();
-      const moniExpression = getMoniExpression(moniMood);
-      const moniQuote = getArchetypeQuote();
       const celebrationBanner = state.showCelebration ? `
         <div class="celebration-banner">
           <div class="icon">${state.showCelebration.icon}</div>
@@ -3566,75 +3563,20 @@
       const homeContent = `
         <div class="main-header">
           <div class="greeting">${t('hey')} ${state.userName} 👋 ${streakBadge}</div>
-          <div class="avatar-container" style="position:relative">
-            <div class="avatar" style="background:linear-gradient(135deg, ${archColor}22, ${archColor}11)">${arch?.emoji || '✨'}</div>
-            <div style="position:absolute;bottom:-2px;right:-2px;font-size:10px;background:${archColor};color:white;padding:2px 6px;border-radius:8px;font-weight:600">${arch?.tag || ''}</div>
-          </div>
+          <div style="background:${archColor};color:white;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600">${arch?.tag || ''}</div>
         </div>
         ${celebrationBanner}
-        <div style="background:linear-gradient(135deg, ${archColor}11, ${archColor}05);border:1px solid ${archColor}22;border-radius:12px;padding:12px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px">
-          <span style="font-size:20px">${moniExpression}</span>
-          <span style="font-size:13px;color:var(--text-soft);font-style:italic">${moniQuote}</span>
-        </div>
         <div class="spendable">
           <div class="spendable-label">${t('spendableLabel')}</div>
           <div class="spendable-amount">${formatSpendable(remaining > 0 ? remaining : 0)}</div>
           ${(() => {
-            // Peace of Mind Indicator logic - using cycle
             const daysLeft = getDaysRemainingInCycle();
-            const dailyBudget = daysLeft > 0 ? remaining / daysLeft : 0;
-            const baseSpendable = spendable();
-            const totalCycleDays = 30; // Approximate month
-            const idealDaily = baseSpendable / totalCycleDays;
-            const paceRatio = idealDaily > 0 ? dailyBudget / idealDaily : 1;
-
-            let peaceStatus, peaceEmoji, peaceColor;
-            if (paceRatio >= 1) {
-              peaceStatus = t('paceOkay') || 'Đang okay';
-              peaceEmoji = '🌿';
-              peaceColor = 'var(--green)';
-            } else if (paceRatio >= 0.8) {
-              peaceStatus = t('paceGood') || 'Vẫn ổn';
-              peaceEmoji = '🌱';
-              peaceColor = '#84cc16';
-            } else {
-              peaceStatus = t('paceWatch') || 'Chú ý chút';
-              peaceEmoji = '💭';
-              peaceColor = 'var(--orange)';
-            }
-
-            // Generate dots (10 dots total)
-            const filledDots = Math.min(10, Math.max(0, Math.round(paceRatio * 10)));
-            const dots = '◉'.repeat(filledDots) + '○'.repeat(10 - filledDots);
-
-            const paceMessage = paceRatio >= 0.8
-              ? (t('onPace') || 'vẫn đúng pace')
-              : (t('slowDown') || 'nên chậm lại');
-
-            // Next cycle reset info
-            const nextCycle = getNextCycleDate();
             const resetDay = state.cycleDay || 1;
-            const resetInfo = t('resetDay') ? `${t('resetDay')} ${resetDay}` : `Reset ngày ${resetDay}`;
-
+            const bufferInfo = state.buffer > 0 ? ` · 🛡️ ${fmt(state.buffer)}` : '';
             return `
-              <div style="margin-top:12px;padding:12px;background:var(--card);border-radius:12px;border:1px solid var(--border)">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                  <span style="font-size:14px;letter-spacing:1px;color:${peaceColor}">${dots}</span>
-                  <span style="font-size:13px;font-weight:600;color:${peaceColor}">${peaceStatus} ${peaceEmoji}</span>
-                </div>
-                <div style="font-size:12px;color:var(--text-muted)">${t('remaining') || 'Còn'} ${daysLeft} ${(t('daysLeft') || 'ngày').toLowerCase()} · ${resetInfo}</div>
+              <div style="margin-top:8px;font-size:13px;color:var(--text-muted);text-align:center">
+                ${daysLeft} ${t('daysLeft') || 'days'} · Reset ${resetDay}${bufferInfo}
               </div>
-              ${state.buffer > 0 ? `
-                <div style="margin-top:8px;padding:12px;background:linear-gradient(135deg, #10b98111, #10b98105);border:1px solid #10b98133;border-radius:12px">
-                  <div style="display:flex;align-items:center;gap:8px">
-                    <span style="font-size:16px">🛡️</span>
-                    <div style="flex:1">
-                      <div style="font-size:13px;font-weight:600;color:var(--green)">Buffer: ${fmt(state.buffer)}</div>
-                      <div style="font-size:11px;color:var(--text-muted)">${t('bufferDesc') || 'Tích lũy từ tiền tiết kiệm'}</div>
-                    </div>
-                  </div>
-                </div>
-              ` : ''}
             `;
           })()}
         </div>
