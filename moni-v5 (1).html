@@ -2483,7 +2483,11 @@
 
     // Load saved data
     const savedData = loadState();
-    const isReturningUser = savedData && savedData.onboardingCompleted;
+    // Only skip onboarding if user has ACTUALLY completed it with valid data
+    const isReturningUser = savedData &&
+                            savedData.onboardingCompleted &&
+                            savedData.userName &&
+                            savedData.income;
 
     let state = {
       screen: isReturningUser ? 'main' : 'language',
