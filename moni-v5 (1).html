@@ -2540,9 +2540,11 @@
       }));
     };
 
-    // Initialize fixed expenses and transactions from defaults
-    state.fixedExpenses = getDefaultFixed();
-    state.transactions = []; // Start empty, user adds expenses
+    // Initialize fixed expenses from defaults ONLY if not already loaded from savedData
+    if (!savedData?.fixedExpenses || savedData.fixedExpenses.length === 0) {
+      state.fixedExpenses = getDefaultFixed();
+    }
+    // Don't overwrite transactions - they are already loaded from savedData or empty
 
     const getArchetypes = () => ({
       dreamer: { emoji: '✨', name: t('theDreamer'), tag: t('dreamerTag'), color: '#8b5cf6', descKey: 'dreamerDesc' },
@@ -3455,7 +3457,7 @@
             const daysLeft = getDaysRemainingInMonth();
             const dailyBudget = daysLeft > 0 ? remaining / daysLeft : 0;
             const totalDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-            const idealDaily = calculateRemaining() / totalDays; // Original monthly budget / total days
+            const idealDaily = spendable() / totalDays; // Original monthly budget / total days
             const paceRatio = idealDaily > 0 ? dailyBudget / idealDaily : 1;
 
             let peaceStatus, peaceEmoji, peaceColor;
@@ -4488,7 +4490,7 @@ Ví dụ response:
     window.resetAllData = () => {
       if (confirm(t('resetConfirm') || 'Are you sure? This will delete all your data and start fresh.')) {
         if (confirm(t('resetConfirm2') || 'This cannot be undone. Really reset?')) {
-          localStorage.removeItem('moniState');
+          localStorage.removeItem(STORAGE_KEY);
           location.reload();
         }
       }
