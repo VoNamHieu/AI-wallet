@@ -2731,7 +2731,6 @@
       showAddExpense: false,
       showAddFixed: false,
       showAddGoal: false,
-      showFabMenu: false,
       fixedExpanded: false,
       selectedGoalEmoji: '🎯',
       showCelebration: null,
@@ -3745,21 +3744,6 @@
         </div>
       ` : '';
 
-      // FAB Menu
-      const fabMenu = state.showFabMenu ? `
-        <div style="position:absolute;inset:0;z-index:90" onclick="closeFabMenu()"></div>
-        <div style="position:fixed;bottom:160px;right:24px;z-index:95;display:flex;flex-direction:column;gap:12px;animation:slideUp 0.2s ease">
-          <button onclick="openAddGoalFromFab()" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.1);cursor:pointer;font-family:inherit">
-            <span style="width:36px;height:36px;background:linear-gradient(135deg,#10b981,#059669);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">🎯</span>
-            <span style="font-size:14px;font-weight:600;color:var(--text)">${t('addGoal') || 'Thêm mục tiêu'}</span>
-          </button>
-          <button onclick="openAddExpenseFromFab()" style="display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,0.1);cursor:pointer;font-family:inherit">
-            <span style="width:36px;height:36px;background:linear-gradient(135deg,#f97316,#ea580c);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px">💸</span>
-            <span style="font-size:14px;font-weight:600;color:var(--text)">${t('addExpense') || 'Thêm chi tiêu'}</span>
-          </button>
-        </div>
-      ` : '';
-
       // Chat response section
       let chatSection = '';
       if (state.chatLoading) {
@@ -4100,9 +4084,14 @@
             <div style="text-align:center;padding:48px 24px;color:var(--text-muted)">
               <div style="font-size:48px;margin-bottom:16px">${arch?.emoji || '🎯'}</div>
               <div style="font-size:16px;font-weight:600;margin-bottom:8px">${t('noGoalsYet') || 'Chưa có mục tiêu'}</div>
-              <div style="font-size:14px">${t('goalsWillAppear') || 'Bấm + để thêm mục tiêu mới'}</div>
+              <div style="font-size:14px">${t('goalsWillAppear') || 'Thêm mục tiêu để bắt đầu tiết kiệm'}</div>
             </div>
           `}
+          ${state.goals.length < 3 ? `
+            <button onclick="openAddGoal()" style="width:100%;margin-top:16px;padding:16px 20px;background:linear-gradient(135deg,${archColor},${archColor}dd);border:none;border-radius:16px;color:white;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 4px 12px ${archColor}40;transition:transform 0.2s,box-shadow 0.2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 16px ${archColor}50'" onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px ${archColor}40'">
+              <span style="font-size:18px">+</span> ${t('addGoal') || 'Thêm mục tiêu mới'}
+            </button>
+          ` : ''}
         </div>
       `;
 
@@ -4381,8 +4370,7 @@
         <div class="content" style="padding: 0 24px;">
           ${tabContent}
         </div>
-        <button class="fab" onclick="toggleFabMenu()" style="transform:rotate(${state.showFabMenu ? '45deg' : '0deg'});transition:transform 0.2s">+</button>
-        ${fabMenu}
+        <button class="fab" onclick="openAddExpense()">+</button>
         <div class="tab-bar">
           <button class="tab ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')"><span class="tab-icon">🏠</span><span class="tab-label">${t('home')}</span></button>
           <button class="tab ${state.activeTab === 'goals' ? 'active' : ''}" onclick="switchTab('goals')"><span class="tab-icon">🎯</span><span class="tab-label">${t('goals')}</span></button>
@@ -4495,30 +4483,17 @@
       }
     };
 
-    // FAB Menu functions
-    window.toggleFabMenu = () => {
-      state.showFabMenu = !state.showFabMenu;
-      render();
-    };
-    window.closeFabMenu = () => {
-      state.showFabMenu = false;
-      render();
-    };
-    window.openAddExpenseFromFab = () => {
-      state.showFabMenu = false;
-      state.showAddExpense = true;
-      render();
-      setTimeout(() => $('expenseText')?.focus(), 100);
-    };
-    window.openAddGoalFromFab = () => {
-      state.showFabMenu = false;
+    // Goal Modal functions
+    window.openAddGoal = () => {
+      if (state.goals.length >= 3) {
+        alert(t('maxGoalsReached') || 'Bạn đã có tối đa 3 mục tiêu');
+        return;
+      }
       state.showAddGoal = true;
       state.selectedGoalEmoji = '🎯';
       render();
       setTimeout(() => $('newGoalNameInput')?.focus(), 100);
     };
-
-    // Goal Modal functions
     window.closeAddGoal = () => {
       state.showAddGoal = false;
       render();
