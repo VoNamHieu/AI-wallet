@@ -2463,6 +2463,13 @@
         goalDeposits: state.goalDeposits,
         goalNotes: state.goalNotes,
         onboardingCompleted: state.onboardingCompleted,
+        // Buffer System
+        buffer: state.buffer,
+        cycleMode: state.cycleMode,
+        debtHandling: state.debtHandling,
+        cycleDay: state.cycleDay,
+        lastCycleDate: state.lastCycleDate,
+        // Celebration tracking
         milestonesAchieved: state.milestonesAchieved,
         streakDays: state.streakDays,
         lastActiveDate: state.lastActiveDate,
@@ -2483,8 +2490,11 @@
 
     // Load saved data
     const savedData = loadState();
-    // Always show onboarding first (for testing/development)
-    const isReturningUser = false;
+    // Only skip onboarding if user has completed it with valid data
+    const isReturningUser = savedData &&
+                            savedData.onboardingCompleted &&
+                            savedData.userName &&
+                            savedData.income;
 
     let state = {
       screen: isReturningUser ? 'main' : 'language',
@@ -2502,6 +2512,12 @@
       goalDeposits: savedData?.goalDeposits || {},
       goalNotes: savedData?.goalNotes || {}, // Future Self Visualization notes
       onboardingCompleted: savedData?.onboardingCompleted || false,
+      // Buffer System (persisted)
+      buffer: savedData?.buffer || 0,
+      cycleMode: savedData?.cycleMode || 'buffer', // 'reset' | 'rollover' | 'buffer'
+      debtHandling: savedData?.debtHandling || 'deduct_buffer', // 'forgive' | 'deduct_buffer'
+      cycleDay: savedData?.cycleDay || 1, // Day of month for cycle reset
+      lastCycleDate: savedData?.lastCycleDate || null,
       // Celebration tracking (persisted)
       milestonesAchieved: savedData?.milestonesAchieved || [],
       streakDays: savedData?.streakDays || 0,
@@ -2745,6 +2761,110 @@
     const todaySpent = () => getTodayTransactions().reduce((a, b) => a + b.amount, 0);
     const monthSpent = () => getThisMonthTransactions().reduce((a, b) => a + b.amount, 0);
 
+    // ============= CYCLE/BUFFER SYSTEM =============
+    // Get the start date of current cycle based on cycleDay
+    const getCycleStartDate = () => {
+      const now = new Date();
+      const cycleDay = state.cycleDay || 1;
+      let cycleStart = new Date(now.getFullYear(), now.getMonth(), cycleDay);
+
+      // If we haven't reached cycleDay this month, cycle started last month
+      if (now.getDate() < cycleDay) {
+        cycleStart = new Date(now.getFullYear(), now.getMonth() - 1, cycleDay);
+      }
+      return cycleStart;
+    };
+
+    // Get the next cycle reset date
+    const getNextCycleDate = () => {
+      const now = new Date();
+      const cycleDay = state.cycleDay || 1;
+      let nextCycle = new Date(now.getFullYear(), now.getMonth(), cycleDay);
+
+      // If we've passed cycleDay, next cycle is next month
+      if (now.getDate() >= cycleDay) {
+        nextCycle = new Date(now.getFullYear(), now.getMonth() + 1, cycleDay);
+      }
+      return nextCycle;
+    };
+
+    // Get days remaining in current cycle
+    const getDaysRemainingInCycle = () => {
+      const now = new Date();
+      const nextCycle = getNextCycleDate();
+      const diffTime = nextCycle - now;
+      return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    };
+
+    // Check if a transaction is in current cycle
+    const isInCurrentCycle = (timestamp) => {
+      if (!timestamp) return true;
+      const txDate = new Date(timestamp);
+      const cycleStart = getCycleStartDate();
+      return txDate >= cycleStart;
+    };
+
+    // Get transactions for current cycle
+    const getCycleTransactions = () => state.transactions.filter(tx => isInCurrentCycle(tx.timestamp));
+
+    // Total spent in current cycle
+    const cycleSpent = () => getCycleTransactions().reduce((a, b) => a + b.amount, 0);
+
+    // Calculate effective spendable (considering buffer mode and rollover)
+    const getEffectiveSpendable = () => {
+      const baseSpendable = spendable();
+      if (state.cycleMode === 'rollover' && state.buffer > 0) {
+        return baseSpendable + state.buffer;
+      }
+      return baseSpendable;
+    };
+
+    // Calculate next cycle values (called at cycle reset)
+    const calculateNextCycleSpendable = () => {
+      const baseSpendable = spendable();
+      const currentRemaining = baseSpendable - cycleSpent();
+
+      if (currentRemaining >= 0) {
+        // Còn dư
+        if (state.cycleMode === 'reset') {
+          return { spendable: baseSpendable, buffer: state.buffer };
+        } else if (state.cycleMode === 'rollover') {
+          return { spendable: baseSpendable + currentRemaining, buffer: 0 };
+        } else {
+          // Buffer mode: accumulate savings
+          return { spendable: baseSpendable, buffer: state.buffer + currentRemaining };
+        }
+      } else {
+        // Tiêu quá
+        const debtAmount = Math.abs(currentRemaining);
+        if (state.debtHandling === 'forgive') {
+          return { spendable: baseSpendable, buffer: state.buffer };
+        } else {
+          // Deduct from buffer first
+          if (state.buffer >= debtAmount) {
+            return { spendable: baseSpendable, buffer: state.buffer - debtAmount };
+          } else {
+            return { spendable: baseSpendable - (debtAmount - state.buffer), buffer: 0 };
+          }
+        }
+      }
+    };
+
+    // Check and process cycle reset
+    const checkCycleReset = () => {
+      const now = new Date();
+      const cycleStart = getCycleStartDate();
+      const lastCycle = state.lastCycleDate ? new Date(state.lastCycleDate) : null;
+
+      // If this is a new cycle (lastCycleDate is before current cycle start)
+      if (!lastCycle || lastCycle < cycleStart) {
+        const result = calculateNextCycleSpendable();
+        state.buffer = result.buffer;
+        state.lastCycleDate = cycleStart.toISOString();
+        saveState();
+      }
+    };
+
     // ============= CELEBRATION SYSTEM =============
     const triggerConfetti = (count = 50) => {
       const colors = ['#8b5cf6', '#f97316', '#ec4899', '#10b981', '#fbbf24', '#3b82f6'];
@@ -2776,7 +2896,7 @@
       // Goal milestones (25%, 50%, 75%, 100%)
       state.goals.forEach(g => {
         const deposited = state.goalDeposits[g.id] || 0;
-        const progress = Math.round((deposited / g.amount) * 100);
+        const progress = g.amount > 0 ? Math.round((deposited / g.amount) * 100) : 0;
         const milestonePoints = [25, 50, 75, 100];
 
         milestonePoints.forEach(point => {
@@ -2836,7 +2956,7 @@
     const getMoniMood = () => {
       const remaining = spendable() - todaySpent();
       const dailyBudget = spendable() / 30;
-      const todayUsage = todaySpent() / dailyBudget;
+      const todayUsage = dailyBudget > 0 ? todaySpent() / dailyBudget : 0;
       const hasGoalProgress = state.goals.some(g => (state.goalDeposits[g.id] || 0) > 0);
       const streakActive = state.streakDays >= 3;
 
@@ -3303,11 +3423,11 @@
               </div>
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
                 <span style="color:var(--text-muted);font-size:14px">${t('fixedExpenses')}</span>
-                <span style="font-weight:600;color:var(--text-soft)">-${fmt(fixed)}</span>
+                <span style="font-weight:600;color:var(--text-soft)">${fmt(fixed)}</span>
               </div>
               <div style="display:flex;justify-content:space-between;margin-bottom:12px">
                 <span style="color:var(--text-muted);font-size:14px">${t('savingForGoals')}</span>
-                <span data-alloc-total style="font-weight:600;color:var(--orange)">-${fmt(allocated)}</span>
+                <span data-alloc-total style="font-weight:600;color:var(--orange)">${fmt(allocated)}</span>
               </div>
               <div style="border-top:1px solid var(--border);padding-top:12px;display:flex;justify-content:space-between">
                 <span style="font-weight:600">${t('spendComfortably')}</span>
@@ -3323,7 +3443,11 @@
 
     const renderMain = (app) => {
       app.className = 'phone';
-      const remaining = spendable() - todaySpent();
+      // Check for cycle reset on each render
+      checkCycleReset();
+      // Use cycle-based spending instead of daily
+      const effectiveSpendable = getEffectiveSpendable();
+      const remaining = effectiveSpendable - cycleSpent();
       const archetypes = getArchetypes();
       const arch = archetypes[state.archetype];
 
@@ -3331,7 +3455,7 @@
       const archColor = arch?.color || '#8b5cf6';
       document.documentElement.style.setProperty('--primary', archColor);
 
-      // Archetype-specific encouraging messages
+      // Archetype-specific encouraging messages (cached for the day)
       const getArchetypeQuote = () => {
         const quotes = {
           dreamer: [
@@ -3356,7 +3480,9 @@
           ]
         };
         const typeQuotes = quotes[state.archetype] || quotes.dreamer;
-        return typeQuotes[Math.floor(Math.random() * typeQuotes.length)];
+        // Use day of year as index to keep same quote all day
+        const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0)) / 86400000);
+        return typeQuotes[dayOfYear % typeQuotes.length];
       };
 
       // Simple text-based add expense modal
@@ -3452,13 +3578,14 @@
         </div>
         <div class="spendable">
           <div class="spendable-label">${t('spendableLabel')}</div>
-          <div class="spendable-amount">${formatSpendable(remaining)}</div>
+          <div class="spendable-amount">${formatSpendable(remaining > 0 ? remaining : 0)}</div>
           ${(() => {
-            // Peace of Mind Indicator logic
-            const daysLeft = getDaysRemainingInMonth();
+            // Peace of Mind Indicator logic - using cycle
+            const daysLeft = getDaysRemainingInCycle();
             const dailyBudget = daysLeft > 0 ? remaining / daysLeft : 0;
-            const totalDays = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
-            const idealDaily = spendable() / totalDays; // Original monthly budget / total days
+            const baseSpendable = spendable();
+            const totalCycleDays = 30; // Approximate month
+            const idealDaily = baseSpendable / totalCycleDays;
             const paceRatio = idealDaily > 0 ? dailyBudget / idealDaily : 1;
 
             let peaceStatus, peaceEmoji, peaceColor;
@@ -3484,14 +3611,30 @@
               ? (t('onPace') || 'vẫn đúng pace')
               : (t('slowDown') || 'nên chậm lại');
 
+            // Next cycle reset info
+            const nextCycle = getNextCycleDate();
+            const resetDay = state.cycleDay || 1;
+            const resetInfo = t('resetDay') ? `${t('resetDay')} ${resetDay}` : `Reset ngày ${resetDay}`;
+
             return `
               <div style="margin-top:12px;padding:12px;background:var(--card);border-radius:12px;border:1px solid var(--border)">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
                   <span style="font-size:14px;letter-spacing:1px;color:${peaceColor}">${dots}</span>
                   <span style="font-size:13px;font-weight:600;color:${peaceColor}">${peaceStatus} ${peaceEmoji}</span>
                 </div>
-                <div style="font-size:12px;color:var(--text-muted)">${t('remaining')} ${daysLeft} ${(t('daysLeft') || 'days left').toLowerCase()} · ${paceMessage}</div>
+                <div style="font-size:12px;color:var(--text-muted)">${t('remaining') || 'Còn'} ${daysLeft} ${(t('daysLeft') || 'ngày').toLowerCase()} · ${resetInfo}</div>
               </div>
+              ${state.buffer > 0 ? `
+                <div style="margin-top:8px;padding:12px;background:linear-gradient(135deg, #10b98111, #10b98105);border:1px solid #10b98133;border-radius:12px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-size:16px">🛡️</span>
+                    <div style="flex:1">
+                      <div style="font-size:13px;font-weight:600;color:var(--green)">Buffer: ${fmt(state.buffer)}</div>
+                      <div style="font-size:11px;color:var(--text-muted)">${t('bufferDesc') || 'Tích lũy từ tiền tiết kiệm'}</div>
+                    </div>
+                  </div>
+                </div>
+              ` : ''}
             `;
           })()}
         </div>
@@ -3927,6 +4070,85 @@
             </div>
           </div>
 
+          <!-- Cycle Settings -->
+          <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
+            <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+              <span style="font-size:24px">🔄</span>
+              <div style="font-size:15px;font-weight:600">${t('cycleSettings') || 'Chu kỳ chi tiêu'}</div>
+            </div>
+
+            <!-- Cycle Day -->
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${t('cycleResetDay') || 'Ngày reset chu kỳ'}</div>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                ${[1, 5, 10, 15, 25].map(day => `
+                  <button onclick="setCycleDay(${day})" style="padding:8px 16px;background:${state.cycleDay === day ? archColor : 'var(--bg)'};color:${state.cycleDay === day ? 'white' : 'var(--text)'};border:1px solid ${state.cycleDay === day ? archColor : 'var(--border)'};border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('day') || 'Ngày'} ${day}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            <!-- Cycle Mode -->
+            <div style="margin-bottom:16px">
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${t('cycleEndAction') || 'Cuối chu kỳ, tiền dư sẽ...'}</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button onclick="setCycleMode('buffer')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.cycleMode === 'buffer' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.cycleMode === 'buffer' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
+                  <span style="font-size:20px">🛡️</span>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'buffer' ? archColor : 'var(--text)'}">${t('bufferMode') || 'Chuyển vào Buffer'}</div>
+                    <div style="font-size:12px;color:var(--text-muted)">${t('bufferModeDesc') || 'Tích lũy riêng, spendable mới (✨ Recommended)'}</div>
+                  </div>
+                </button>
+                <button onclick="setCycleMode('rollover')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.cycleMode === 'rollover' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.cycleMode === 'rollover' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
+                  <span style="font-size:20px">↗️</span>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'rollover' ? archColor : 'var(--text)'}">${t('rolloverMode') || 'Cộng vào tháng sau'}</div>
+                    <div style="font-size:12px;color:var(--text-muted)">${t('rolloverModeDesc') || 'Dư tháng này = thêm tháng sau'}</div>
+                  </div>
+                </button>
+                <button onclick="setCycleMode('reset')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.cycleMode === 'reset' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.cycleMode === 'reset' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
+                  <span style="font-size:20px">🔄</span>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'reset' ? archColor : 'var(--text)'}">${t('resetMode') || 'Reset về 0'}</div>
+                    <div style="font-size:12px;color:var(--text-muted)">${t('resetModeDesc') || 'Mỗi tháng bắt đầu mới'}</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Debt Handling -->
+            <div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${t('debtHandling') || 'Nếu tiêu quá...'}</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <button onclick="setDebtHandling('deduct_buffer')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.debtHandling === 'deduct_buffer' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.debtHandling === 'deduct_buffer' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
+                  <span style="font-size:20px">💳</span>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:${state.debtHandling === 'deduct_buffer' ? archColor : 'var(--text)'}">${t('deductBuffer') || 'Trừ từ Buffer trước'}</div>
+                    <div style="font-size:12px;color:var(--text-muted)">${t('deductBufferDesc') || 'Dùng tiền dự phòng'}</div>
+                  </div>
+                </button>
+                <button onclick="setDebtHandling('forgive')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.debtHandling === 'forgive' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.debtHandling === 'forgive' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
+                  <span style="font-size:20px">🌱</span>
+                  <div style="flex:1">
+                    <div style="font-size:14px;font-weight:600;color:${state.debtHandling === 'forgive' ? archColor : 'var(--text)'}">${t('forgiveDebt') || 'Bỏ qua, bắt đầu mới'}</div>
+                    <div style="font-size:12px;color:var(--text-muted)">${t('forgiveDebtDesc') || 'Fresh start không debt'}</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            ${state.buffer > 0 ? `
+              <div style="margin-top:16px;padding:12px;background:linear-gradient(135deg, #10b98111, #10b98105);border:1px solid #10b98133;border-radius:12px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <div>
+                    <div style="font-size:13px;color:var(--text-muted)">Buffer hiện tại</div>
+                    <div style="font-size:18px;font-weight:700;color:var(--green)">${fmt(state.buffer)}</div>
+                  </div>
+                  <button onclick="withdrawBuffer()" style="padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('withdraw') || 'Rút'}</button>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
           <!-- Reset Data -->
           <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px">
             <div style="display:flex;justify-content:space-between;align-items:center">
@@ -3985,6 +4207,8 @@
         let maxType = 'dreamer', maxCount = 0;
         Object.entries(counts).forEach(([t, c]) => { if (c > maxCount) { maxType = t; maxCount = c; } });
         state.archetype = maxType;
+        // Set personality-based cycle defaults
+        setArchetypeDefaults(maxType);
         state.step = 2;
         render();
       }
@@ -4130,7 +4354,7 @@
       render();
       
       const remaining = spendable() - todaySpent();
-      const goalsInfo = state.goals.map(g => `${g.name}: ${fmt(g.amount)}, tiết kiệm ${fmt(state.allocations[g.id] || 0)}/tháng`).join('; ');
+      const goalsInfo = state.goals.map(g => `${getGoalName(g)}: ${fmt(g.amount)}, tiết kiệm ${fmt(state.allocations[g.id] || 0)}/tháng`).join('; ');
       
       const systemPrompt = `Bạn là Moni, một trợ lý tài chính thân thiện. Bạn giúp user quyết định có nên mua một món đồ hay không dựa trên ngân sách của họ.
 
@@ -4494,6 +4718,62 @@ Ví dụ response:
           localStorage.removeItem(STORAGE_KEY);
           location.reload();
         }
+      }
+    };
+
+    // Set archetype-based defaults when quiz completes
+    const setArchetypeDefaults = (archetype) => {
+      switch (archetype) {
+        case 'dreamer':
+          state.cycleMode = 'buffer';
+          state.debtHandling = 'deduct_buffer';
+          break;
+        case 'experiencer':
+          state.cycleMode = 'rollover';
+          state.debtHandling = 'forgive';
+          break;
+        case 'giver':
+          state.cycleMode = 'buffer';
+          state.debtHandling = 'deduct_buffer';
+          break;
+        case 'planner':
+          state.cycleMode = 'buffer';
+          state.debtHandling = 'deduct_buffer';
+          break;
+        default:
+          state.cycleMode = 'buffer';
+          state.debtHandling = 'deduct_buffer';
+      }
+    };
+
+    // Cycle Settings handlers
+    window.setCycleDay = (day) => {
+      state.cycleDay = day;
+      saveState();
+      render();
+    };
+
+    window.setCycleMode = (mode) => {
+      state.cycleMode = mode;
+      saveState();
+      render();
+    };
+
+    window.setDebtHandling = (handling) => {
+      state.debtHandling = handling;
+      saveState();
+      render();
+    };
+
+    window.withdrawBuffer = () => {
+      if (state.buffer <= 0) return;
+      const input = prompt(t('withdrawBufferPrompt') || `Rút bao nhiêu từ Buffer? (Hiện có: ${fmt(state.buffer)})`, state.buffer.toString());
+      if (input === null) return;
+      const amount = parseAmount(input);
+      if (amount > 0 && amount <= state.buffer) {
+        state.buffer -= amount;
+        saveState();
+        render();
       }
     };
 
