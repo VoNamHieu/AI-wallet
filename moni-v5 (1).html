@@ -4319,6 +4319,7 @@
                 ${[1, 5, 10, 15, 25].map(day => `
                   <button onclick="setCycleDay(${day})" style="padding:8px 16px;background:${state.cycleDay === day ? archColor : 'var(--bg)'};color:${state.cycleDay === day ? 'white' : 'var(--text)'};border:1px solid ${state.cycleDay === day ? archColor : 'var(--border)'};border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('day') || 'Ngày'} ${day}</button>
                 `).join('')}
+                <button onclick="openCustomCycleDay()" style="padding:8px 16px;background:${![1,5,10,15,25].includes(state.cycleDay) ? archColor : 'var(--bg)'};color:${![1,5,10,15,25].includes(state.cycleDay) ? 'white' : 'var(--text)'};border:1px solid ${![1,5,10,15,25].includes(state.cycleDay) ? archColor : 'var(--border)'};border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${![1,5,10,15,25].includes(state.cycleDay) ? (t('day') || 'Ngày') + ' ' + state.cycleDay : (t('custom') || 'Tuỳ chọn')}</button>
               </div>
             </div>
 
@@ -5118,6 +5119,26 @@ Ví dụ response:
       state.cycleDay = day;
       saveState();
       render();
+    };
+
+    window.openCustomCycleDay = () => {
+      openInputModal({
+        icon: '📅',
+        title: t('customCycleDay') || 'Chọn ngày reset',
+        subtitle: t('cycleDayHint') || 'Nhập ngày trong tháng (1-28)',
+        placeholder: '1-28',
+        value: state.cycleDay?.toString() || '1',
+        buttonText: t('save') || 'Lưu',
+        onSubmit: (input) => {
+          const day = parseInt(input);
+          if (day >= 1 && day <= 28) {
+            state.cycleDay = day;
+            state.inputModal = null;
+            saveState();
+            render();
+          }
+        }
+      });
     };
 
     window.setCycleMode = (mode) => {
