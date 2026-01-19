@@ -2733,6 +2733,7 @@
       showAddGoal: false,
       fixedExpanded: false,
       selectedGoalEmoji: '🎯',
+      inputModal: null, // Generic input modal config
       showCelebration: null,
       newExpense: { name: '', amount: '' },
       newFixed: { name: '', amount: '' },
@@ -3744,6 +3745,46 @@
         </div>
       ` : '';
 
+      // Add Fixed Expense Modal
+      const addFixedModal = state.showAddFixed ? `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100" onclick="if(event.target===this)closeAddFixed()">
+          <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+              <span style="font-size:20px;font-weight:700">📦 ${t('addFixedExpense') || 'Thêm chi phí cố định'}</span>
+              <button onclick="closeAddFixed()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+            </div>
+            <div style="margin-bottom:16px">
+              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('expenseName') || 'Tên khoản chi'}</label>
+              <input id="newFixedNameInput" class="input" placeholder="${t('expenseNamePlaceholder') || 'VD: Gym, Netflix...'}" style="font-size:16px">
+            </div>
+            <div style="margin-bottom:20px">
+              <label style="font-size:13px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:8px">${t('amountPerMonth') || 'Số tiền / tháng'}</label>
+              <input id="newFixedAmountInput" class="input" placeholder="500,000" style="font-size:18px;font-weight:600">
+            </div>
+            <button class="btn" onclick="submitNewFixed()">${t('add') || 'Thêm'}</button>
+          </div>
+        </div>
+      ` : '';
+
+      // Generic Input Modal - reusable for deposit, withdraw, edit income, etc.
+      const inputModal = state.inputModal ? `
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,0.5);display:flex;align-items:flex-end;z-index:100" onclick="if(event.target===this)closeInputModal()">
+          <div style="background:var(--bg);border-top-left-radius:28px;border-top-right-radius:28px;padding:24px;width:100%">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+              <span style="font-size:20px;font-weight:700">${state.inputModal.icon || ''} ${state.inputModal.title}</span>
+              <button onclick="closeInputModal()" style="width:36px;height:36px;background:var(--card);border:1px solid var(--border);border-radius:18px;font-size:18px;cursor:pointer">×</button>
+            </div>
+            ${state.inputModal.subtitle ? `<div style="font-size:14px;color:var(--text-muted);margin-bottom:16px">${state.inputModal.subtitle}</div>` : ''}
+            <div style="margin-bottom:20px">
+              <input id="genericModalInput" class="input" type="${state.inputModal.type || 'text'}" placeholder="${state.inputModal.placeholder || ''}" value="${state.inputModal.value || ''}" style="font-size:18px;font-weight:600;${state.inputModal.inputStyle || ''}" onkeydown="if(event.key==='Enter')submitInputModal()">
+              ${state.inputModal.hint ? `<div style="font-size:12px;color:var(--text-muted);margin-top:8px">${state.inputModal.hint}</div>` : ''}
+            </div>
+            ${state.inputModal.error ? `<div style="color:#ef4444;font-size:13px;margin-bottom:12px">${state.inputModal.error}</div>` : ''}
+            <button class="btn" onclick="submitInputModal()">${state.inputModal.buttonText || 'OK'}</button>
+          </div>
+        </div>
+      ` : '';
+
       // Chat response section
       let chatSection = '';
       if (state.chatLoading) {
@@ -4379,6 +4420,8 @@
         </div>
         ${addExpenseModal}
         ${addGoalModal}
+        ${addFixedModal}
+        ${inputModal}
       `;
     };
 
@@ -4527,6 +4570,23 @@
       state.showAddGoal = false;
       saveState();
       render();
+    };
+
+    // Generic Input Modal functions
+    window.openInputModal = (config) => {
+      state.inputModal = { ...config, error: null };
+      render();
+      setTimeout(() => $('genericModalInput')?.focus(), 100);
+    };
+    window.closeInputModal = () => {
+      state.inputModal = null;
+      render();
+    };
+    window.submitInputModal = () => {
+      const value = $('genericModalInput')?.value;
+      if (state.inputModal?.onSubmit) {
+        state.inputModal.onSubmit(value);
+      }
     };
 
     // Allocation  
@@ -4824,37 +4884,51 @@ Ví dụ response:
       const remaining = goal.amount - currentDeposit;
       const suggested = Math.min(parseInt(state.allocations[goalId]) || 0, remaining);
 
-      const input = prompt(t('enterDepositAmount') + ` (${t('remaining')}: ${fmt(remaining)})`, suggested > 0 ? suggested : '');
-      if (input === null) return;
-
-      const amount = parseAmount(input);
-      if (amount > 0) {
-        state.goalDeposits[goalId] = currentDeposit + Math.min(amount, remaining);
-        saveState();
-
-        // Check for goal milestones
-        const milestones = checkMilestones();
-        if (milestones.length > 0) {
-          celebrateMilestone(milestones[0]);
+      openInputModal({
+        icon: '💰',
+        title: t('deposit') || 'Nạp tiền',
+        subtitle: `${goal.e} ${getGoalName(goal)} - ${t('remaining') || 'Còn lại'}: ${fmt(remaining)}`,
+        placeholder: t('enterAmount') || 'Nhập số tiền',
+        value: suggested > 0 ? suggested.toString() : '',
+        buttonText: t('deposit') || 'Nạp tiền',
+        onSubmit: (input) => {
+          const amount = parseAmount(input);
+          if (amount > 0) {
+            state.goalDeposits[goalId] = currentDeposit + Math.min(amount, remaining);
+            state.inputModal = null;
+            saveState();
+            const milestones = checkMilestones();
+            if (milestones.length > 0) {
+              celebrateMilestone(milestones[0]);
+            }
+            render();
+          }
         }
-
-        render();
-      }
+      });
     };
 
     window.withdrawFromGoal = (goalId) => {
+      const goal = state.goals.find(g => g.id === goalId);
       const currentDeposit = state.goalDeposits[goalId] || 0;
       if (currentDeposit <= 0) return;
 
-      const input = prompt(t('enterWithdrawAmount') + ` (${t('available')}: ${fmt(currentDeposit)})`, '');
-      if (input === null) return;
-
-      const amount = parseAmount(input);
-      if (amount > 0) {
-        state.goalDeposits[goalId] = Math.max(0, currentDeposit - amount);
-        saveState();
-        render();
-      }
+      openInputModal({
+        icon: '💸',
+        title: t('withdraw') || 'Rút tiền',
+        subtitle: `${goal?.e || '🎯'} ${getGoalName(goal)} - ${t('available') || 'Có thể rút'}: ${fmt(currentDeposit)}`,
+        placeholder: t('enterAmount') || 'Nhập số tiền',
+        value: '',
+        buttonText: t('withdraw') || 'Rút tiền',
+        onSubmit: (input) => {
+          const amount = parseAmount(input);
+          if (amount > 0 && amount <= currentDeposit) {
+            state.goalDeposits[goalId] = currentDeposit - amount;
+            state.inputModal = null;
+            saveState();
+            render();
+          }
+        }
+      });
     };
 
     // B2: Future Self Visualization - Edit goal note
@@ -4863,28 +4937,42 @@ Ví dụ response:
       if (!goal) return;
 
       const currentNote = state.goalNotes[goalId] || '';
-      const promptText = t('futureSelfPrompt') || 'Why do you want this? Describe your future self enjoying this goal:';
-      const input = prompt(promptText, currentNote);
-
-      if (input === null) return; // User cancelled
-
-      state.goalNotes[goalId] = input.trim();
-      saveState();
-      render();
+      openInputModal({
+        icon: '✏️',
+        title: t('futureSelfNote') || 'Ghi chú tương lai',
+        subtitle: t('futureSelfPrompt') || 'Tại sao bạn muốn mục tiêu này?',
+        placeholder: t('futureSelfPlaceholder') || 'Mô tả cảm giác khi đạt được...',
+        value: currentNote,
+        buttonText: t('save') || 'Lưu',
+        onSubmit: (input) => {
+          state.goalNotes[goalId] = input.trim();
+          state.inputModal = null;
+          saveState();
+          render();
+        }
+      });
     };
 
     // B5: Settings Screen - Edit functions
     window.editIncome = () => {
       const current = state.income || '';
-      const input = prompt(t('enterIncome') || 'Enter your monthly income:', fmt(parseInt(current) || 0));
-      if (input === null) return;
-
-      const amount = parseAmount(input);
-      if (amount > 0) {
-        state.income = amount.toString();
-        saveState();
-        render();
-      }
+      openInputModal({
+        icon: '💰',
+        title: t('editIncome') || 'Chỉnh thu nhập',
+        subtitle: t('monthlyIncome') || 'Thu nhập hàng tháng của bạn',
+        placeholder: t('enterIncome') || 'Nhập số tiền',
+        value: parseInt(current) > 0 ? current : '',
+        buttonText: t('save') || 'Lưu',
+        onSubmit: (input) => {
+          const amount = parseAmount(input);
+          if (amount > 0) {
+            state.income = amount.toString();
+            state.inputModal = null;
+            saveState();
+            render();
+          }
+        }
+      });
     };
 
     window.editFixedExpenses = () => {
@@ -4917,10 +5005,20 @@ Ví dụ response:
     };
 
     window.addNewFixedExpense = () => {
-      const name = prompt(t('expenseName') || 'Tên khoản chi:', '');
+      state.showAddFixed = true;
+      render();
+      setTimeout(() => $('newFixedNameInput')?.focus(), 100);
+    };
+
+    window.closeAddFixed = () => {
+      state.showAddFixed = false;
+      render();
+    };
+
+    window.submitNewFixed = () => {
+      const name = $('newFixedNameInput')?.value;
+      const amountStr = $('newFixedAmountInput')?.value;
       if (!name || !name.trim()) return;
-      const amountStr = prompt(t('amountPerMonth') || 'Số tiền / tháng:', '0');
-      if (amountStr === null) return;
       const amount = parseAmount(amountStr);
       if (!Array.isArray(state.fixedExpenses)) state.fixedExpenses = [];
       state.fixedExpenses.push({
@@ -4928,6 +5026,7 @@ Ví dụ response:
         emoji: '📦',
         amount: amount.toString()
       });
+      state.showAddFixed = false;
       saveState();
       render();
     };
