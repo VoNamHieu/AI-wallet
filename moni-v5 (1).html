@@ -4089,27 +4089,27 @@
 
             <!-- Cycle Mode -->
             <div style="margin-bottom:16px">
-              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${t('cycleEndAction') || 'Cuối chu kỳ, tiền dư sẽ...'}</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Cuối chu kỳ, tiền dư sẽ...</div>
               <div style="display:flex;flex-direction:column;gap:8px">
                 <button onclick="setCycleMode('buffer')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.cycleMode === 'buffer' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.cycleMode === 'buffer' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
                   <span style="font-size:20px">🛡️</span>
                   <div style="flex:1">
-                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'buffer' ? archColor : 'var(--text)'}">${t('bufferMode') || 'Chuyển vào Buffer'}</div>
-                    <div style="font-size:12px;color:var(--text-muted)">${t('bufferModeDesc') || 'Tích lũy riêng, spendable mới (✨ Recommended)'}</div>
+                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'buffer' ? archColor : 'var(--text)'}">Chuyển vào Buffer</div>
+                    <div style="font-size:12px;color:var(--text-muted)">Tích lũy riêng, spendable mới ✨</div>
                   </div>
                 </button>
                 <button onclick="setCycleMode('rollover')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.cycleMode === 'rollover' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.cycleMode === 'rollover' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
                   <span style="font-size:20px">↗️</span>
                   <div style="flex:1">
-                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'rollover' ? archColor : 'var(--text)'}">${t('rolloverMode') || 'Cộng vào tháng sau'}</div>
-                    <div style="font-size:12px;color:var(--text-muted)">${t('rolloverModeDesc') || 'Dư tháng này = thêm tháng sau'}</div>
+                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'rollover' ? archColor : 'var(--text)'}">Cộng vào tháng sau</div>
+                    <div style="font-size:12px;color:var(--text-muted)">Dư tháng này = thêm tháng sau</div>
                   </div>
                 </button>
                 <button onclick="setCycleMode('reset')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.cycleMode === 'reset' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.cycleMode === 'reset' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
                   <span style="font-size:20px">🔄</span>
                   <div style="flex:1">
-                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'reset' ? archColor : 'var(--text)'}">${t('resetMode') || 'Reset về 0'}</div>
-                    <div style="font-size:12px;color:var(--text-muted)">${t('resetModeDesc') || 'Mỗi tháng bắt đầu mới'}</div>
+                    <div style="font-size:14px;font-weight:600;color:${state.cycleMode === 'reset' ? archColor : 'var(--text)'}">Reset về 0</div>
+                    <div style="font-size:12px;color:var(--text-muted)">Mỗi tháng bắt đầu mới</div>
                   </div>
                 </button>
               </div>
@@ -4117,20 +4117,20 @@
 
             <!-- Debt Handling -->
             <div>
-              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">${t('debtHandling') || 'Nếu tiêu quá...'}</div>
+              <div style="font-size:13px;color:var(--text-muted);margin-bottom:8px">Nếu tiêu quá...</div>
               <div style="display:flex;flex-direction:column;gap:8px">
                 <button onclick="setDebtHandling('deduct_buffer')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.debtHandling === 'deduct_buffer' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.debtHandling === 'deduct_buffer' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
                   <span style="font-size:20px">💳</span>
                   <div style="flex:1">
-                    <div style="font-size:14px;font-weight:600;color:${state.debtHandling === 'deduct_buffer' ? archColor : 'var(--text)'}">${t('deductBuffer') || 'Trừ từ Buffer trước'}</div>
-                    <div style="font-size:12px;color:var(--text-muted)">${t('deductBufferDesc') || 'Dùng tiền dự phòng'}</div>
+                    <div style="font-size:14px;font-weight:600;color:${state.debtHandling === 'deduct_buffer' ? archColor : 'var(--text)'}">Trừ từ Buffer trước</div>
+                    <div style="font-size:12px;color:var(--text-muted)">Dùng tiền dự phòng</div>
                   </div>
                 </button>
                 <button onclick="setDebtHandling('forgive')" style="display:flex;align-items:center;gap:12px;padding:12px;background:${state.debtHandling === 'forgive' ? 'linear-gradient(135deg, ' + archColor + '11, ' + archColor + '05)' : 'var(--bg)'};border:1px solid ${state.debtHandling === 'forgive' ? archColor : 'var(--border)'};border-radius:12px;text-align:left;cursor:pointer;font-family:inherit">
                   <span style="font-size:20px">🌱</span>
                   <div style="flex:1">
-                    <div style="font-size:14px;font-weight:600;color:${state.debtHandling === 'forgive' ? archColor : 'var(--text)'}">${t('forgiveDebt') || 'Bỏ qua, bắt đầu mới'}</div>
-                    <div style="font-size:12px;color:var(--text-muted)">${t('forgiveDebtDesc') || 'Fresh start không debt'}</div>
+                    <div style="font-size:14px;font-weight:600;color:${state.debtHandling === 'forgive' ? archColor : 'var(--text)'}">Bỏ qua, bắt đầu mới</div>
+                    <div style="font-size:12px;color:var(--text-muted)">Fresh start không debt</div>
                   </div>
                 </button>
               </div>
@@ -4143,7 +4143,7 @@
                     <div style="font-size:13px;color:var(--text-muted)">Buffer hiện tại</div>
                     <div style="font-size:18px;font-weight:700;color:var(--green)">${fmt(state.buffer)}</div>
                   </div>
-                  <button onclick="withdrawBuffer()" style="padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">${t('withdraw') || 'Rút'}</button>
+                  <button onclick="withdrawBuffer()" style="padding:8px 16px;background:var(--bg);border:1px solid var(--border);border-radius:10px;font-size:13px;cursor:pointer;font-family:inherit">Rút</button>
                 </div>
               </div>
             ` : ''}
