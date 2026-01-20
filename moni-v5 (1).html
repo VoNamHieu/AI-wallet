@@ -1015,6 +1015,7 @@
         monthlyIncome: 'Thu nhập hàng tháng của bạn',
         save: 'Lưu',
         withdraw: 'Rút tiền',
+        withdrawBufferPrompt: 'Rút bao nhiêu từ Buffer?',
         yourGoals: 'Mục tiêu của bạn',
       },
       en: {
@@ -1281,6 +1282,7 @@
         monthlyIncome: 'Your monthly income',
         save: 'Save',
         withdraw: 'Withdraw',
+        withdrawBufferPrompt: 'How much to withdraw from Buffer?',
         yourGoals: 'Your goals',
       },
       zh: {
@@ -1547,6 +1549,7 @@
         monthlyIncome: '您的月收入',
         save: '保存',
         withdraw: '取款',
+        withdrawBufferPrompt: '从缓冲区取款多少？',
         yourGoals: '您的目标',
       },
       ja: {
@@ -1812,6 +1815,7 @@
         monthlyIncome: '月収',
         save: '保存',
         withdraw: '出金',
+        withdrawBufferPrompt: 'バッファからいくら引き出しますか？',
         yourGoals: 'あなたの目標',
       },
       ko: {
@@ -2077,6 +2081,7 @@
         monthlyIncome: '월 수입',
         save: '저장',
         withdraw: '출금',
+        withdrawBufferPrompt: '버퍼에서 얼마를 인출하시겠습니까?',
         yourGoals: '내 목표',
       },
       fr: {
@@ -2342,6 +2347,7 @@
         monthlyIncome: 'Votre revenu mensuel',
         save: 'Enregistrer',
         withdraw: 'Retirer',
+        withdrawBufferPrompt: 'Combien retirer du buffer ?',
         yourGoals: 'Vos objectifs',
       },
       es: {
@@ -2607,6 +2613,7 @@
         monthlyIncome: 'Tu ingreso mensual',
         save: 'Guardar',
         withdraw: 'Retirar',
+        withdrawBufferPrompt: '¿Cuánto retirar del buffer?',
         yourGoals: 'Tus metas',
       }
     };
@@ -4088,7 +4095,7 @@
                 <div class="goal-card-info">
                   <div class="goal-card-header">
                     <span class="goal-card-name">${getGoalName(g)}</span>
-                    <span class="goal-card-percent ${isComplete ? 'complete' : ''}">${isComplete ? '✓ Hoàn thành' : progress + '%'}</span>
+                    <span class="goal-card-percent ${isComplete ? 'complete' : ''}">${isComplete ? '✓ ' + (t('completed') || 'Completed') : progress + '%'}</span>
                   </div>
                   <div class="goal-card-progress-bar">
                     <div class="goal-card-progress-fill ${isComplete ? 'complete' : ''}" style="width:${progress}%"></div>
@@ -4857,7 +4864,7 @@
       render();
       
       const remaining = spendable() - todaySpent();
-      const goalsInfo = state.goals.map(g => `${getGoalName(g)}: ${fmt(g.amount)}, tiết kiệm ${fmt(state.allocations[g.id] || 0)}/tháng`).join('; ');
+      const goalsInfo = state.goals.map(g => `${getGoalName(g)}: ${fmt(g.amount)}, ${t('saved') || 'saved'} ${fmt(state.allocations[g.id] || 0)}/${t('month') || 'mo'}`).join('; ');
       
       const systemPrompt = `Bạn là Moni, một trợ lý tài chính thân thiện. Bạn giúp user quyết định có nên mua một món đồ hay không dựa trên ngân sách của họ.
 
@@ -5358,7 +5365,7 @@ Ví dụ response:
 
     window.withdrawBuffer = () => {
       if (state.buffer <= 0) return;
-      const input = prompt(t('withdrawBufferPrompt') || `Rút bao nhiêu từ Buffer? (Hiện có: ${fmt(state.buffer)})`, state.buffer.toString());
+      const input = prompt((t('withdrawBufferPrompt') || 'How much to withdraw from Buffer?') + ` (${t('available') || 'Available'}: ${fmt(state.buffer)})`, state.buffer.toString());
       if (input === null) return;
       const amount = parseAmount(input);
       if (amount > 0 && amount <= state.buffer) {
