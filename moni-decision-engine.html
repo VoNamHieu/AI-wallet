@@ -1,0 +1,2585 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Moni - Goal-Driven Decision Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf9f7;
+      --card: #ffffff;
+      --text: #1a1a1a;
+      --text-soft: #6b6b6b;
+      --text-muted: #9a9a9a;
+      --border: #e8e6e3;
+      --primary: #6366f1;
+      --primary-light: #eef2ff;
+      /* Status colors */
+      --safe: #22c55e;
+      --safe-bg: #f0fdf4;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      /* Mode colors */
+      --survival: #ef4444;
+      --target: #6366f1;
+      --control: #22c55e;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #1a1a1a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Be Vietnam Pro', sans-serif;
+      padding: 20px;
+    }
+
+    .phone {
+      width: 100%;
+      max-width: 390px;
+      height: 844px;
+      background: var(--bg);
+      border-radius: 44px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.5);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .phone.dark-bg {
+      background: linear-gradient(160deg, #1a1a1a 0%, #2d2d2d 100%);
+    }
+
+    .hidden { display: none !important; }
+
+    /* ============= COMMON COMPONENTS ============= */
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 24px;
+    }
+
+    .btn-back {
+      width: 44px;
+      height: 44px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-back.light {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      color: white;
+    }
+
+    .progress-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 4px;
+      background: var(--border);
+      transition: all 0.3s;
+    }
+
+    .dot.active {
+      width: 24px;
+      background: var(--text);
+    }
+
+    .dot.light {
+      background: rgba(255,255,255,0.3);
+    }
+
+    .dot.light.active {
+      background: white;
+    }
+
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 24px;
+    }
+
+    .footer {
+      padding: 16px 24px 40px;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 18px 24px;
+      background: var(--text);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: transform 0.2s, opacity 0.2s;
+    }
+
+    .btn:hover { transform: scale(1.02); }
+    .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+    .btn.white { background: white; color: var(--text); }
+    .btn.primary { background: var(--primary); }
+    .btn.danger { background: var(--danger); }
+    .btn.outline {
+      background: transparent;
+      border: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    .input {
+      width: 100%;
+      padding: 18px 20px;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      font-size: 17px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+      background: var(--card);
+    }
+
+    .input:focus { border-color: var(--primary); }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-soft);
+      margin-bottom: 8px;
+    }
+
+    /* ============= SPLASH SCREEN ============= */
+    .splash {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 60px 32px 48px;
+      text-align: center;
+    }
+
+    .splash-logo { font-size: 80px; margin-bottom: 16px; }
+    .splash-title { font-size: 48px; font-weight: 800; color: white; letter-spacing: -1px; }
+    .splash-tagline { font-size: 17px; color: rgba(255,255,255,0.7); margin-top: 12px; line-height: 1.5; }
+
+    /* ============= MODE SELECTION ============= */
+    .mode-title {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .mode-subtitle {
+      font-size: 16px;
+      color: var(--text-soft);
+      margin-bottom: 32px;
+      line-height: 1.5;
+    }
+
+    .mode-card {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .mode-card:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .mode-card.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .mode-card-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .mode-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .mode-icon.survival { background: #fef2f2; }
+    .mode-icon.target { background: #eef2ff; }
+    .mode-icon.control { background: #f0fdf4; }
+
+    .mode-name {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .mode-tag {
+      font-size: 13px;
+      color: var(--text-soft);
+      margin-top: 2px;
+    }
+
+    .mode-desc {
+      font-size: 14px;
+      color: var(--text-soft);
+      line-height: 1.6;
+    }
+
+    /* ============= SETUP SCREENS ============= */
+    .setup-icon { font-size: 64px; margin-bottom: 20px; text-align: center; }
+    .setup-title { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 12px; }
+    .setup-desc { font-size: 15px; color: var(--text-soft); line-height: 1.6; margin-bottom: 24px; }
+
+    .amount-input-wrap {
+      display: flex;
+      align-items: center;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .amount-input-wrap:focus-within {
+      border-color: var(--primary);
+    }
+
+    .amount-input {
+      flex: 1;
+      border: none;
+      font-size: 32px;
+      font-weight: 700;
+      font-family: inherit;
+      outline: none;
+      background: transparent;
+      text-align: right;
+    }
+
+    .amount-unit {
+      font-size: 18px;
+      color: var(--text-soft);
+      margin-left: 8px;
+    }
+
+    .quick-amounts {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+
+    .quick-amount {
+      padding: 10px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-amount:hover {
+      background: var(--primary-light);
+      border-color: var(--primary);
+    }
+
+    /* Fixed Expenses */
+    .expense-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .expense-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+    }
+
+    .expense-emoji {
+      font-size: 24px;
+    }
+
+    .expense-name {
+      flex: 1;
+      font-size: 15px;
+      font-weight: 500;
+    }
+
+    .expense-amount {
+      width: 100px;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 600;
+      text-align: right;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .expense-amount:focus {
+      border-color: var(--primary);
+    }
+
+    .add-expense-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px;
+      background: var(--bg);
+      border: 2px dashed var(--border);
+      border-radius: 14px;
+      font-size: 15px;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .add-expense-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* ============= COMMITMENT CONTRACT ============= */
+    .contract-card {
+      background: linear-gradient(135deg, #1a1a1a, #2d2d2d);
+      border-radius: 24px;
+      padding: 32px 24px;
+      color: white;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .contract-icon { font-size: 48px; margin-bottom: 16px; }
+    .contract-title { font-size: 20px; font-weight: 700; margin-bottom: 16px; }
+    .contract-text { font-size: 15px; opacity: 0.8; line-height: 1.7; }
+
+    .contract-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 18px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .contract-checkbox.checked {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .checkbox-box {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+
+    .contract-checkbox.checked .checkbox-box {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: white;
+    }
+
+    .checkbox-label {
+      font-size: 15px;
+      color: var(--text);
+      line-height: 1.5;
+      text-align: left;
+    }
+
+    /* ============= STRICTNESS LEVELS ============= */
+    .strictness-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .strictness-option {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .strictness-option:hover {
+      border-color: var(--primary);
+    }
+
+    .strictness-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .strictness-icon { font-size: 28px; }
+    .strictness-info { flex: 1; }
+    .strictness-name { font-size: 16px; font-weight: 600; color: var(--text); }
+    .strictness-desc { font-size: 13px; color: var(--text-soft); margin-top: 2px; }
+
+    /* ============= MAIN DASHBOARD ============= */
+    .dashboard {
+      padding-top: 20px;
+    }
+
+    .greeting {
+      font-size: 16px;
+      color: var(--text-soft);
+      margin-bottom: 4px;
+    }
+
+    .greeting-name {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 24px;
+    }
+
+    /* The One Number Card */
+    .main-card {
+      border-radius: 28px;
+      padding: 32px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+      transition: all 0.3s;
+    }
+
+    .main-card.safe { background: var(--safe-bg); }
+    .main-card.warning { background: var(--warning-bg); }
+    .main-card.danger { background: var(--danger-bg); }
+
+    .main-card-label {
+      font-size: 15px;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .main-card.safe .main-card-label { color: #166534; }
+    .main-card.warning .main-card-label { color: #92400e; }
+    .main-card.danger .main-card-label { color: #991b1b; }
+
+    .main-card-amount {
+      font-size: 56px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .main-card.safe .main-card-amount { color: var(--safe); }
+    .main-card.warning .main-card-amount { color: var(--warning); }
+    .main-card.danger .main-card-amount { color: var(--danger); }
+
+    .main-card-unit {
+      font-size: 24px;
+      font-weight: 600;
+    }
+
+    .main-card-sub {
+      font-size: 14px;
+      margin-top: 12px;
+    }
+
+    .main-card.safe .main-card-sub { color: #166534; }
+    .main-card.warning .main-card-sub { color: #92400e; }
+    .main-card.danger .main-card-sub { color: #991b1b; }
+
+    /* Progress Bars */
+    .progress-section {
+      margin-bottom: 24px;
+    }
+
+    .progress-item {
+      margin-bottom: 16px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .progress-label {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-soft);
+    }
+
+    .progress-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .progress-bar {
+      height: 8px;
+      background: var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+
+    .progress-fill.time { background: var(--primary); }
+    .progress-fill.goal { background: var(--safe); }
+
+    /* Quick Actions */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .quick-action {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 20px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-action:hover {
+      border-color: var(--primary);
+      transform: translateY(-2px);
+    }
+
+    .quick-action-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .quick-action-icon.expense { background: #fef2f2; }
+    .quick-action-icon.save { background: #f0fdf4; }
+
+    .quick-action-label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Trade-off Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      padding: 24px;
+    }
+
+    .modal {
+      background: var(--card);
+      border-radius: 28px;
+      padding: 32px 24px;
+      max-width: 340px;
+      width: 100%;
+    }
+
+    .modal-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+    .modal-title { font-size: 20px; font-weight: 700; text-align: center; margin-bottom: 12px; }
+    .modal-desc { font-size: 15px; color: var(--text-soft); text-align: center; line-height: 1.6; margin-bottom: 24px; }
+
+    .tradeoff-alert {
+      background: var(--warning-bg);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+
+    .tradeoff-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 0;
+    }
+
+    .tradeoff-item:not(:last-child) {
+      border-bottom: 1px solid rgba(245,158,11,0.2);
+    }
+
+    .tradeoff-icon { font-size: 20px; }
+    .tradeoff-text { font-size: 14px; color: #92400e; flex: 1; }
+
+    .modal-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .modal-buttons .btn {
+      padding: 16px;
+    }
+
+    /* Transaction Input Modal */
+    .tx-input-section {
+      margin-bottom: 20px;
+    }
+
+    .tx-emoji-picker {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .tx-emoji {
+      width: 44px;
+      height: 44px;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tx-emoji:hover, .tx-emoji.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    /* History Section */
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-link {
+      font-size: 14px;
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    .transaction-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 14px 16px;
+      background: var(--card);
+      border-radius: 16px;
+    }
+
+    .transaction-emoji {
+      width: 44px;
+      height: 44px;
+      background: var(--bg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+
+    .transaction-info { flex: 1; }
+    .transaction-name { font-size: 15px; font-weight: 500; color: var(--text); }
+    .transaction-time { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+    .transaction-amount { font-size: 16px; font-weight: 700; }
+    .transaction-amount.expense { color: var(--danger); }
+    .transaction-amount.save { color: var(--safe); }
+
+    /* Bottom Nav */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 24px 32px;
+      background: var(--card);
+      border-top: 1px solid var(--border);
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      padding: 8px 16px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: all 0.2s;
+    }
+
+    .nav-item.active {
+      opacity: 1;
+    }
+
+    .nav-icon { font-size: 24px; }
+    .nav-label { font-size: 12px; font-weight: 500; color: var(--text); }
+
+    /* Morning Verification Banner */
+    .verification-banner {
+      background: linear-gradient(135deg, var(--primary), #818cf8);
+      border-radius: 20px;
+      padding: 20px;
+      margin-bottom: 24px;
+      color: white;
+    }
+
+    .verification-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .verification-desc {
+      font-size: 14px;
+      opacity: 0.9;
+      margin-bottom: 16px;
+    }
+
+    .verification-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .verification-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .verification-btn.confirm {
+      background: white;
+      color: var(--primary);
+    }
+
+    .verification-btn.edit {
+      background: rgba(255,255,255,0.2);
+      color: white;
+    }
+
+    /* Settings Screen */
+    .settings-section {
+      margin-bottom: 24px;
+    }
+
+    .settings-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+
+    .settings-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      background: var(--card);
+      border-radius: 14px;
+      margin-bottom: 8px;
+      cursor: pointer;
+    }
+
+    .settings-item-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .settings-icon {
+      width: 40px;
+      height: 40px;
+      background: var(--bg);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .settings-label { font-size: 15px; font-weight: 500; color: var(--text); }
+    .settings-value { font-size: 14px; color: var(--text-muted); }
+
+    /* Animations */
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .animate-in {
+      animation: slideUp 0.3s ease-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    .pulse {
+      animation: pulse 2s infinite;
+    }
+  </style>
+</head>
+<body>
+  <div class="phone" id="app"></div>
+
+  <script>
+    // ============= TRANSLATIONS =============
+    const translations = {
+      vi: {
+        // Splash
+        splashTagline: 'Hệ thống dẫn đường tài chính',
+        getStarted: 'Bắt đầu',
+
+        // Mode Selection
+        choosePath: 'Chọn con đường của bạn',
+        choosePathDesc: 'Moni sẽ tùy chỉnh thuật toán dựa trên mục tiêu của bạn',
+
+        survivalMode: 'Chế độ Sinh tồn',
+        survivalTag: 'Đang cháy túi',
+        survivalDesc: 'Dành cho bạn đang cần "sống sót" đến kỳ lương tiếp theo',
+
+        targetMode: 'Chế độ Mục tiêu',
+        targetTag: 'Muốn mua tài sản',
+        targetDesc: 'Dành cho bạn muốn tích lũy mua một thứ gì đó cụ thể',
+
+        controlMode: 'Chế độ Kiểm soát',
+        controlTag: 'Tìm lỗ hổng',
+        controlDesc: 'Dành cho bạn muốn phát hiện và siết chặt chi tiêu',
+
+        continue: 'Tiếp tục',
+        back: 'Quay lại',
+
+        // Survival Setup
+        survivalSetupTitle: 'Bạn còn bao nhiêu?',
+        survivalSetupDesc: 'Nhập số tiền hiện có và ngày nhận lương tiếp theo',
+        currentMoney: 'Tiền hiện có',
+        daysUntilPayday: 'Số ngày đến kỳ lương',
+        days: 'ngày',
+
+        // Target Setup
+        targetSetupTitle: 'Bạn muốn mua gì?',
+        targetSetupDesc: 'Nhập mục tiêu và thời hạn bạn muốn đạt được',
+        targetItem: 'Tên món đồ',
+        targetAmount: 'Giá trị',
+        targetDeadline: 'Thời hạn (tháng)',
+        monthlyIncome: 'Thu nhập hàng tháng',
+        months: 'tháng',
+
+        // Control Setup
+        controlSetupTitle: 'Bạn muốn kiểm soát gì?',
+        controlSetupDesc: 'Chọn danh mục bạn muốn siết chặt chi tiêu',
+
+        // Fixed Expenses
+        fixedExpensesTitle: 'Chi phí cứng hàng tháng',
+        fixedExpensesDesc: 'Các khoản bắt buộc phải trả (sẽ tự động trừ khỏi ngân sách)',
+        rent: 'Thuê nhà',
+        electricity: 'Điện',
+        water: 'Nước',
+        internet: 'Internet',
+        phone: 'Điện thoại',
+        insurance: 'Bảo hiểm',
+        loan: 'Trả góp',
+        addExpense: 'Thêm khoản khác',
+
+        // Daily Baseline
+        baselineTitle: 'Mức chi tiêu tối thiểu',
+        baselineDesc: 'Số tiền bạn CẦN tiêu mỗi ngày cho sinh hoạt cơ bản (ăn uống, đi lại). Moni sẽ tự động trừ số này nếu bạn không nhập gì.',
+        baselineLabel: 'Chi tiêu tối thiểu/ngày',
+        baselineHint: 'Ví dụ: 150k cho ăn uống + đi lại',
+
+        // Commitment Contract
+        commitmentTitle: 'Hợp đồng cam kết',
+        commitmentText: 'Tôi hiểu rằng để đạt được mục tiêu tài chính, tôi cần kỷ luật và kiên nhẫn. Tôi chấp nhận rằng sẽ có những lúc phải từ chối chi tiêu để đổi lấy tương lai tốt đẹp hơn.',
+        commitmentAccept: 'Tôi cam kết kỷ luật với bản thân để đạt mục tiêu',
+
+        // Strictness
+        strictnessTitle: 'Moni nên nghiêm khắc thế nào?',
+        strictnessDesc: 'Chọn thái độ của Moni khi bạn định chi tiêu',
+
+        softLevel: 'Nhẹ nhàng',
+        softDesc: 'Nhắc nhở nhẹ, không gây áp lực',
+
+        mediumLevel: 'Trung bình',
+        mediumDesc: 'Cảnh báo rõ ràng, hiển thị hậu quả',
+
+        militaryLevel: 'Quân đội',
+        militaryDesc: 'Nghiêm khắc, ngôn ngữ mạnh, nhắc liên tục',
+
+        // Dashboard
+        goodMorning: 'Chào buổi sáng,',
+        goodAfternoon: 'Chào buổi chiều,',
+        goodEvening: 'Chào buổi tối,',
+
+        todayCanSpend: 'Hôm nay được tiêu',
+        daysLeft: 'ngày còn lại',
+
+        timeProgress: 'Thời gian trong tháng',
+        goalProgress: 'Tiến độ mục tiêu',
+
+        addExpenseBtn: 'Chi tiêu',
+        quickSaveBtn: 'Đã không mua',
+
+        // Trade-off
+        tradeoffTitle: 'Cân nhắc kỹ nhé!',
+        tradeoffGoalDelay: 'Mục tiêu bị lùi {days} ngày',
+        tradeoffTomorrowBudget: 'Ngày mai chỉ còn {amount}',
+        tradeoffDanger: 'Vượt ngân sách hôm nay!',
+
+        buyAnyway: 'Vẫn mua',
+        dontBuy: 'Không mua nữa',
+
+        // Quick Save
+        quickSaveTitle: 'Tuyệt vời! 🎉',
+        quickSaveDesc: 'Bạn vừa tiết kiệm được {amount}. Số tiền này được cộng vào tiến độ mục tiêu!',
+
+        // Verification
+        verificationTitle: 'Hôm qua có gì khác không?',
+        verificationDesc: 'Moni đã tự động trừ {amount} cho chi tiêu cơ bản',
+        verificationConfirm: 'Đúng rồi',
+        verificationEdit: 'Có khác',
+
+        // Strictness messages
+        softWarning: 'Hmm, khoản này hơi lớn đó...',
+        mediumWarning: '⚠️ Cảnh báo: Chi tiêu này ảnh hưởng đến mục tiêu của bạn',
+        militaryWarning: '🛑 DỪNG LẠI! Bạn đang phá hoại kế hoạch của mình!',
+
+        // History
+        today: 'Hôm nay',
+        yesterday: 'Hôm qua',
+        thisMonth: 'Tháng này',
+
+        // Settings
+        settings: 'Cài đặt',
+        editMode: 'Đổi chế độ',
+        editBaseline: 'Mức chi tiêu tối thiểu',
+        editStrictness: 'Độ nghiêm khắc',
+        resetData: 'Xóa tất cả dữ liệu',
+
+        // Tabs
+        tabHome: 'Trang chủ',
+        tabHistory: 'Lịch sử',
+        tabSettings: 'Cài đặt',
+
+        // Common
+        save: 'Lưu',
+        cancel: 'Hủy',
+        confirm: 'Xác nhận',
+        delete: 'Xóa',
+        edit: 'Sửa',
+      },
+      en: {
+        // Splash
+        splashTagline: 'Financial Navigation System',
+        getStarted: 'Get Started',
+
+        // Mode Selection
+        choosePath: 'Choose your path',
+        choosePathDesc: 'Moni will customize the algorithm based on your goal',
+
+        survivalMode: 'Survival Mode',
+        survivalTag: 'Running low',
+        survivalDesc: 'For when you need to survive until next payday',
+
+        targetMode: 'Target Mode',
+        targetTag: 'Want to buy something',
+        targetDesc: 'For when you want to save up for something specific',
+
+        controlMode: 'Control Mode',
+        controlTag: 'Find the leaks',
+        controlDesc: 'For when you want to identify and reduce spending',
+
+        continue: 'Continue',
+        back: 'Back',
+
+        // Survival Setup
+        survivalSetupTitle: 'How much do you have?',
+        survivalSetupDesc: 'Enter your current money and days until payday',
+        currentMoney: 'Current money',
+        daysUntilPayday: 'Days until payday',
+        days: 'days',
+
+        // Target Setup
+        targetSetupTitle: 'What do you want to buy?',
+        targetSetupDesc: 'Enter your goal and when you want to achieve it',
+        targetItem: 'Item name',
+        targetAmount: 'Target amount',
+        targetDeadline: 'Deadline (months)',
+        monthlyIncome: 'Monthly income',
+        months: 'months',
+
+        // Control Setup
+        controlSetupTitle: 'What do you want to control?',
+        controlSetupDesc: 'Select categories you want to reduce spending on',
+
+        // Fixed Expenses
+        fixedExpensesTitle: 'Monthly fixed expenses',
+        fixedExpensesDesc: 'Required payments (automatically deducted from budget)',
+        rent: 'Rent',
+        electricity: 'Electricity',
+        water: 'Water',
+        internet: 'Internet',
+        phone: 'Phone',
+        insurance: 'Insurance',
+        loan: 'Loan',
+        addExpense: 'Add another',
+
+        // Daily Baseline
+        baselineTitle: 'Minimum daily spending',
+        baselineDesc: 'Amount you NEED to spend daily for basics (food, transport). Moni will auto-deduct this if you don\'t log anything.',
+        baselineLabel: 'Daily minimum spending',
+        baselineHint: 'Example: $20 for food + transport',
+
+        // Commitment Contract
+        commitmentTitle: 'Commitment Contract',
+        commitmentText: 'I understand that achieving my financial goal requires discipline and patience. I accept that there will be times I must refuse spending in exchange for a better future.',
+        commitmentAccept: 'I commit to being disciplined to reach my goal',
+
+        // Strictness
+        strictnessTitle: 'How strict should Moni be?',
+        strictnessDesc: 'Choose Moni\'s attitude when you\'re about to spend',
+
+        softLevel: 'Gentle',
+        softDesc: 'Soft reminders, no pressure',
+
+        mediumLevel: 'Medium',
+        mediumDesc: 'Clear warnings, show consequences',
+
+        militaryLevel: 'Military',
+        militaryDesc: 'Strict, strong language, persistent',
+
+        // Dashboard
+        goodMorning: 'Good morning,',
+        goodAfternoon: 'Good afternoon,',
+        goodEvening: 'Good evening,',
+
+        todayCanSpend: 'Today you can spend',
+        daysLeft: 'days left',
+
+        timeProgress: 'Time in month',
+        goalProgress: 'Goal progress',
+
+        addExpenseBtn: 'Add expense',
+        quickSaveBtn: 'Didn\'t buy',
+
+        // Trade-off
+        tradeoffTitle: 'Think carefully!',
+        tradeoffGoalDelay: 'Goal delayed by {days} days',
+        tradeoffTomorrowBudget: 'Tomorrow only {amount} left',
+        tradeoffDanger: 'Over today\'s budget!',
+
+        buyAnyway: 'Buy anyway',
+        dontBuy: 'Don\'t buy',
+
+        // Quick Save
+        quickSaveTitle: 'Awesome! 🎉',
+        quickSaveDesc: 'You just saved {amount}. This is added to your goal progress!',
+
+        // Verification
+        verificationTitle: 'Anything different yesterday?',
+        verificationDesc: 'Moni auto-deducted {amount} for basic spending',
+        verificationConfirm: 'Correct',
+        verificationEdit: 'Something else',
+
+        // Strictness messages
+        softWarning: 'Hmm, this is a bit much...',
+        mediumWarning: '⚠️ Warning: This expense affects your goal',
+        militaryWarning: '🛑 STOP! You\'re sabotaging your plan!',
+
+        // History
+        today: 'Today',
+        yesterday: 'Yesterday',
+        thisMonth: 'This month',
+
+        // Settings
+        settings: 'Settings',
+        editMode: 'Change mode',
+        editBaseline: 'Daily minimum',
+        editStrictness: 'Strictness level',
+        resetData: 'Reset all data',
+
+        // Tabs
+        tabHome: 'Home',
+        tabHistory: 'History',
+        tabSettings: 'Settings',
+
+        // Common
+        save: 'Save',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+        delete: 'Delete',
+        edit: 'Edit',
+      }
+    };
+
+    // ============= STATE =============
+    const STORAGE_KEY = 'moni_decision_engine';
+
+    const defaultFixedExpenses = [
+      { id: 'rent', emoji: '🏠', nameKey: 'rent', amount: 0 },
+      { id: 'electricity', emoji: '💡', nameKey: 'electricity', amount: 0 },
+      { id: 'water', emoji: '💧', nameKey: 'water', amount: 0 },
+      { id: 'internet', emoji: '📶', nameKey: 'internet', amount: 0 },
+      { id: 'phone', emoji: '📱', nameKey: 'phone', amount: 0 },
+    ];
+
+    const defaultState = {
+      screen: 'splash',
+      setupStep: 0,
+      language: 'vi',
+
+      // Mode
+      mode: null, // 'survival' | 'target' | 'control'
+
+      // Survival Mode
+      survivalData: {
+        currentMoney: 0,
+        daysUntilPayday: 30,
+      },
+
+      // Target Mode
+      targetData: {
+        itemName: '',
+        itemEmoji: '🎯',
+        targetAmount: 0,
+        deadlineMonths: 6,
+        monthlyIncome: 0,
+      },
+
+      // Control Mode
+      controlData: {
+        monthlyIncome: 0,
+        categories: [],
+      },
+
+      // Common
+      fixedExpenses: [...defaultFixedExpenses],
+      dailyBaseline: 150000, // 150k VND default
+
+      // Psychology
+      commitmentAccepted: false,
+      strictnessLevel: 'medium',
+
+      // Transactions
+      transactions: [],
+      quickSaves: [],
+
+      // Recalibration
+      lastRecalibrationDate: null,
+      dailyHistory: [], // { date, planned, actual, adjustment }
+
+      // UI State
+      activeTab: 'home',
+      showModal: null,
+      modalData: null,
+      showVerification: false,
+    };
+
+    let state = { ...defaultState };
+
+    // ============= HELPERS =============
+    const t = (key) => translations[state.language]?.[key] || translations.vi[key] || key;
+
+    const formatMoney = (amount) => {
+      if (state.language === 'en') {
+        if (amount >= 1000000) return '$' + (amount / 1000000).toFixed(1) + 'M';
+        if (amount >= 1000) return '$' + (amount / 1000).toFixed(0) + 'k';
+        return '$' + amount;
+      }
+      // Vietnamese
+      if (amount >= 1000000) return (amount / 1000000).toFixed(1).replace('.0', '') + 'tr';
+      if (amount >= 1000) return (amount / 1000).toFixed(0) + 'k';
+      return amount + 'đ';
+    };
+
+    const formatMoneyFull = (amount) => {
+      return new Intl.NumberFormat(state.language === 'vi' ? 'vi-VN' : 'en-US').format(amount);
+    };
+
+    const parseAmount = (input) => {
+      if (!input) return 0;
+      const text = input.toString().toLowerCase().trim();
+      let clean = text.replace(/[$€¥₫₩,\s]/g, '');
+      let multiplier = 1;
+
+      if (/tr(iệu)?|million|m(?!\w)/i.test(clean)) {
+        multiplier = 1000000;
+        clean = clean.replace(/tr(iệu)?|million|m(?!\w)/gi, '');
+      } else if (/nghìn|ngàn|thousand|k(?!\w)/i.test(clean)) {
+        multiplier = 1000;
+        clean = clean.replace(/nghìn|ngàn|thousand|k(?!\w)/gi, '');
+      }
+
+      const num = parseFloat(clean.replace(/[^\d.]/g, '')) || 0;
+      return Math.round(num * multiplier);
+    };
+
+    const getGreeting = () => {
+      const hour = new Date().getHours();
+      if (hour < 12) return t('goodMorning');
+      if (hour < 18) return t('goodAfternoon');
+      return t('goodEvening');
+    };
+
+    const isToday = (timestamp) => {
+      const date = new Date(timestamp);
+      const today = new Date();
+      return date.toDateString() === today.toDateString();
+    };
+
+    const isYesterday = (timestamp) => {
+      const date = new Date(timestamp);
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      return date.toDateString() === yesterday.toDateString();
+    };
+
+    // ============= CORE ENGINE =============
+
+    // Calculate total fixed expenses
+    const totalFixedExpenses = () => {
+      return state.fixedExpenses.reduce((sum, exp) => sum + (parseInt(exp.amount) || 0), 0);
+    };
+
+    // Calculate daily safe-to-spend based on mode
+    const calculateDailySafeToSpend = () => {
+      switch (state.mode) {
+        case 'survival': {
+          const { currentMoney, daysUntilPayday } = state.survivalData;
+          const available = currentMoney - totalFixedExpenses();
+          return Math.max(0, Math.floor(available / Math.max(1, daysUntilPayday)));
+        }
+
+        case 'target': {
+          const { monthlyIncome, targetAmount, deadlineMonths } = state.targetData;
+          const monthlyAvailable = monthlyIncome - totalFixedExpenses();
+          const monthlyToSave = targetAmount / deadlineMonths;
+          const monthlyToSpend = monthlyAvailable - monthlyToSave;
+          return Math.max(0, Math.floor(monthlyToSpend / 30));
+        }
+
+        case 'control': {
+          const { monthlyIncome } = state.controlData;
+          const monthlyAvailable = monthlyIncome - totalFixedExpenses();
+          return Math.max(0, Math.floor(monthlyAvailable / 30));
+        }
+
+        default:
+          return 0;
+      }
+    };
+
+    // Get today's spent amount
+    const getTodaySpent = () => {
+      return state.transactions
+        .filter(tx => isToday(tx.timestamp))
+        .reduce((sum, tx) => sum + tx.amount, 0);
+    };
+
+    // Get today's remaining budget
+    const getTodayRemaining = () => {
+      const dailyBudget = calculateDailySafeToSpend();
+      const spent = getTodaySpent();
+      return dailyBudget - spent;
+    };
+
+    // Get days remaining based on mode
+    const getDaysRemaining = () => {
+      switch (state.mode) {
+        case 'survival':
+          return state.survivalData.daysUntilPayday;
+        case 'target':
+        case 'control': {
+          const today = new Date();
+          const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+          return lastDay.getDate() - today.getDate();
+        }
+        default:
+          return 30;
+      }
+    };
+
+    // Get status color (safe/warning/danger)
+    const getStatus = () => {
+      const remaining = getTodayRemaining();
+      const daily = calculateDailySafeToSpend();
+
+      if (remaining <= 0) return 'danger';
+      if (remaining < daily * 0.3) return 'warning';
+      return 'safe';
+    };
+
+    // Calculate trade-off for a potential expense
+    const calculateTradeoff = (amount) => {
+      const result = {
+        goalDelayDays: 0,
+        tomorrowBudget: 0,
+        isOverBudget: false,
+        warnings: []
+      };
+
+      const todayRemaining = getTodayRemaining();
+      const dailyBudget = calculateDailySafeToSpend();
+      const daysRemaining = getDaysRemaining();
+
+      // Check if over today's budget
+      if (amount > todayRemaining) {
+        result.isOverBudget = true;
+        result.warnings.push({ icon: '🚨', text: t('tradeoffDanger') });
+      }
+
+      // Calculate tomorrow's budget if we buy this
+      if (state.mode === 'survival') {
+        const newRemaining = state.survivalData.currentMoney - totalFixedExpenses() - getTodaySpent() - amount;
+        result.tomorrowBudget = Math.floor(newRemaining / Math.max(1, daysRemaining - 1));
+
+        if (result.tomorrowBudget < dailyBudget * 0.5) {
+          result.warnings.push({
+            icon: '📉',
+            text: t('tradeoffTomorrowBudget').replace('{amount}', formatMoney(result.tomorrowBudget))
+          });
+        }
+      }
+
+      // Calculate goal delay for target mode
+      if (state.mode === 'target') {
+        const { targetAmount, deadlineMonths, monthlyIncome } = state.targetData;
+        const monthlyToSave = targetAmount / deadlineMonths;
+        const dailyToSave = monthlyToSave / 30;
+
+        if (amount > todayRemaining) {
+          const overspend = amount - todayRemaining;
+          result.goalDelayDays = Math.ceil(overspend / dailyToSave);
+          result.warnings.push({
+            icon: '📅',
+            text: t('tradeoffGoalDelay').replace('{days}', result.goalDelayDays)
+          });
+        }
+      }
+
+      return result;
+    };
+
+    // Auto-recalibration (GPS feature)
+    const runRecalibration = () => {
+      const today = new Date().toDateString();
+
+      if (state.lastRecalibrationDate === today) return;
+
+      // Get yesterday's data
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      const yesterdayTransactions = state.transactions.filter(tx => isYesterday(tx.timestamp));
+      const yesterdaySpent = yesterdayTransactions.reduce((sum, tx) => sum + tx.amount, 0);
+      const plannedBudget = calculateDailySafeToSpend();
+
+      // If no transactions yesterday and baseline is set, auto-deduct baseline
+      if (yesterdayTransactions.length === 0 && state.dailyBaseline > 0) {
+        state.transactions.push({
+          id: Date.now().toString(),
+          emoji: '📋',
+          name: 'Chi tiêu cơ bản',
+          amount: state.dailyBaseline,
+          timestamp: yesterday.getTime(),
+          isBaseline: true
+        });
+        state.showVerification = true;
+      }
+
+      // Record history
+      state.dailyHistory.push({
+        date: yesterday.toISOString(),
+        planned: plannedBudget,
+        actual: yesterdaySpent || state.dailyBaseline,
+        adjustment: plannedBudget - (yesterdaySpent || state.dailyBaseline)
+      });
+
+      // Update survival mode remaining money
+      if (state.mode === 'survival') {
+        state.survivalData.currentMoney -= (yesterdaySpent || state.dailyBaseline);
+        state.survivalData.daysUntilPayday = Math.max(0, state.survivalData.daysUntilPayday - 1);
+      }
+
+      state.lastRecalibrationDate = today;
+      saveState();
+    };
+
+    // ============= PERSISTENCE =============
+    const saveState = () => {
+      const toSave = {
+        language: state.language,
+        mode: state.mode,
+        survivalData: state.survivalData,
+        targetData: state.targetData,
+        controlData: state.controlData,
+        fixedExpenses: state.fixedExpenses,
+        dailyBaseline: state.dailyBaseline,
+        commitmentAccepted: state.commitmentAccepted,
+        strictnessLevel: state.strictnessLevel,
+        transactions: state.transactions,
+        quickSaves: state.quickSaves,
+        lastRecalibrationDate: state.lastRecalibrationDate,
+        dailyHistory: state.dailyHistory,
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+    };
+
+    const loadState = () => {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state = { ...defaultState, ...parsed };
+          if (state.mode) {
+            state.screen = 'main';
+          }
+        }
+      } catch (e) {
+        console.error('Failed to load state:', e);
+      }
+    };
+
+    // ============= RENDER FUNCTIONS =============
+
+    const renderSplash = () => `
+      <div class="splash">
+        <div>
+          <div class="splash-logo">🧭</div>
+          <div class="splash-title">Moni</div>
+          <div class="splash-tagline">${t('splashTagline')}</div>
+        </div>
+        <div>
+          <button class="btn white" onclick="startOnboarding()">${t('getStarted')}</button>
+        </div>
+      </div>
+    `;
+
+    const renderModeSelection = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <h1 class="mode-title">${t('choosePath')}</h1>
+        <p class="mode-subtitle">${t('choosePathDesc')}</p>
+
+        <div class="mode-card ${state.mode === 'survival' ? 'selected' : ''}" onclick="selectMode('survival')">
+          <div class="mode-card-header">
+            <div class="mode-icon survival">🚑</div>
+            <div>
+              <div class="mode-name">${t('survivalMode')}</div>
+              <div class="mode-tag">${t('survivalTag')}</div>
+            </div>
+          </div>
+          <p class="mode-desc">${t('survivalDesc')}</p>
+        </div>
+
+        <div class="mode-card ${state.mode === 'target' ? 'selected' : ''}" onclick="selectMode('target')">
+          <div class="mode-card-header">
+            <div class="mode-icon target">🎯</div>
+            <div>
+              <div class="mode-name">${t('targetMode')}</div>
+              <div class="mode-tag">${t('targetTag')}</div>
+            </div>
+          </div>
+          <p class="mode-desc">${t('targetDesc')}</p>
+        </div>
+
+        <div class="mode-card ${state.mode === 'control' ? 'selected' : ''}" onclick="selectMode('control')">
+          <div class="mode-card-header">
+            <div class="mode-icon control">🛡️</div>
+            <div>
+              <div class="mode-name">${t('controlMode')}</div>
+              <div class="mode-tag">${t('controlTag')}</div>
+            </div>
+          </div>
+          <p class="mode-desc">${t('controlDesc')}</p>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="nextStep()" ${!state.mode ? 'disabled' : ''}>${t('continue')}</button>
+      </div>
+    `;
+
+    const renderModeSetup = () => {
+      switch (state.mode) {
+        case 'survival': return renderSurvivalSetup();
+        case 'target': return renderTargetSetup();
+        case 'control': return renderControlSetup();
+        default: return '';
+      }
+    };
+
+    const renderSurvivalSetup = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <div class="setup-icon">🚑</div>
+        <h1 class="setup-title">${t('survivalSetupTitle')}</h1>
+        <p class="setup-desc">${t('survivalSetupDesc')}</p>
+
+        <div class="input-group">
+          <label class="input-label">${t('currentMoney')}</label>
+          <div class="amount-input-wrap">
+            <input type="text" class="amount-input"
+              value="${state.survivalData.currentMoney ? formatMoneyFull(state.survivalData.currentMoney) : ''}"
+              placeholder="0"
+              oninput="updateSurvivalMoney(this.value)">
+            <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+          </div>
+          <div class="quick-amounts">
+            <button class="quick-amount" onclick="setSurvivalMoney(500000)">500k</button>
+            <button class="quick-amount" onclick="setSurvivalMoney(1000000)">1tr</button>
+            <button class="quick-amount" onclick="setSurvivalMoney(2000000)">2tr</button>
+            <button class="quick-amount" onclick="setSurvivalMoney(3000000)">3tr</button>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">${t('daysUntilPayday')}</label>
+          <div class="amount-input-wrap">
+            <input type="number" class="amount-input"
+              value="${state.survivalData.daysUntilPayday}"
+              min="1" max="60"
+              oninput="updateSurvivalDays(this.value)">
+            <span class="amount-unit">${t('days')}</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="nextStep()"
+          ${!state.survivalData.currentMoney ? 'disabled' : ''}>${t('continue')}</button>
+      </div>
+    `;
+
+    const renderTargetSetup = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <div class="setup-icon">🎯</div>
+        <h1 class="setup-title">${t('targetSetupTitle')}</h1>
+        <p class="setup-desc">${t('targetSetupDesc')}</p>
+
+        <div class="input-group">
+          <label class="input-label">${t('targetItem')}</label>
+          <input type="text" class="input"
+            value="${state.targetData.itemName}"
+            placeholder="iPhone, Xe máy, Laptop..."
+            oninput="updateTargetItem(this.value)">
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">${t('targetAmount')}</label>
+          <div class="amount-input-wrap">
+            <input type="text" class="amount-input"
+              value="${state.targetData.targetAmount ? formatMoneyFull(state.targetData.targetAmount) : ''}"
+              placeholder="0"
+              oninput="updateTargetAmount(this.value)">
+            <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">${t('targetDeadline')}</label>
+          <div class="amount-input-wrap">
+            <input type="number" class="amount-input"
+              value="${state.targetData.deadlineMonths}"
+              min="1" max="60"
+              oninput="updateTargetDeadline(this.value)">
+            <span class="amount-unit">${t('months')}</span>
+          </div>
+        </div>
+
+        <div class="input-group">
+          <label class="input-label">${t('monthlyIncome')}</label>
+          <div class="amount-input-wrap">
+            <input type="text" class="amount-input"
+              value="${state.targetData.monthlyIncome ? formatMoneyFull(state.targetData.monthlyIncome) : ''}"
+              placeholder="0"
+              oninput="updateTargetIncome(this.value)">
+            <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="nextStep()"
+          ${!state.targetData.targetAmount || !state.targetData.monthlyIncome ? 'disabled' : ''}>${t('continue')}</button>
+      </div>
+    `;
+
+    const renderControlSetup = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <div class="setup-icon">🛡️</div>
+        <h1 class="setup-title">${t('controlSetupTitle')}</h1>
+        <p class="setup-desc">${t('controlSetupDesc')}</p>
+
+        <div class="input-group">
+          <label class="input-label">${t('monthlyIncome')}</label>
+          <div class="amount-input-wrap">
+            <input type="text" class="amount-input"
+              value="${state.controlData.monthlyIncome ? formatMoneyFull(state.controlData.monthlyIncome) : ''}"
+              placeholder="0"
+              oninput="updateControlIncome(this.value)">
+            <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="nextStep()"
+          ${!state.controlData.monthlyIncome ? 'disabled' : ''}>${t('continue')}</button>
+      </div>
+    `;
+
+    const renderFixedExpenses = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <div class="setup-icon">📋</div>
+        <h1 class="setup-title">${t('fixedExpensesTitle')}</h1>
+        <p class="setup-desc">${t('fixedExpensesDesc')}</p>
+
+        <div class="expense-list">
+          ${state.fixedExpenses.map((exp, i) => `
+            <div class="expense-item">
+              <span class="expense-emoji">${exp.emoji}</span>
+              <span class="expense-name">${t(exp.nameKey) || exp.customName}</span>
+              <input type="text" class="expense-amount"
+                value="${exp.amount || ''}"
+                placeholder="0"
+                oninput="updateFixedExpense(${i}, this.value)">
+            </div>
+          `).join('')}
+        </div>
+
+        <button class="add-expense-btn" onclick="addFixedExpense()">
+          + ${t('addExpense')}
+        </button>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="nextStep()">${t('continue')}</button>
+      </div>
+    `;
+
+    const renderBaselineSetup = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <div class="setup-icon">⚡</div>
+        <h1 class="setup-title">${t('baselineTitle')}</h1>
+        <p class="setup-desc">${t('baselineDesc')}</p>
+
+        <div class="input-group">
+          <label class="input-label">${t('baselineLabel')}</label>
+          <div class="amount-input-wrap">
+            <input type="text" class="amount-input"
+              value="${state.dailyBaseline ? formatMoneyFull(state.dailyBaseline) : ''}"
+              placeholder="150000"
+              oninput="updateBaseline(this.value)">
+            <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+          </div>
+          <div class="quick-amounts">
+            <button class="quick-amount" onclick="setBaseline(100000)">100k</button>
+            <button class="quick-amount" onclick="setBaseline(150000)">150k</button>
+            <button class="quick-amount" onclick="setBaseline(200000)">200k</button>
+            <button class="quick-amount" onclick="setBaseline(250000)">250k</button>
+          </div>
+        </div>
+
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 16px;">
+          💡 ${t('baselineHint')}
+        </p>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="nextStep()">${t('continue')}</button>
+      </div>
+    `;
+
+    const renderCommitment = () => `
+      <div class="header">
+        <button class="btn-back" onclick="goBack()">←</button>
+        <div class="progress-dots">
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+          <div class="dot active"></div>
+        </div>
+        <div style="width:44px"></div>
+      </div>
+      <div class="content animate-in">
+        <div class="contract-card">
+          <div class="contract-icon">📜</div>
+          <div class="contract-title">${t('commitmentTitle')}</div>
+          <p class="contract-text">${t('commitmentText')}</p>
+        </div>
+
+        <div class="contract-checkbox ${state.commitmentAccepted ? 'checked' : ''}"
+          onclick="toggleCommitment()">
+          <div class="checkbox-box">${state.commitmentAccepted ? '✓' : ''}</div>
+          <span class="checkbox-label">${t('commitmentAccept')}</span>
+        </div>
+
+        <div style="margin-top: 32px;">
+          <h2 class="setup-title" style="font-size: 20px;">${t('strictnessTitle')}</h2>
+          <p class="setup-desc">${t('strictnessDesc')}</p>
+
+          <div class="strictness-options">
+            <div class="strictness-option ${state.strictnessLevel === 'soft' ? 'selected' : ''}"
+              onclick="setStrictness('soft')">
+              <span class="strictness-icon">🌸</span>
+              <div class="strictness-info">
+                <div class="strictness-name">${t('softLevel')}</div>
+                <div class="strictness-desc">${t('softDesc')}</div>
+              </div>
+            </div>
+
+            <div class="strictness-option ${state.strictnessLevel === 'medium' ? 'selected' : ''}"
+              onclick="setStrictness('medium')">
+              <span class="strictness-icon">⚠️</span>
+              <div class="strictness-info">
+                <div class="strictness-name">${t('mediumLevel')}</div>
+                <div class="strictness-desc">${t('mediumDesc')}</div>
+              </div>
+            </div>
+
+            <div class="strictness-option ${state.strictnessLevel === 'military' ? 'selected' : ''}"
+              onclick="setStrictness('military')">
+              <span class="strictness-icon">🎖️</span>
+              <div class="strictness-info">
+                <div class="strictness-name">${t('militaryLevel')}</div>
+                <div class="strictness-desc">${t('militaryDesc')}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <button class="btn" onclick="finishSetup()"
+          ${!state.commitmentAccepted ? 'disabled' : ''}>${t('continue')}</button>
+      </div>
+    `;
+
+    const renderDashboard = () => {
+      const status = getStatus();
+      const remaining = getTodayRemaining();
+      const dailyBudget = calculateDailySafeToSpend();
+      const daysLeft = getDaysRemaining();
+
+      // Calculate progress percentages
+      const today = new Date();
+      const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+      const timeProgress = Math.round((today.getDate() / daysInMonth) * 100);
+
+      let goalProgress = 0;
+      if (state.mode === 'target') {
+        const totalSaved = state.quickSaves.reduce((sum, qs) => sum + qs.amount, 0);
+        goalProgress = Math.min(100, Math.round((totalSaved / state.targetData.targetAmount) * 100));
+      }
+
+      return `
+        <div class="content dashboard">
+          ${state.showVerification ? renderVerificationBanner() : ''}
+
+          <p class="greeting">${getGreeting()}</p>
+          <p class="greeting-name">Bạn ơi 👋</p>
+
+          <div class="main-card ${status} pulse">
+            <p class="main-card-label">${t('todayCanSpend')}</p>
+            <div class="main-card-amount">
+              ${formatMoney(Math.max(0, remaining))}
+            </div>
+            <p class="main-card-sub">${daysLeft} ${t('daysLeft')}</p>
+          </div>
+
+          <div class="progress-section">
+            <div class="progress-item">
+              <div class="progress-header">
+                <span class="progress-label">${t('timeProgress')}</span>
+                <span class="progress-value">${timeProgress}%</span>
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill time" style="width: ${timeProgress}%"></div>
+              </div>
+            </div>
+
+            ${state.mode === 'target' ? `
+              <div class="progress-item">
+                <div class="progress-header">
+                  <span class="progress-label">${state.targetData.itemEmoji} ${state.targetData.itemName || t('goalProgress')}</span>
+                  <span class="progress-value">${goalProgress}%</span>
+                </div>
+                <div class="progress-bar">
+                  <div class="progress-fill goal" style="width: ${goalProgress}%"></div>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="quick-actions">
+            <button class="quick-action" onclick="showAddExpense()">
+              <div class="quick-action-icon expense">💸</div>
+              <span class="quick-action-label">${t('addExpenseBtn')}</span>
+            </button>
+            <button class="quick-action" onclick="showQuickSave()">
+              <div class="quick-action-icon save">🎉</div>
+              <span class="quick-action-label">${t('quickSaveBtn')}</span>
+            </button>
+          </div>
+
+          ${renderTodayTransactions()}
+        </div>
+        ${renderBottomNav()}
+        ${state.showModal ? renderModal() : ''}
+      `;
+    };
+
+    const renderVerificationBanner = () => `
+      <div class="verification-banner">
+        <p class="verification-title">${t('verificationTitle')}</p>
+        <p class="verification-desc">${t('verificationDesc').replace('{amount}', formatMoney(state.dailyBaseline))}</p>
+        <div class="verification-buttons">
+          <button class="verification-btn confirm" onclick="confirmVerification()">${t('verificationConfirm')}</button>
+          <button class="verification-btn edit" onclick="editVerification()">${t('verificationEdit')}</button>
+        </div>
+      </div>
+    `;
+
+    const renderTodayTransactions = () => {
+      const todayTx = state.transactions.filter(tx => isToday(tx.timestamp));
+
+      if (todayTx.length === 0) return '';
+
+      return `
+        <div class="section-header">
+          <span class="section-title">${t('today')}</span>
+        </div>
+        <div class="transaction-list">
+          ${todayTx.slice(0, 5).map(tx => `
+            <div class="transaction-item">
+              <div class="transaction-emoji">${tx.emoji}</div>
+              <div class="transaction-info">
+                <div class="transaction-name">${tx.name}</div>
+                <div class="transaction-time">${new Date(tx.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+              </div>
+              <div class="transaction-amount expense">-${formatMoney(tx.amount)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    };
+
+    const renderBottomNav = () => `
+      <div class="bottom-nav">
+        <div class="nav-item ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')">
+          <span class="nav-icon">🏠</span>
+          <span class="nav-label">${t('tabHome')}</span>
+        </div>
+        <div class="nav-item ${state.activeTab === 'history' ? 'active' : ''}" onclick="switchTab('history')">
+          <span class="nav-icon">📊</span>
+          <span class="nav-label">${t('tabHistory')}</span>
+        </div>
+        <div class="nav-item ${state.activeTab === 'settings' ? 'active' : ''}" onclick="switchTab('settings')">
+          <span class="nav-icon">⚙️</span>
+          <span class="nav-label">${t('tabSettings')}</span>
+        </div>
+      </div>
+    `;
+
+    const renderModal = () => {
+      switch (state.showModal) {
+        case 'expense': return renderExpenseModal();
+        case 'quicksave': return renderQuickSaveModal();
+        case 'tradeoff': return renderTradeoffModal();
+        case 'success': return renderSuccessModal();
+        default: return '';
+      }
+    };
+
+    const renderExpenseModal = () => {
+      const emojis = ['🍜', '☕', '🚗', '🛒', '🎬', '💊', '👕', '🎁'];
+
+      return `
+        <div class="modal-overlay" onclick="closeModal()">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-icon">💸</div>
+            <div class="modal-title">${t('addExpenseBtn')}</div>
+
+            <div class="tx-input-section">
+              <div class="tx-emoji-picker">
+                ${emojis.map(e => `
+                  <button class="tx-emoji ${state.modalData?.emoji === e ? 'selected' : ''}"
+                    onclick="selectExpenseEmoji('${e}')">${e}</button>
+                `).join('')}
+              </div>
+
+              <input type="text" class="input" placeholder="Tên chi tiêu"
+                value="${state.modalData?.name || ''}"
+                oninput="updateExpenseName(this.value)"
+                style="margin-bottom: 12px;">
+
+              <div class="amount-input-wrap">
+                <input type="text" class="amount-input" placeholder="0"
+                  value="${state.modalData?.amount || ''}"
+                  oninput="updateExpenseAmount(this.value)">
+                <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+              </div>
+            </div>
+
+            <div class="modal-buttons">
+              <button class="btn primary" onclick="checkAndAddExpense()">${t('confirm')}</button>
+              <button class="btn outline" onclick="closeModal()">${t('cancel')}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    const renderQuickSaveModal = () => {
+      const emojis = ['👗', '👟', '🎮', '📱', '☕', '🍔', '🎬', '💄'];
+
+      return `
+        <div class="modal-overlay" onclick="closeModal()">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-icon">🎉</div>
+            <div class="modal-title">${t('quickSaveBtn')}</div>
+            <div class="modal-desc">Bạn vừa từ chối mua gì? Số tiền tiết kiệm sẽ được cộng vào mục tiêu!</div>
+
+            <div class="tx-input-section">
+              <div class="tx-emoji-picker">
+                ${emojis.map(e => `
+                  <button class="tx-emoji ${state.modalData?.emoji === e ? 'selected' : ''}"
+                    onclick="selectSaveEmoji('${e}')">${e}</button>
+                `).join('')}
+              </div>
+
+              <input type="text" class="input" placeholder="Đã không mua gì?"
+                value="${state.modalData?.name || ''}"
+                oninput="updateSaveName(this.value)"
+                style="margin-bottom: 12px;">
+
+              <div class="amount-input-wrap">
+                <input type="text" class="amount-input" placeholder="0"
+                  value="${state.modalData?.amount || ''}"
+                  oninput="updateSaveAmount(this.value)">
+                <span class="amount-unit">${state.language === 'vi' ? 'đ' : '$'}</span>
+              </div>
+            </div>
+
+            <div class="modal-buttons">
+              <button class="btn primary" onclick="confirmQuickSave()" style="background: var(--safe)">
+                ${t('confirm')}
+              </button>
+              <button class="btn outline" onclick="closeModal()">${t('cancel')}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    const renderTradeoffModal = () => {
+      const tradeoff = state.modalData?.tradeoff || {};
+      const warning = state.strictnessLevel === 'military' ? t('militaryWarning') :
+                      state.strictnessLevel === 'medium' ? t('mediumWarning') : t('softWarning');
+
+      return `
+        <div class="modal-overlay">
+          <div class="modal" onclick="event.stopPropagation()">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-title">${t('tradeoffTitle')}</div>
+            <div class="modal-desc">${warning}</div>
+
+            ${tradeoff.warnings?.length ? `
+              <div class="tradeoff-alert">
+                ${tradeoff.warnings.map(w => `
+                  <div class="tradeoff-item">
+                    <span class="tradeoff-icon">${w.icon}</span>
+                    <span class="tradeoff-text">${w.text}</span>
+                  </div>
+                `).join('')}
+              </div>
+            ` : ''}
+
+            <div class="modal-buttons">
+              <button class="btn danger" onclick="confirmExpense()">${t('buyAnyway')}</button>
+              <button class="btn" onclick="cancelExpense()" style="background: var(--safe)">
+                ${t('dontBuy')}
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    };
+
+    const renderSuccessModal = () => `
+      <div class="modal-overlay" onclick="closeModal()">
+        <div class="modal animate-in" onclick="event.stopPropagation()">
+          <div class="modal-icon">🎉</div>
+          <div class="modal-title">${t('quickSaveTitle')}</div>
+          <div class="modal-desc">
+            ${t('quickSaveDesc').replace('{amount}', formatMoney(state.modalData?.amount || 0))}
+          </div>
+          <div class="modal-buttons">
+            <button class="btn primary" onclick="closeModal()">${t('confirm')}</button>
+          </div>
+        </div>
+      </div>
+    `;
+
+    const renderHistory = () => {
+      const groupedTx = {};
+      state.transactions.forEach(tx => {
+        const dateKey = new Date(tx.timestamp).toDateString();
+        if (!groupedTx[dateKey]) groupedTx[dateKey] = [];
+        groupedTx[dateKey].push(tx);
+      });
+
+      return `
+        <div class="content" style="padding-top: 20px;">
+          <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 24px;">${t('tabHistory')}</h1>
+
+          ${Object.entries(groupedTx).reverse().map(([date, txs]) => {
+            const d = new Date(date);
+            const isToday = d.toDateString() === new Date().toDateString();
+            const label = isToday ? t('today') : d.toLocaleDateString(state.language);
+            const total = txs.reduce((sum, tx) => sum + tx.amount, 0);
+
+            return `
+              <div style="margin-bottom: 24px;">
+                <div class="section-header">
+                  <span class="section-title">${label}</span>
+                  <span style="font-weight: 600; color: var(--danger);">-${formatMoney(total)}</span>
+                </div>
+                <div class="transaction-list">
+                  ${txs.map(tx => `
+                    <div class="transaction-item">
+                      <div class="transaction-emoji">${tx.emoji}</div>
+                      <div class="transaction-info">
+                        <div class="transaction-name">${tx.name}</div>
+                        <div class="transaction-time">${new Date(tx.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                      </div>
+                      <div class="transaction-amount expense">-${formatMoney(tx.amount)}</div>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            `;
+          }).join('')}
+
+          ${state.transactions.length === 0 ? `
+            <div style="text-align: center; padding: 60px 20px; color: var(--text-muted);">
+              <div style="font-size: 48px; margin-bottom: 16px;">📝</div>
+              <p>Chưa có giao dịch nào</p>
+            </div>
+          ` : ''}
+        </div>
+        ${renderBottomNav()}
+      `;
+    };
+
+    const renderSettings = () => `
+      <div class="content" style="padding-top: 20px;">
+        <h1 style="font-size: 28px; font-weight: 800; margin-bottom: 24px;">${t('settings')}</h1>
+
+        <div class="settings-section">
+          <div class="settings-item" onclick="resetAndStartOver()">
+            <div class="settings-item-left">
+              <div class="settings-icon">🔄</div>
+              <span class="settings-label">${t('editMode')}</span>
+            </div>
+            <span class="settings-value">${t(state.mode + 'Mode')}</span>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-item-left">
+              <div class="settings-icon">⚡</div>
+              <span class="settings-label">${t('editBaseline')}</span>
+            </div>
+            <span class="settings-value">${formatMoney(state.dailyBaseline)}</span>
+          </div>
+
+          <div class="settings-item">
+            <div class="settings-item-left">
+              <div class="settings-icon">${state.strictnessLevel === 'military' ? '🎖️' : state.strictnessLevel === 'medium' ? '⚠️' : '🌸'}</div>
+              <span class="settings-label">${t('editStrictness')}</span>
+            </div>
+            <span class="settings-value">${t(state.strictnessLevel + 'Level')}</span>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <div class="settings-item" onclick="resetAllData()" style="color: var(--danger);">
+            <div class="settings-item-left">
+              <div class="settings-icon" style="background: var(--danger-bg);">🗑️</div>
+              <span class="settings-label" style="color: var(--danger);">${t('resetData')}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${renderBottomNav()}
+    `;
+
+    // ============= MAIN RENDER =============
+    const render = () => {
+      const app = document.getElementById('app');
+      let html = '';
+
+      // Add dark background for splash
+      if (state.screen === 'splash') {
+        app.classList.add('dark-bg');
+      } else {
+        app.classList.remove('dark-bg');
+      }
+
+      switch (state.screen) {
+        case 'splash':
+          html = renderSplash();
+          break;
+        case 'mode-select':
+          html = renderModeSelection();
+          break;
+        case 'setup':
+          switch (state.setupStep) {
+            case 0: html = renderModeSetup(); break;
+            case 1: html = renderFixedExpenses(); break;
+            case 2: html = renderBaselineSetup(); break;
+            case 3: html = renderCommitment(); break;
+          }
+          break;
+        case 'main':
+          switch (state.activeTab) {
+            case 'home': html = renderDashboard(); break;
+            case 'history': html = renderHistory(); break;
+            case 'settings': html = renderSettings(); break;
+          }
+          break;
+      }
+
+      app.innerHTML = html;
+    };
+
+    // ============= EVENT HANDLERS =============
+    window.startOnboarding = () => {
+      state.screen = 'mode-select';
+      render();
+    };
+
+    window.selectMode = (mode) => {
+      state.mode = mode;
+      render();
+    };
+
+    window.nextStep = () => {
+      if (state.screen === 'mode-select') {
+        state.screen = 'setup';
+        state.setupStep = 0;
+      } else if (state.screen === 'setup') {
+        state.setupStep++;
+      }
+      render();
+    };
+
+    window.goBack = () => {
+      if (state.screen === 'setup' && state.setupStep > 0) {
+        state.setupStep--;
+      } else if (state.screen === 'setup' && state.setupStep === 0) {
+        state.screen = 'mode-select';
+      } else if (state.screen === 'mode-select') {
+        state.screen = 'splash';
+      }
+      render();
+    };
+
+    window.finishSetup = () => {
+      state.screen = 'main';
+      state.activeTab = 'home';
+      saveState();
+      render();
+    };
+
+    // Survival Mode handlers
+    window.updateSurvivalMoney = (val) => {
+      state.survivalData.currentMoney = parseAmount(val);
+      render();
+    };
+
+    window.setSurvivalMoney = (amount) => {
+      state.survivalData.currentMoney = amount;
+      render();
+    };
+
+    window.updateSurvivalDays = (val) => {
+      state.survivalData.daysUntilPayday = parseInt(val) || 1;
+      render();
+    };
+
+    // Target Mode handlers
+    window.updateTargetItem = (val) => {
+      state.targetData.itemName = val;
+    };
+
+    window.updateTargetAmount = (val) => {
+      state.targetData.targetAmount = parseAmount(val);
+      render();
+    };
+
+    window.updateTargetDeadline = (val) => {
+      state.targetData.deadlineMonths = parseInt(val) || 1;
+    };
+
+    window.updateTargetIncome = (val) => {
+      state.targetData.monthlyIncome = parseAmount(val);
+      render();
+    };
+
+    // Control Mode handlers
+    window.updateControlIncome = (val) => {
+      state.controlData.monthlyIncome = parseAmount(val);
+      render();
+    };
+
+    // Fixed expenses handlers
+    window.updateFixedExpense = (index, val) => {
+      state.fixedExpenses[index].amount = parseAmount(val);
+    };
+
+    window.addFixedExpense = () => {
+      const name = prompt('Tên khoản chi:');
+      if (name) {
+        state.fixedExpenses.push({
+          id: Date.now().toString(),
+          emoji: '📌',
+          customName: name,
+          amount: 0
+        });
+        render();
+      }
+    };
+
+    // Baseline handlers
+    window.updateBaseline = (val) => {
+      state.dailyBaseline = parseAmount(val);
+      render();
+    };
+
+    window.setBaseline = (amount) => {
+      state.dailyBaseline = amount;
+      render();
+    };
+
+    // Commitment handlers
+    window.toggleCommitment = () => {
+      state.commitmentAccepted = !state.commitmentAccepted;
+      render();
+    };
+
+    window.setStrictness = (level) => {
+      state.strictnessLevel = level;
+      render();
+    };
+
+    // Tab navigation
+    window.switchTab = (tab) => {
+      state.activeTab = tab;
+      render();
+    };
+
+    // Modal handlers
+    window.showAddExpense = () => {
+      state.showModal = 'expense';
+      state.modalData = { emoji: '🍜', name: '', amount: '' };
+      render();
+    };
+
+    window.showQuickSave = () => {
+      state.showModal = 'quicksave';
+      state.modalData = { emoji: '👗', name: '', amount: '' };
+      render();
+    };
+
+    window.closeModal = () => {
+      state.showModal = null;
+      state.modalData = null;
+      render();
+    };
+
+    window.selectExpenseEmoji = (emoji) => {
+      state.modalData.emoji = emoji;
+      render();
+    };
+
+    window.selectSaveEmoji = (emoji) => {
+      state.modalData.emoji = emoji;
+      render();
+    };
+
+    window.updateExpenseName = (val) => {
+      state.modalData.name = val;
+    };
+
+    window.updateExpenseAmount = (val) => {
+      state.modalData.amount = val;
+    };
+
+    window.updateSaveName = (val) => {
+      state.modalData.name = val;
+    };
+
+    window.updateSaveAmount = (val) => {
+      state.modalData.amount = val;
+    };
+
+    window.checkAndAddExpense = () => {
+      const amount = parseAmount(state.modalData.amount);
+      if (!amount) return;
+
+      const tradeoff = calculateTradeoff(amount);
+
+      // Show trade-off warning if significant impact
+      if (tradeoff.warnings.length > 0) {
+        state.showModal = 'tradeoff';
+        state.modalData = { ...state.modalData, amount, tradeoff };
+        render();
+      } else {
+        confirmExpense();
+      }
+    };
+
+    window.confirmExpense = () => {
+      const amount = parseAmount(state.modalData.amount);
+
+      state.transactions.push({
+        id: Date.now().toString(),
+        emoji: state.modalData.emoji,
+        name: state.modalData.name || 'Chi tiêu',
+        amount: amount,
+        timestamp: Date.now(),
+        isBaseline: false
+      });
+
+      saveState();
+      state.showModal = null;
+      state.modalData = null;
+      render();
+    };
+
+    window.cancelExpense = () => {
+      // User decided not to buy - treat as quick save
+      const amount = parseAmount(state.modalData.amount);
+
+      state.quickSaves.push({
+        id: Date.now().toString(),
+        emoji: state.modalData.emoji,
+        name: state.modalData.name || 'Đã không mua',
+        amount: amount,
+        timestamp: Date.now()
+      });
+
+      saveState();
+      state.showModal = 'success';
+      state.modalData = { amount };
+      render();
+    };
+
+    window.confirmQuickSave = () => {
+      const amount = parseAmount(state.modalData.amount);
+      if (!amount) return;
+
+      state.quickSaves.push({
+        id: Date.now().toString(),
+        emoji: state.modalData.emoji,
+        name: state.modalData.name || 'Đã không mua',
+        amount: amount,
+        timestamp: Date.now()
+      });
+
+      saveState();
+      state.showModal = 'success';
+      state.modalData = { amount };
+      render();
+    };
+
+    // Verification handlers
+    window.confirmVerification = () => {
+      state.showVerification = false;
+      render();
+    };
+
+    window.editVerification = () => {
+      state.showVerification = false;
+      showAddExpense();
+    };
+
+    // Settings handlers
+    window.resetAndStartOver = () => {
+      if (confirm('Bạn có muốn thay đổi chế độ? Dữ liệu giao dịch sẽ được giữ lại.')) {
+        state.screen = 'mode-select';
+        state.mode = null;
+        state.setupStep = 0;
+        render();
+      }
+    };
+
+    window.resetAllData = () => {
+      if (confirm('Xóa tất cả dữ liệu? Hành động này không thể hoàn tác.')) {
+        localStorage.removeItem(STORAGE_KEY);
+        state = { ...defaultState };
+        render();
+      }
+    };
+
+    // ============= INITIALIZATION =============
+    const init = () => {
+      loadState();
+      runRecalibration();
+      render();
+    };
+
+    init();
+  </script>
+</body>
+</html>
