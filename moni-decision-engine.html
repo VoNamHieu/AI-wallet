@@ -1,0 +1,2138 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Moni - Goal-Driven Decision Engine</title>
+  <style>
+    /* ===== CSS RESET & BASE ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :root {
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --primary-dark: #4f46e5;
+      --success: #10b981;
+      --success-light: #34d399;
+      --warning: #f59e0b;
+      --warning-light: #fbbf24;
+      --danger: #ef4444;
+      --danger-light: #f87171;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-800: #1f2937;
+      --gray-900: #111827;
+      --radius: 16px;
+      --radius-sm: 12px;
+      --radius-lg: 24px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05);
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .app {
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      background: white;
+      position: relative;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1 { font-size: 28px; font-weight: 700; line-height: 1.2; }
+    h2 { font-size: 22px; font-weight: 600; line-height: 1.3; }
+    h3 { font-size: 18px; font-weight: 600; }
+    .text-sm { font-size: 14px; }
+    .text-xs { font-size: 12px; }
+    .text-muted { color: var(--gray-500); }
+    .text-center { text-align: center; }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 16px 24px;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-primary:disabled { background: var(--gray-300); cursor: not-allowed; }
+
+    .btn-secondary {
+      background: var(--gray-100);
+      color: var(--gray-700);
+    }
+    .btn-secondary:hover { background: var(--gray-200); }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--gray-200);
+      color: var(--gray-700);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    .btn-success { background: var(--success); color: white; }
+    .btn-danger { background: var(--danger); color: white; }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: white;
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-bordered {
+      border: 2px solid var(--gray-200);
+      box-shadow: none;
+    }
+
+    .card-selected {
+      border-color: var(--primary);
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    /* ===== INPUTS ===== */
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 8px;
+      color: var(--gray-700);
+    }
+
+    .input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--gray-200);
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      transition: border-color 0.2s;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .input-large {
+      font-size: 32px;
+      font-weight: 700;
+      text-align: center;
+      padding: 20px;
+    }
+
+    /* ===== SCREEN LAYOUTS ===== */
+    .screen {
+      display: none;
+      min-height: 100vh;
+      padding: 24px;
+      padding-bottom: 100px;
+    }
+
+    .screen.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .screen-header {
+      margin-bottom: 32px;
+    }
+
+    .screen-content {
+      flex: 1;
+    }
+
+    .screen-footer {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      padding: 16px 24px;
+      background: white;
+      border-top: 1px solid var(--gray-100);
+    }
+
+    /* ===== MODE CARDS ===== */
+    .mode-card {
+      padding: 24px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .mode-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .mode-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin-bottom: 16px;
+    }
+
+    .mode-survival .mode-icon { background: rgba(239, 68, 68, 0.1); }
+    .mode-target .mode-icon { background: rgba(16, 185, 129, 0.1); }
+    .mode-control .mode-icon { background: rgba(99, 102, 241, 0.1); }
+
+    .mode-card h3 {
+      margin-bottom: 8px;
+    }
+
+    .mode-card p {
+      color: var(--gray-500);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ===== LANGUAGE SELECTOR ===== */
+    .language-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .language-option {
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .language-option .flag {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    .language-option .name {
+      font-weight: 500;
+    }
+
+    /* ===== BIG NUMBER DISPLAY ===== */
+    .big-number {
+      text-align: center;
+      padding: 40px 0;
+    }
+
+    .big-number-label {
+      font-size: 14px;
+      color: var(--gray-500);
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .big-number-value {
+      font-size: 48px;
+      font-weight: 800;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .big-number-value.positive { color: var(--success); }
+    .big-number-value.warning { color: var(--warning); }
+    .big-number-value.danger { color: var(--danger); }
+
+    .big-number-sub {
+      font-size: 14px;
+      color: var(--gray-500);
+    }
+
+    /* ===== STATUS INDICATOR ===== */
+    .status-bar {
+      height: 8px;
+      background: var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+      margin: 16px 0;
+    }
+
+    .status-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .status-bar-fill.green { background: var(--success); }
+    .status-bar-fill.yellow { background: var(--warning); }
+    .status-bar-fill.red { background: var(--danger); }
+
+    /* ===== PROGRESS RING ===== */
+    .progress-ring {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      margin: 0 auto;
+    }
+
+    .progress-ring svg {
+      transform: rotate(-90deg);
+    }
+
+    .progress-ring-bg {
+      fill: none;
+      stroke: var(--gray-200);
+      stroke-width: 12;
+    }
+
+    .progress-ring-fill {
+      fill: none;
+      stroke: var(--primary);
+      stroke-width: 12;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s ease;
+    }
+
+    .progress-ring-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+
+    /* ===== TRANSACTION LIST ===== */
+    .transaction-item {
+      display: flex;
+      align-items: center;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .transaction-item:last-child {
+      border-bottom: none;
+    }
+
+    .transaction-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--gray-100);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      margin-right: 12px;
+    }
+
+    .transaction-info {
+      flex: 1;
+    }
+
+    .transaction-name {
+      font-weight: 500;
+      margin-bottom: 2px;
+    }
+
+    .transaction-time {
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    .transaction-amount {
+      font-weight: 600;
+      color: var(--danger);
+    }
+
+    .transaction-amount.positive {
+      color: var(--success);
+    }
+
+    /* ===== BOTTOM NAV ===== */
+    .bottom-nav {
+      display: none;
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background: white;
+      border-top: 1px solid var(--gray-200);
+      padding: 8px 0;
+      padding-bottom: max(8px, env(safe-area-inset-bottom));
+    }
+
+    .bottom-nav.visible {
+      display: flex;
+      justify-content: space-around;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 16px;
+      color: var(--gray-400);
+      text-decoration: none;
+      font-size: 12px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .nav-item.active {
+      color: var(--primary);
+    }
+
+    .nav-item-icon {
+      font-size: 24px;
+      margin-bottom: 4px;
+    }
+
+    /* ===== MODALS ===== */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: flex-end;
+      justify-content: center;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      background: white;
+      width: 100%;
+      max-width: 430px;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      padding: 24px;
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .modal-handle {
+      width: 40px;
+      height: 4px;
+      background: var(--gray-300);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+
+    .modal h2 {
+      margin-bottom: 20px;
+    }
+
+    /* ===== COMMITMENT CONTRACT ===== */
+    .contract-box {
+      background: var(--gray-50);
+      border: 2px dashed var(--gray-300);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin: 24px 0;
+    }
+
+    .contract-text {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--gray-700);
+    }
+
+    .contract-text strong {
+      color: var(--primary);
+    }
+
+    .signature-line {
+      border-top: 2px solid var(--gray-400);
+      margin-top: 24px;
+      padding-top: 8px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--gray-400);
+    }
+
+    /* ===== QUICK ACTIONS ===== */
+    .quick-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .quick-action {
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .quick-action-icon {
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .quick-action-label {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    /* ===== TRADE-OFF ALERT ===== */
+    .trade-off-alert {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin: 16px 0;
+    }
+
+    .trade-off-alert h4 {
+      color: var(--warning);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trade-off-alert p {
+      font-size: 14px;
+      color: var(--gray-700);
+      line-height: 1.5;
+    }
+
+    .trade-off-impact {
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.7);
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      text-align: center;
+    }
+
+    /* ===== FIXED EXPENSE LIST ===== */
+    .expense-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      background: var(--gray-100);
+      border-radius: 20px;
+      margin: 4px;
+      font-size: 14px;
+    }
+
+    .expense-chip .remove {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--gray-300);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    /* ===== EMOJI PICKER ===== */
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .emoji-option {
+      width: 48px;
+      height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .emoji-option:hover {
+      background: var(--gray-100);
+    }
+
+    .emoji-option.selected {
+      background: var(--primary);
+      transform: scale(1.1);
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .animate-pulse { animation: pulse 2s infinite; }
+    .animate-shake { animation: shake 0.5s; }
+
+    /* ===== CONFETTI ===== */
+    .confetti-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ===== UTILITIES ===== */
+    .mt-2 { margin-top: 8px; }
+    .mt-4 { margin-top: 16px; }
+    .mt-6 { margin-top: 24px; }
+    .mb-2 { margin-bottom: 8px; }
+    .mb-4 { margin-bottom: 16px; }
+    .gap-2 { gap: 8px; }
+    .gap-4 { gap: 16px; }
+    .flex { display: flex; }
+    .flex-col { flex-direction: column; }
+    .items-center { align-items: center; }
+    .justify-between { justify-content: space-between; }
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="app" id="app"></div>
+
+  <script>
+    // ===== TRANSLATIONS =====
+    const translations = {
+      vi: {
+        // Language Screen
+        selectLanguage: 'Chọn ngôn ngữ',
+        continue: 'Tiếp tục',
+
+        // Mode Selection
+        chooseMode: 'Bạn đang ở tình huống nào?',
+        chooseModeDesc: 'Moni sẽ giúp bạn quản lý tiền phù hợp nhất',
+
+        survivalMode: 'Chế độ Sinh tồn',
+        survivalDesc: 'Tiền sắp hết, cần cầm cự đến kỳ lương',
+
+        targetMode: 'Chế độ Mục tiêu',
+        targetDesc: 'Muốn mua một món đồ cụ thể',
+
+        controlMode: 'Chế độ Kiểm soát',
+        controlDesc: 'Muốn siết chặt chi tiêu hàng tháng',
+
+        // Survival Setup
+        survivalSetupTitle: 'Thiết lập Sinh tồn',
+        howMuchLeft: 'Bạn còn bao nhiêu tiền?',
+        whenPayday: 'Ngày nhận lương tiếp theo?',
+        daysLeft: 'ngày nữa',
+        yourDailyBudget: 'Ngân sách mỗi ngày của bạn',
+
+        // Target Setup
+        targetSetupTitle: 'Thiết lập Mục tiêu',
+        whatToBuy: 'Bạn muốn mua gì?',
+        itemPlaceholder: 'VD: iPhone 15, Xe máy...',
+        howMuchCost: 'Giá bao nhiêu?',
+        whenToGet: 'Muốn có vào lúc nào?',
+        yourIncome: 'Thu nhập hàng tháng?',
+        dailyToSave: 'Mỗi ngày cần tiết kiệm',
+        toReachGoal: 'để đạt mục tiêu đúng hạn',
+
+        // Control Setup
+        controlSetupTitle: 'Thiết lập Kiểm soát',
+        monthlyIncome: 'Thu nhập hàng tháng',
+        selectCategories: 'Chọn danh mục cần siết',
+
+        // Fixed Expenses
+        fixedExpenses: 'Chi phí cố định',
+        fixedExpensesDesc: 'Những khoản phải trả hàng tháng',
+        addExpense: 'Thêm chi phí',
+        rent: 'Thuê nhà',
+        electricity: 'Điện',
+        water: 'Nước',
+        internet: 'Internet',
+        phone: 'Điện thoại',
+        insurance: 'Bảo hiểm',
+        total: 'Tổng',
+        skip: 'Bỏ qua',
+
+        // Commitment
+        commitmentTitle: 'Cam kết với bản thân',
+        commitmentText: 'Tôi, <strong>{name}</strong>, cam kết sẽ tuân thủ ngân sách <strong>{amount}</strong>/ngày. Tôi hiểu rằng mỗi quyết định chi tiêu hôm nay sẽ ảnh hưởng đến {goal} của tôi.',
+        iCommit: 'Tôi cam kết',
+
+        // Dashboard
+        todayBudget: 'Hôm nay được tiêu',
+        daysRemaining: 'ngày còn lại',
+        onTrack: 'Đang đúng hướng',
+        overBudget: 'Vượt ngân sách',
+        underBudget: 'Còn dư',
+
+        // Actions
+        addExpenseBtn: 'Ghi chi tiêu',
+        quickSave: 'Đã không mua',
+        askMoni: 'Hỏi Moni',
+
+        // Trade-off
+        tradeOffTitle: 'Cân nhắc một chút',
+        tradeOffMsg: 'Nếu chi {amount}, mục tiêu sẽ bị lùi {days} ngày',
+        stillBuy: 'Vẫn mua',
+        notBuy: 'Thôi không mua',
+
+        // Quick Save
+        quickSaveTitle: 'Đã không mua gì?',
+        quickSaveDesc: 'Ghi lại để thấy bạn đã tiết kiệm được bao nhiêu',
+        whatDidntBuy: 'Đã không mua gì?',
+        howMuchSaved: 'Tiết kiệm được bao nhiêu?',
+        savedTotal: 'Tổng đã tiết kiệm',
+
+        // History
+        history: 'Lịch sử',
+        today: 'Hôm nay',
+        yesterday: 'Hôm qua',
+        thisWeek: 'Tuần này',
+        thisMonth: 'Tháng này',
+        noTransactions: 'Chưa có giao dịch nào',
+
+        // Settings
+        settings: 'Cài đặt',
+        editBudget: 'Sửa ngân sách',
+        editGoal: 'Sửa mục tiêu',
+        language: 'Ngôn ngữ',
+        resetData: 'Xóa dữ liệu',
+
+        // Navigation
+        navHome: 'Trang chủ',
+        navHistory: 'Lịch sử',
+        navStats: 'Thống kê',
+        navSettings: 'Cài đặt',
+
+        // Categories
+        catFood: 'Ăn uống',
+        catTransport: 'Di chuyển',
+        catShopping: 'Mua sắm',
+        catEntertainment: 'Giải trí',
+        catBills: 'Hóa đơn',
+        catHealth: 'Sức khỏe',
+        catOther: 'Khác',
+
+        // Misc
+        enterName: 'Tên của bạn',
+        namePlaceholder: 'VD: Minh',
+        greeting: 'Xin chào',
+        currency: 'đ',
+        currencyPosition: 'after',
+        back: 'Quay lại',
+        save: 'Lưu',
+        cancel: 'Hủy',
+        confirm: 'Xác nhận',
+        delete: 'Xóa',
+        edit: 'Sửa'
+      },
+
+      en: {
+        // Language Screen
+        selectLanguage: 'Select Language',
+        continue: 'Continue',
+
+        // Mode Selection
+        chooseMode: 'What\'s your situation?',
+        chooseModeDesc: 'Moni will help you manage money the best way',
+
+        survivalMode: 'Survival Mode',
+        survivalDesc: 'Running low, need to last until payday',
+
+        targetMode: 'Target Mode',
+        targetDesc: 'Want to buy something specific',
+
+        controlMode: 'Control Mode',
+        controlDesc: 'Want to tighten monthly spending',
+
+        // Survival Setup
+        survivalSetupTitle: 'Survival Setup',
+        howMuchLeft: 'How much money do you have?',
+        whenPayday: 'When is your next payday?',
+        daysLeft: 'days left',
+        yourDailyBudget: 'Your daily budget',
+
+        // Target Setup
+        targetSetupTitle: 'Target Setup',
+        whatToBuy: 'What do you want to buy?',
+        itemPlaceholder: 'E.g: iPhone 15, Laptop...',
+        howMuchCost: 'How much does it cost?',
+        whenToGet: 'When do you want it?',
+        yourIncome: 'Monthly income?',
+        dailyToSave: 'Daily savings needed',
+        toReachGoal: 'to reach your goal on time',
+
+        // Control Setup
+        controlSetupTitle: 'Control Setup',
+        monthlyIncome: 'Monthly Income',
+        selectCategories: 'Select categories to control',
+
+        // Fixed Expenses
+        fixedExpenses: 'Fixed Expenses',
+        fixedExpensesDesc: 'Monthly recurring payments',
+        addExpense: 'Add expense',
+        rent: 'Rent',
+        electricity: 'Electricity',
+        water: 'Water',
+        internet: 'Internet',
+        phone: 'Phone',
+        insurance: 'Insurance',
+        total: 'Total',
+        skip: 'Skip',
+
+        // Commitment
+        commitmentTitle: 'Commit to yourself',
+        commitmentText: 'I, <strong>{name}</strong>, commit to follow the budget of <strong>{amount}</strong>/day. I understand that every spending decision today will affect my {goal}.',
+        iCommit: 'I commit',
+
+        // Dashboard
+        todayBudget: 'Today\'s Budget',
+        daysRemaining: 'days remaining',
+        onTrack: 'On track',
+        overBudget: 'Over budget',
+        underBudget: 'Under budget',
+
+        // Actions
+        addExpenseBtn: 'Add expense',
+        quickSave: 'Didn\'t buy',
+        askMoni: 'Ask Moni',
+
+        // Trade-off
+        tradeOffTitle: 'Think about it',
+        tradeOffMsg: 'If you spend {amount}, your goal will be delayed by {days} days',
+        stillBuy: 'Still buy',
+        notBuy: 'Don\'t buy',
+
+        // Quick Save
+        quickSaveTitle: 'What didn\'t you buy?',
+        quickSaveDesc: 'Track how much you\'ve saved',
+        whatDidntBuy: 'What didn\'t you buy?',
+        howMuchSaved: 'How much did you save?',
+        savedTotal: 'Total saved',
+
+        // History
+        history: 'History',
+        today: 'Today',
+        yesterday: 'Yesterday',
+        thisWeek: 'This week',
+        thisMonth: 'This month',
+        noTransactions: 'No transactions yet',
+
+        // Settings
+        settings: 'Settings',
+        editBudget: 'Edit budget',
+        editGoal: 'Edit goal',
+        language: 'Language',
+        resetData: 'Reset data',
+
+        // Navigation
+        navHome: 'Home',
+        navHistory: 'History',
+        navStats: 'Stats',
+        navSettings: 'Settings',
+
+        // Categories
+        catFood: 'Food',
+        catTransport: 'Transport',
+        catShopping: 'Shopping',
+        catEntertainment: 'Entertainment',
+        catBills: 'Bills',
+        catHealth: 'Health',
+        catOther: 'Other',
+
+        // Misc
+        enterName: 'Your name',
+        namePlaceholder: 'E.g: John',
+        greeting: 'Hello',
+        currency: '$',
+        currencyPosition: 'before',
+        back: 'Back',
+        save: 'Save',
+        cancel: 'Cancel',
+        confirm: 'Confirm',
+        delete: 'Delete',
+        edit: 'Edit'
+      }
+    };
+
+    // ===== CATEGORIES =====
+    const categories = [
+      { id: 'food', emoji: '🍜', key: 'catFood' },
+      { id: 'transport', emoji: '🚗', key: 'catTransport' },
+      { id: 'shopping', emoji: '🛍️', key: 'catShopping' },
+      { id: 'entertainment', emoji: '🎮', key: 'catEntertainment' },
+      { id: 'bills', emoji: '📄', key: 'catBills' },
+      { id: 'health', emoji: '💊', key: 'catHealth' },
+      { id: 'other', emoji: '📦', key: 'catOther' }
+    ];
+
+    // ===== FIXED EXPENSE PRESETS =====
+    const fixedExpensePresets = [
+      { id: 'rent', emoji: '🏠', key: 'rent' },
+      { id: 'electricity', emoji: '⚡', key: 'electricity' },
+      { id: 'water', emoji: '💧', key: 'water' },
+      { id: 'internet', emoji: '📶', key: 'internet' },
+      { id: 'phone', emoji: '📱', key: 'phone' },
+      { id: 'insurance', emoji: '🛡️', key: 'insurance' }
+    ];
+
+    // ===== LANGUAGES =====
+    const languages = [
+      { code: 'vi', flag: '🇻🇳', name: 'Tiếng Việt' },
+      { code: 'en', flag: '🇬🇧', name: 'English' }
+    ];
+
+    // ===== APP STATE =====
+    let state = {
+      screen: 'language',
+      language: 'vi',
+      userName: '',
+
+      // Mode
+      mode: null, // 'survival' | 'target' | 'control'
+
+      // Survival Mode Data
+      survivalData: {
+        currentMoney: 0,
+        paydayDate: null
+      },
+
+      // Target Mode Data
+      targetData: {
+        itemName: '',
+        itemEmoji: '🎯',
+        targetAmount: 0,
+        deadline: null,
+        monthlyIncome: 0
+      },
+
+      // Control Mode Data
+      controlData: {
+        monthlyIncome: 0,
+        categoriesToControl: []
+      },
+
+      // Common
+      fixedExpenses: [],
+
+      // Commitment
+      commitmentAccepted: false,
+
+      // Calculated
+      dailyBudget: 0,
+      daysRemaining: 0,
+
+      // Transactions
+      transactions: [],
+      quickSaves: [],
+
+      // UI State
+      activeTab: 'home',
+      modalOpen: null
+    };
+
+    // ===== STORAGE =====
+    const STORAGE_KEY = 'moni_decision_engine';
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function loadState() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        state = { ...state, ...JSON.parse(saved) };
+      }
+    }
+
+    // ===== UTILITIES =====
+    function t(key) {
+      return translations[state.language]?.[key] || translations.vi[key] || key;
+    }
+
+    function formatMoney(amount) {
+      const num = Math.abs(amount);
+      const formatted = num.toLocaleString('vi-VN');
+      const currency = t('currency');
+      const position = t('currencyPosition');
+
+      if (position === 'before') {
+        return `${currency}${formatted}`;
+      }
+      return `${formatted}${currency}`;
+    }
+
+    function parseAmount(text) {
+      if (!text) return 0;
+      text = text.toString().toLowerCase().replace(/,/g, '').replace(/\s/g, '');
+
+      // Vietnamese: 50k = 50,000, 1.5tr = 1,500,000
+      if (text.includes('tr')) {
+        return parseFloat(text.replace('tr', '')) * 1000000;
+      }
+      if (text.includes('k')) {
+        return parseFloat(text.replace('k', '')) * 1000;
+      }
+
+      return parseFloat(text) || 0;
+    }
+
+    function getDaysUntil(date) {
+      if (!date) return 0;
+      const target = new Date(date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      target.setHours(0, 0, 0, 0);
+      return Math.ceil((target - today) / (1000 * 60 * 60 * 24));
+    }
+
+    function getDateString(date) {
+      return new Date(date).toISOString().split('T')[0];
+    }
+
+    function getTodayString() {
+      return getDateString(new Date());
+    }
+
+    // ===== CALCULATIONS =====
+    function calculateDailyBudget() {
+      switch (state.mode) {
+        case 'survival':
+          const survivalDays = getDaysUntil(state.survivalData.paydayDate);
+          const totalFixed = state.fixedExpenses.reduce((sum, e) => sum + e.amount, 0);
+          const available = state.survivalData.currentMoney - totalFixed;
+          return survivalDays > 0 ? Math.floor(available / survivalDays) : 0;
+
+        case 'target':
+          const targetDays = getDaysUntil(state.targetData.deadline);
+          const monthlySpendable = state.targetData.monthlyIncome -
+            state.fixedExpenses.reduce((sum, e) => sum + e.amount, 0);
+          const dailySpendable = monthlySpendable / 30;
+          const dailySavingsNeeded = targetDays > 0 ?
+            state.targetData.targetAmount / targetDays : 0;
+          return Math.floor(dailySpendable - dailySavingsNeeded);
+
+        case 'control':
+          const controlMonthly = state.controlData.monthlyIncome -
+            state.fixedExpenses.reduce((sum, e) => sum + e.amount, 0);
+          return Math.floor(controlMonthly / 30);
+
+        default:
+          return 0;
+      }
+    }
+
+    function getTodaySpent() {
+      const today = getTodayString();
+      return state.transactions
+        .filter(tx => getDateString(tx.timestamp) === today)
+        .reduce((sum, tx) => sum + tx.amount, 0);
+    }
+
+    function getTodayRemaining() {
+      return state.dailyBudget - getTodaySpent();
+    }
+
+    function getStatus() {
+      const remaining = getTodayRemaining();
+      const budget = state.dailyBudget;
+
+      if (remaining >= budget * 0.5) return 'green';
+      if (remaining >= 0) return 'yellow';
+      return 'red';
+    }
+
+    function calculateGoalDelay(amount) {
+      if (state.mode !== 'target') return 0;
+      const dailySavings = state.dailyBudget;
+      if (dailySavings <= 0) return 0;
+      return Math.ceil(amount / dailySavings);
+    }
+
+    // ===== RENDER FUNCTIONS =====
+    function render() {
+      const app = document.getElementById('app');
+
+      switch (state.screen) {
+        case 'language':
+          app.innerHTML = renderLanguageScreen();
+          break;
+        case 'name':
+          app.innerHTML = renderNameScreen();
+          break;
+        case 'mode':
+          app.innerHTML = renderModeScreen();
+          break;
+        case 'setup':
+          app.innerHTML = renderSetupScreen();
+          break;
+        case 'fixed':
+          app.innerHTML = renderFixedExpensesScreen();
+          break;
+        case 'commitment':
+          app.innerHTML = renderCommitmentScreen();
+          break;
+        case 'main':
+          app.innerHTML = renderMainScreen();
+          break;
+        default:
+          app.innerHTML = renderLanguageScreen();
+      }
+
+      attachEventListeners();
+    }
+
+    function renderLanguageScreen() {
+      return `
+        <div class="screen active">
+          <div class="screen-header text-center" style="padding-top: 60px;">
+            <div style="font-size: 64px; margin-bottom: 16px;">💰</div>
+            <h1>Moni</h1>
+            <p class="text-muted mt-2">Goal-Driven Decision Engine</p>
+          </div>
+
+          <div class="screen-content">
+            <h3 class="text-center mb-4">${t('selectLanguage')}</h3>
+            <div class="language-grid">
+              ${languages.map(lang => `
+                <div class="card card-bordered language-option ${state.language === lang.code ? 'card-selected' : ''}"
+                     onclick="selectLanguage('${lang.code}')">
+                  <div class="flag">${lang.flag}</div>
+                  <div class="name">${lang.name}</div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-primary" onclick="goToScreen('name')">${t('continue')}</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderNameScreen() {
+      return `
+        <div class="screen active">
+          <div class="screen-header" style="padding-top: 40px;">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('language')">
+              ← ${t('back')}
+            </button>
+          </div>
+
+          <div class="screen-content" style="padding-top: 40px;">
+            <h1 class="text-center">${t('greeting')}! 👋</h1>
+            <p class="text-muted text-center mt-2">${t('enterName')}</p>
+
+            <div class="input-group mt-6">
+              <input type="text" class="input input-large" id="nameInput"
+                     placeholder="${t('namePlaceholder')}" value="${state.userName}"
+                     oninput="updateName(this.value)">
+            </div>
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-primary" onclick="goToScreen('mode')" ${!state.userName ? 'disabled' : ''}>
+              ${t('continue')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderModeScreen() {
+      return `
+        <div class="screen active">
+          <div class="screen-header">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('name')">
+              ← ${t('back')}
+            </button>
+            <h1 class="mt-4">${t('chooseMode')}</h1>
+            <p class="text-muted mt-2">${t('chooseModeDesc')}</p>
+          </div>
+
+          <div class="screen-content">
+            <div class="card card-bordered mode-card mode-survival ${state.mode === 'survival' ? 'card-selected' : ''}"
+                 onclick="selectMode('survival')">
+              <div class="mode-icon">🆘</div>
+              <h3>${t('survivalMode')}</h3>
+              <p>${t('survivalDesc')}</p>
+            </div>
+
+            <div class="card card-bordered mode-card mode-target ${state.mode === 'target' ? 'card-selected' : ''}"
+                 onclick="selectMode('target')">
+              <div class="mode-icon">🎯</div>
+              <h3>${t('targetMode')}</h3>
+              <p>${t('targetDesc')}</p>
+            </div>
+
+            <div class="card card-bordered mode-card mode-control ${state.mode === 'control' ? 'card-selected' : ''}"
+                 onclick="selectMode('control')">
+              <div class="mode-icon">📊</div>
+              <h3>${t('controlMode')}</h3>
+              <p>${t('controlDesc')}</p>
+            </div>
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-primary" onclick="goToScreen('setup')" ${!state.mode ? 'disabled' : ''}>
+              ${t('continue')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSetupScreen() {
+      switch (state.mode) {
+        case 'survival':
+          return renderSurvivalSetup();
+        case 'target':
+          return renderTargetSetup();
+        case 'control':
+          return renderControlSetup();
+        default:
+          return renderModeScreen();
+      }
+    }
+
+    function renderSurvivalSetup() {
+      const days = getDaysUntil(state.survivalData.paydayDate);
+      const totalFixed = state.fixedExpenses.reduce((sum, e) => sum + e.amount, 0);
+      const available = state.survivalData.currentMoney - totalFixed;
+      const dailyBudget = days > 0 ? Math.floor(available / days) : 0;
+
+      return `
+        <div class="screen active">
+          <div class="screen-header">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('mode')">
+              ← ${t('back')}
+            </button>
+            <h1 class="mt-4">🆘 ${t('survivalSetupTitle')}</h1>
+          </div>
+
+          <div class="screen-content">
+            <div class="input-group">
+              <label>${t('howMuchLeft')}</label>
+              <input type="text" class="input input-large" id="survivalMoney"
+                     placeholder="500k"
+                     value="${state.survivalData.currentMoney ? formatMoney(state.survivalData.currentMoney) : ''}"
+                     oninput="updateSurvivalMoney(this.value)">
+            </div>
+
+            <div class="input-group">
+              <label>${t('whenPayday')}</label>
+              <input type="date" class="input" id="survivalPayday"
+                     value="${state.survivalData.paydayDate || ''}"
+                     min="${getTodayString()}"
+                     onchange="updateSurvivalPayday(this.value)">
+            </div>
+
+            ${days > 0 && dailyBudget > 0 ? `
+              <div class="big-number">
+                <div class="big-number-label">${t('yourDailyBudget')}</div>
+                <div class="big-number-value ${dailyBudget > 50000 ? 'positive' : dailyBudget > 20000 ? 'warning' : 'danger'}">
+                  ${formatMoney(dailyBudget)}
+                </div>
+                <div class="big-number-sub">${days} ${t('daysLeft')}</div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-primary" onclick="goToScreen('fixed')"
+                    ${!state.survivalData.currentMoney || !state.survivalData.paydayDate ? 'disabled' : ''}>
+              ${t('continue')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderTargetSetup() {
+      const days = getDaysUntil(state.targetData.deadline);
+      const dailySavings = days > 0 ? Math.ceil(state.targetData.targetAmount / days) : 0;
+
+      return `
+        <div class="screen active">
+          <div class="screen-header">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('mode')">
+              ← ${t('back')}
+            </button>
+            <h1 class="mt-4">🎯 ${t('targetSetupTitle')}</h1>
+          </div>
+
+          <div class="screen-content">
+            <div class="input-group">
+              <label>${t('whatToBuy')}</label>
+              <input type="text" class="input" id="targetItem"
+                     placeholder="${t('itemPlaceholder')}"
+                     value="${state.targetData.itemName}"
+                     oninput="updateTargetItem(this.value)">
+            </div>
+
+            <div class="input-group">
+              <label>${t('howMuchCost')}</label>
+              <input type="text" class="input input-large" id="targetAmount"
+                     placeholder="10,000,000"
+                     value="${state.targetData.targetAmount ? formatMoney(state.targetData.targetAmount) : ''}"
+                     oninput="updateTargetAmount(this.value)">
+            </div>
+
+            <div class="input-group">
+              <label>${t('whenToGet')}</label>
+              <input type="date" class="input" id="targetDeadline"
+                     value="${state.targetData.deadline || ''}"
+                     min="${getTodayString()}"
+                     onchange="updateTargetDeadline(this.value)">
+            </div>
+
+            <div class="input-group">
+              <label>${t('yourIncome')}</label>
+              <input type="text" class="input" id="targetIncome"
+                     placeholder="15,000,000"
+                     value="${state.targetData.monthlyIncome ? formatMoney(state.targetData.monthlyIncome) : ''}"
+                     oninput="updateTargetIncome(this.value)">
+            </div>
+
+            ${dailySavings > 0 ? `
+              <div class="big-number">
+                <div class="big-number-label">${t('dailyToSave')}</div>
+                <div class="big-number-value warning">${formatMoney(dailySavings)}</div>
+                <div class="big-number-sub">${t('toReachGoal')}</div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-primary" onclick="goToScreen('fixed')"
+                    ${!state.targetData.targetAmount || !state.targetData.deadline || !state.targetData.monthlyIncome ? 'disabled' : ''}>
+              ${t('continue')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderControlSetup() {
+      const dailyBudget = state.controlData.monthlyIncome > 0 ?
+        Math.floor(state.controlData.monthlyIncome / 30) : 0;
+
+      return `
+        <div class="screen active">
+          <div class="screen-header">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('mode')">
+              ← ${t('back')}
+            </button>
+            <h1 class="mt-4">📊 ${t('controlSetupTitle')}</h1>
+          </div>
+
+          <div class="screen-content">
+            <div class="input-group">
+              <label>${t('monthlyIncome')}</label>
+              <input type="text" class="input input-large" id="controlIncome"
+                     placeholder="15,000,000"
+                     value="${state.controlData.monthlyIncome ? formatMoney(state.controlData.monthlyIncome) : ''}"
+                     oninput="updateControlIncome(this.value)">
+            </div>
+
+            ${dailyBudget > 0 ? `
+              <div class="big-number">
+                <div class="big-number-label">${t('yourDailyBudget')}</div>
+                <div class="big-number-value positive">${formatMoney(dailyBudget)}</div>
+                <div class="big-number-sub">30 ${t('daysRemaining')}</div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-primary" onclick="goToScreen('fixed')"
+                    ${!state.controlData.monthlyIncome ? 'disabled' : ''}>
+              ${t('continue')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFixedExpensesScreen() {
+      const total = state.fixedExpenses.reduce((sum, e) => sum + e.amount, 0);
+
+      return `
+        <div class="screen active">
+          <div class="screen-header">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('setup')">
+              ← ${t('back')}
+            </button>
+            <h1 class="mt-4">📋 ${t('fixedExpenses')}</h1>
+            <p class="text-muted mt-2">${t('fixedExpensesDesc')}</p>
+          </div>
+
+          <div class="screen-content">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 20px;">
+              ${fixedExpensePresets.map(preset => `
+                <button class="btn btn-outline" style="width: auto; padding: 10px 16px;"
+                        onclick="showAddFixedExpense('${preset.id}', '${preset.emoji}', '${t(preset.key)}')">
+                  ${preset.emoji} ${t(preset.key)}
+                </button>
+              `).join('')}
+            </div>
+
+            <div id="fixedExpensesList">
+              ${state.fixedExpenses.map(expense => `
+                <div class="transaction-item">
+                  <div class="transaction-icon">${expense.emoji}</div>
+                  <div class="transaction-info">
+                    <div class="transaction-name">${expense.name}</div>
+                  </div>
+                  <div class="transaction-amount" style="color: var(--gray-700);">
+                    ${formatMoney(expense.amount)}
+                  </div>
+                  <button onclick="removeFixedExpense('${expense.id}')"
+                          style="margin-left: 8px; background: none; border: none; cursor: pointer; font-size: 18px;">
+                    ✕
+                  </button>
+                </div>
+              `).join('')}
+            </div>
+
+            ${total > 0 ? `
+              <div class="card" style="margin-top: 16px; background: var(--gray-50);">
+                <div class="flex justify-between items-center">
+                  <span class="text-muted">${t('total')}</span>
+                  <span style="font-size: 20px; font-weight: 700;">${formatMoney(total)}</span>
+                </div>
+              </div>
+            ` : ''}
+          </div>
+
+          <div class="screen-footer">
+            <div class="flex gap-2">
+              <button class="btn btn-secondary" onclick="goToScreen('commitment')">${t('skip')}</button>
+              <button class="btn btn-primary" onclick="goToScreen('commitment')">${t('continue')}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Add Fixed Expense Modal -->
+        <div class="modal-overlay" id="addFixedModal">
+          <div class="modal">
+            <div class="modal-handle"></div>
+            <h2>${t('addExpense')}</h2>
+            <input type="hidden" id="fixedExpenseId">
+            <input type="hidden" id="fixedExpenseEmoji">
+            <div class="input-group">
+              <label id="fixedExpenseName"></label>
+              <input type="text" class="input input-large" id="fixedExpenseAmount" placeholder="2,000,000">
+            </div>
+            <div class="flex gap-2 mt-4">
+              <button class="btn btn-secondary" onclick="closeModal('addFixedModal')">${t('cancel')}</button>
+              <button class="btn btn-primary" onclick="addFixedExpense()">${t('save')}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderCommitmentScreen() {
+      state.dailyBudget = calculateDailyBudget();
+
+      let goalText = '';
+      switch (state.mode) {
+        case 'survival':
+          goalText = t('survivalMode').toLowerCase();
+          break;
+        case 'target':
+          goalText = state.targetData.itemName || t('targetMode').toLowerCase();
+          break;
+        case 'control':
+          goalText = t('controlMode').toLowerCase();
+          break;
+      }
+
+      const commitmentText = t('commitmentText')
+        .replace('{name}', state.userName)
+        .replace('{amount}', formatMoney(state.dailyBudget))
+        .replace('{goal}', goalText);
+
+      return `
+        <div class="screen active">
+          <div class="screen-header">
+            <button class="btn btn-secondary" style="width: auto; padding: 8px 16px;" onclick="goToScreen('fixed')">
+              ← ${t('back')}
+            </button>
+          </div>
+
+          <div class="screen-content" style="padding-top: 20px;">
+            <h1 class="text-center">✍️ ${t('commitmentTitle')}</h1>
+
+            <div class="contract-box">
+              <div class="contract-text">${commitmentText}</div>
+              <div class="signature-line">${state.userName}</div>
+            </div>
+
+            <div class="big-number">
+              <div class="big-number-label">${t('todayBudget')}</div>
+              <div class="big-number-value positive animate-pulse">${formatMoney(state.dailyBudget)}</div>
+            </div>
+          </div>
+
+          <div class="screen-footer">
+            <button class="btn btn-success" onclick="acceptCommitment()">
+              ✓ ${t('iCommit')}
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderMainScreen() {
+      const remaining = getTodayRemaining();
+      const status = getStatus();
+      const spent = getTodaySpent();
+      const progress = state.dailyBudget > 0 ? (spent / state.dailyBudget) * 100 : 0;
+
+      let statusText = t('onTrack');
+      if (status === 'yellow') statusText = t('underBudget');
+      if (status === 'red') statusText = t('overBudget');
+
+      const todayTransactions = state.transactions.filter(
+        tx => getDateString(tx.timestamp) === getTodayString()
+      );
+
+      return `
+        <div class="screen active" style="padding-bottom: 80px;">
+          <!-- Header -->
+          <div class="flex justify-between items-center mb-4">
+            <div>
+              <div class="text-muted text-sm">${t('greeting')},</div>
+              <h2>${state.userName}</h2>
+            </div>
+            <div style="font-size: 32px;">
+              ${state.mode === 'survival' ? '🆘' : state.mode === 'target' ? '🎯' : '📊'}
+            </div>
+          </div>
+
+          <!-- Big Number -->
+          <div class="card" style="background: linear-gradient(135deg, ${
+            status === 'green' ? '#ecfdf5, #d1fae5' :
+            status === 'yellow' ? '#fefce8, #fef08a' :
+            '#fef2f2, #fecaca'
+          });">
+            <div class="big-number" style="padding: 20px 0;">
+              <div class="big-number-label">${t('todayBudget')}</div>
+              <div class="big-number-value ${status === 'green' ? 'positive' : status === 'yellow' ? 'warning' : 'danger'}">
+                ${formatMoney(remaining)}
+              </div>
+              <div class="big-number-sub">${statusText}</div>
+            </div>
+
+            <div class="status-bar">
+              <div class="status-bar-fill ${status}" style="width: ${Math.min(progress, 100)}%"></div>
+            </div>
+
+            <div class="flex justify-between text-sm text-muted">
+              <span>${t('todayBudget')}: ${formatMoney(state.dailyBudget)}</span>
+              <span>Đã chi: ${formatMoney(spent)}</span>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class="quick-actions">
+            <div class="card card-bordered quick-action" onclick="showAddExpenseModal()">
+              <div class="quick-action-icon">💸</div>
+              <div class="quick-action-label">${t('addExpenseBtn')}</div>
+            </div>
+            <div class="card card-bordered quick-action" onclick="showQuickSaveModal()">
+              <div class="quick-action-icon">💪</div>
+              <div class="quick-action-label">${t('quickSave')}</div>
+            </div>
+          </div>
+
+          <!-- Today's Transactions -->
+          <div class="mt-6">
+            <h3>${t('today')}</h3>
+            <div class="mt-2">
+              ${todayTransactions.length > 0 ?
+                todayTransactions.map(tx => `
+                  <div class="transaction-item">
+                    <div class="transaction-icon">${tx.emoji}</div>
+                    <div class="transaction-info">
+                      <div class="transaction-name">${tx.name}</div>
+                      <div class="transaction-time">${new Date(tx.timestamp).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
+                    <div class="transaction-amount">-${formatMoney(tx.amount)}</div>
+                  </div>
+                `).join('') :
+                `<p class="text-muted text-center" style="padding: 32px;">${t('noTransactions')}</p>`
+              }
+            </div>
+          </div>
+
+          <!-- Quick Saves Summary -->
+          ${state.quickSaves.length > 0 ? `
+            <div class="card mt-4" style="background: var(--success); color: white;">
+              <div class="flex justify-between items-center">
+                <div>
+                  <div class="text-sm" style="opacity: 0.8;">${t('savedTotal')}</div>
+                  <div style="font-size: 24px; font-weight: 700;">
+                    ${formatMoney(state.quickSaves.reduce((sum, s) => sum + s.amount, 0))}
+                  </div>
+                </div>
+                <div style="font-size: 32px;">💪</div>
+              </div>
+            </div>
+          ` : ''}
+        </div>
+
+        <!-- Bottom Nav -->
+        <div class="bottom-nav visible">
+          <div class="nav-item ${state.activeTab === 'home' ? 'active' : ''}" onclick="switchTab('home')">
+            <div class="nav-item-icon">🏠</div>
+            <span>${t('navHome')}</span>
+          </div>
+          <div class="nav-item ${state.activeTab === 'history' ? 'active' : ''}" onclick="switchTab('history')">
+            <div class="nav-item-icon">📜</div>
+            <span>${t('navHistory')}</span>
+          </div>
+          <div class="nav-item ${state.activeTab === 'settings' ? 'active' : ''}" onclick="switchTab('settings')">
+            <div class="nav-item-icon">⚙️</div>
+            <span>${t('navSettings')}</span>
+          </div>
+        </div>
+
+        <!-- Add Expense Modal -->
+        <div class="modal-overlay" id="addExpenseModal">
+          <div class="modal">
+            <div class="modal-handle"></div>
+            <h2>${t('addExpenseBtn')}</h2>
+
+            <div class="emoji-grid">
+              ${categories.map(cat => `
+                <div class="emoji-option" onclick="selectExpenseCategory('${cat.emoji}')" data-emoji="${cat.emoji}">
+                  ${cat.emoji}
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="input-group">
+              <input type="text" class="input" id="expenseName" placeholder="Cafe, Grab, Cơm...">
+            </div>
+
+            <div class="input-group">
+              <input type="text" class="input input-large" id="expenseAmount" placeholder="50k">
+            </div>
+
+            <!-- Trade-off Alert (hidden by default) -->
+            <div class="trade-off-alert hidden" id="tradeOffAlert">
+              <h4>⚠️ ${t('tradeOffTitle')}</h4>
+              <p id="tradeOffMessage"></p>
+              <div class="trade-off-impact" id="tradeOffImpact"></div>
+            </div>
+
+            <div class="flex gap-2 mt-4">
+              <button class="btn btn-secondary" onclick="closeModal('addExpenseModal')">${t('cancel')}</button>
+              <button class="btn btn-primary" onclick="addExpense()">${t('confirm')}</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Save Modal -->
+        <div class="modal-overlay" id="quickSaveModal">
+          <div class="modal">
+            <div class="modal-handle"></div>
+            <h2>💪 ${t('quickSaveTitle')}</h2>
+            <p class="text-muted mb-4">${t('quickSaveDesc')}</p>
+
+            <div class="emoji-grid">
+              ${categories.map(cat => `
+                <div class="emoji-option" onclick="selectQuickSaveCategory('${cat.emoji}')" data-emoji="${cat.emoji}">
+                  ${cat.emoji}
+                </div>
+              `).join('')}
+            </div>
+
+            <div class="input-group">
+              <input type="text" class="input" id="quickSaveName" placeholder="${t('whatDidntBuy')}">
+            </div>
+
+            <div class="input-group">
+              <input type="text" class="input input-large" id="quickSaveAmount" placeholder="${t('howMuchSaved')}">
+            </div>
+
+            <div class="flex gap-2 mt-4">
+              <button class="btn btn-secondary" onclick="closeModal('quickSaveModal')">${t('cancel')}</button>
+              <button class="btn btn-success" onclick="addQuickSave()">${t('save')}</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ===== EVENT HANDLERS =====
+    function selectLanguage(code) {
+      state.language = code;
+      saveState();
+      render();
+    }
+
+    function updateName(name) {
+      state.userName = name.trim();
+      saveState();
+      render();
+    }
+
+    function selectMode(mode) {
+      state.mode = mode;
+      saveState();
+      render();
+    }
+
+    function goToScreen(screen) {
+      state.screen = screen;
+      saveState();
+      render();
+    }
+
+    // Survival Mode
+    function updateSurvivalMoney(value) {
+      state.survivalData.currentMoney = parseAmount(value);
+      saveState();
+      render();
+    }
+
+    function updateSurvivalPayday(value) {
+      state.survivalData.paydayDate = value;
+      saveState();
+      render();
+    }
+
+    // Target Mode
+    function updateTargetItem(value) {
+      state.targetData.itemName = value;
+      saveState();
+    }
+
+    function updateTargetAmount(value) {
+      state.targetData.targetAmount = parseAmount(value);
+      saveState();
+      render();
+    }
+
+    function updateTargetDeadline(value) {
+      state.targetData.deadline = value;
+      saveState();
+      render();
+    }
+
+    function updateTargetIncome(value) {
+      state.targetData.monthlyIncome = parseAmount(value);
+      saveState();
+      render();
+    }
+
+    // Control Mode
+    function updateControlIncome(value) {
+      state.controlData.monthlyIncome = parseAmount(value);
+      saveState();
+      render();
+    }
+
+    // Fixed Expenses
+    function showAddFixedExpense(id, emoji, name) {
+      document.getElementById('fixedExpenseId').value = id;
+      document.getElementById('fixedExpenseEmoji').value = emoji;
+      document.getElementById('fixedExpenseName').textContent = `${emoji} ${name}`;
+      document.getElementById('fixedExpenseAmount').value = '';
+      document.getElementById('addFixedModal').classList.add('active');
+    }
+
+    function addFixedExpense() {
+      const id = document.getElementById('fixedExpenseId').value;
+      const emoji = document.getElementById('fixedExpenseEmoji').value;
+      const name = document.getElementById('fixedExpenseName').textContent;
+      const amount = parseAmount(document.getElementById('fixedExpenseAmount').value);
+
+      if (amount > 0) {
+        // Remove if exists
+        state.fixedExpenses = state.fixedExpenses.filter(e => e.id !== id);
+        state.fixedExpenses.push({ id, emoji, name, amount });
+        saveState();
+      }
+
+      closeModal('addFixedModal');
+      render();
+    }
+
+    function removeFixedExpense(id) {
+      state.fixedExpenses = state.fixedExpenses.filter(e => e.id !== id);
+      saveState();
+      render();
+    }
+
+    // Commitment
+    function acceptCommitment() {
+      state.commitmentAccepted = true;
+      state.dailyBudget = calculateDailyBudget();
+      state.screen = 'main';
+      saveState();
+      render();
+
+      // Celebration
+      triggerConfetti();
+    }
+
+    // Tab Navigation
+    function switchTab(tab) {
+      state.activeTab = tab;
+
+      if (tab === 'home') {
+        render();
+      } else if (tab === 'history') {
+        renderHistoryTab();
+      } else if (tab === 'settings') {
+        renderSettingsTab();
+      }
+    }
+
+    function renderHistoryTab() {
+      const app = document.getElementById('app');
+
+      const groupedTx = {};
+      state.transactions.forEach(tx => {
+        const date = getDateString(tx.timestamp);
+        if (!groupedTx[date]) groupedTx[date] = [];
+        groupedTx[date].push(tx);
+      });
+
+      const dates = Object.keys(groupedTx).sort().reverse();
+
+      app.innerHTML = `
+        <div class="screen active" style="padding-bottom: 80px;">
+          <h1 class="mb-4">${t('history')}</h1>
+
+          ${dates.length > 0 ? dates.map(date => {
+            const txs = groupedTx[date];
+            const total = txs.reduce((sum, tx) => sum + tx.amount, 0);
+            const dateLabel = date === getTodayString() ? t('today') :
+              new Date(date).toLocaleDateString(state.language === 'vi' ? 'vi-VN' : 'en-US',
+                {weekday: 'short', day: 'numeric', month: 'short'});
+
+            return `
+              <div class="mb-4">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-muted">${dateLabel}</span>
+                  <span class="text-muted">-${formatMoney(total)}</span>
+                </div>
+                ${txs.map(tx => `
+                  <div class="transaction-item">
+                    <div class="transaction-icon">${tx.emoji}</div>
+                    <div class="transaction-info">
+                      <div class="transaction-name">${tx.name}</div>
+                      <div class="transaction-time">${new Date(tx.timestamp).toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'})}</div>
+                    </div>
+                    <div class="transaction-amount">-${formatMoney(tx.amount)}</div>
+                  </div>
+                `).join('')}
+              </div>
+            `;
+          }).join('') : `
+            <p class="text-muted text-center" style="padding: 60px 0;">${t('noTransactions')}</p>
+          `}
+        </div>
+
+        <div class="bottom-nav visible">
+          <div class="nav-item" onclick="switchTab('home')">
+            <div class="nav-item-icon">🏠</div>
+            <span>${t('navHome')}</span>
+          </div>
+          <div class="nav-item active" onclick="switchTab('history')">
+            <div class="nav-item-icon">📜</div>
+            <span>${t('navHistory')}</span>
+          </div>
+          <div class="nav-item" onclick="switchTab('settings')">
+            <div class="nav-item-icon">⚙️</div>
+            <span>${t('navSettings')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderSettingsTab() {
+      const app = document.getElementById('app');
+
+      app.innerHTML = `
+        <div class="screen active" style="padding-bottom: 80px;">
+          <h1 class="mb-4">${t('settings')}</h1>
+
+          <div class="card card-bordered mb-4" onclick="goToScreen('language')">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span style="font-size: 24px;">${languages.find(l => l.code === state.language)?.flag}</span>
+                <span>${t('language')}</span>
+              </div>
+              <span style="color: var(--gray-400);">→</span>
+            </div>
+          </div>
+
+          <div class="card card-bordered mb-4" onclick="goToScreen('mode')">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span style="font-size: 24px;">
+                  ${state.mode === 'survival' ? '🆘' : state.mode === 'target' ? '🎯' : '📊'}
+                </span>
+                <span>${state.mode === 'survival' ? t('survivalMode') : state.mode === 'target' ? t('targetMode') : t('controlMode')}</span>
+              </div>
+              <span style="color: var(--gray-400);">→</span>
+            </div>
+          </div>
+
+          <div class="card card-bordered mb-4" onclick="goToScreen('fixed')">
+            <div class="flex justify-between items-center">
+              <div class="flex items-center gap-2">
+                <span style="font-size: 24px;">📋</span>
+                <span>${t('fixedExpenses')}</span>
+              </div>
+              <span style="color: var(--gray-400);">→</span>
+            </div>
+          </div>
+
+          <button class="btn btn-danger mt-6" onclick="confirmReset()">
+            🗑️ ${t('resetData')}
+          </button>
+        </div>
+
+        <div class="bottom-nav visible">
+          <div class="nav-item" onclick="switchTab('home')">
+            <div class="nav-item-icon">🏠</div>
+            <span>${t('navHome')}</span>
+          </div>
+          <div class="nav-item" onclick="switchTab('history')">
+            <div class="nav-item-icon">📜</div>
+            <span>${t('navHistory')}</span>
+          </div>
+          <div class="nav-item active" onclick="switchTab('settings')">
+            <div class="nav-item-icon">⚙️</div>
+            <span>${t('navSettings')}</span>
+          </div>
+        </div>
+      `;
+    }
+
+    function confirmReset() {
+      if (confirm(t('resetData') + '?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    // Modals
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    function showAddExpenseModal() {
+      document.getElementById('expenseName').value = '';
+      document.getElementById('expenseAmount').value = '';
+      document.getElementById('tradeOffAlert').classList.add('hidden');
+      document.querySelectorAll('#addExpenseModal .emoji-option').forEach(el => el.classList.remove('selected'));
+      document.getElementById('addExpenseModal').classList.add('active');
+
+      // Add input listener for trade-off
+      document.getElementById('expenseAmount').oninput = checkTradeOff;
+    }
+
+    let selectedExpenseEmoji = '📦';
+
+    function selectExpenseCategory(emoji) {
+      selectedExpenseEmoji = emoji;
+      document.querySelectorAll('#addExpenseModal .emoji-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.emoji === emoji);
+      });
+    }
+
+    function checkTradeOff() {
+      const amount = parseAmount(document.getElementById('expenseAmount').value);
+      const remaining = getTodayRemaining();
+
+      if (amount > remaining && state.mode === 'target') {
+        const delayDays = calculateGoalDelay(amount - remaining);
+        document.getElementById('tradeOffMessage').textContent =
+          t('tradeOffMsg').replace('{amount}', formatMoney(amount)).replace('{days}', delayDays);
+        document.getElementById('tradeOffImpact').textContent =
+          `${state.targetData.itemName} 🎯 +${delayDays} ngày`;
+        document.getElementById('tradeOffAlert').classList.remove('hidden');
+      } else {
+        document.getElementById('tradeOffAlert').classList.add('hidden');
+      }
+    }
+
+    function addExpense() {
+      const name = document.getElementById('expenseName').value.trim() || 'Chi tiêu';
+      const amount = parseAmount(document.getElementById('expenseAmount').value);
+
+      if (amount > 0) {
+        state.transactions.push({
+          id: Date.now().toString(),
+          emoji: selectedExpenseEmoji,
+          name,
+          amount,
+          timestamp: new Date().toISOString()
+        });
+        saveState();
+      }
+
+      closeModal('addExpenseModal');
+      render();
+    }
+
+    function showQuickSaveModal() {
+      document.getElementById('quickSaveName').value = '';
+      document.getElementById('quickSaveAmount').value = '';
+      document.querySelectorAll('#quickSaveModal .emoji-option').forEach(el => el.classList.remove('selected'));
+      document.getElementById('quickSaveModal').classList.add('active');
+    }
+
+    let selectedQuickSaveEmoji = '💪';
+
+    function selectQuickSaveCategory(emoji) {
+      selectedQuickSaveEmoji = emoji;
+      document.querySelectorAll('#quickSaveModal .emoji-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.emoji === emoji);
+      });
+    }
+
+    function addQuickSave() {
+      const name = document.getElementById('quickSaveName').value.trim() || 'Tiết kiệm';
+      const amount = parseAmount(document.getElementById('quickSaveAmount').value);
+
+      if (amount > 0) {
+        state.quickSaves.push({
+          id: Date.now().toString(),
+          emoji: selectedQuickSaveEmoji,
+          name,
+          amount,
+          timestamp: new Date().toISOString()
+        });
+        saveState();
+
+        // Celebration
+        triggerConfetti();
+      }
+
+      closeModal('quickSaveModal');
+      render();
+    }
+
+    // Confetti
+    function triggerConfetti() {
+      const container = document.createElement('div');
+      container.className = 'confetti-container';
+      document.body.appendChild(container);
+
+      const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
+
+      for (let i = 0; i < 50; i++) {
+        const confetti = document.createElement('div');
+        confetti.style.cssText = `
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          background: ${colors[Math.floor(Math.random() * colors.length)]};
+          left: ${Math.random() * 100}%;
+          top: -10px;
+          border-radius: ${Math.random() > 0.5 ? '50%' : '0'};
+          animation: fall ${2 + Math.random() * 2}s linear forwards;
+        `;
+        container.appendChild(confetti);
+      }
+
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fall {
+          to {
+            transform: translateY(100vh) rotate(${Math.random() * 720}deg);
+            opacity: 0;
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      setTimeout(() => {
+        container.remove();
+        style.remove();
+      }, 4000);
+    }
+
+    function attachEventListeners() {
+      // Close modals on overlay click
+      document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', (e) => {
+          if (e.target === overlay) {
+            overlay.classList.remove('active');
+          }
+        });
+      });
+    }
+
+    // ===== INIT =====
+    loadState();
+
+    // Recalculate daily budget on load
+    if (state.screen === 'main') {
+      state.dailyBudget = calculateDailyBudget();
+    }
+
+    render();
+  </script>
+</body>
+</html>
